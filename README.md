@@ -349,9 +349,9 @@ MIT License - Free to use and modify
 
 ## 📧 Contact
 
-- Email: garvitsharma@example.com
+- Email: giantgarvit@gmail.com
 - GitHub: @garvitshrma
-- LinkedIn: [Garvit Sharma](https://linkedin.com)
+
 
 ---
 
@@ -384,11 +384,6 @@ This project was built to learn:
 
 ## 🎉 Built with ❤️
 
-Started: May 7, 2026
-Current: May 16, 2026
-Target Launch: August 1, 2026
-
-**10 days from zero to working product!** 🚀
 
 ---
 
