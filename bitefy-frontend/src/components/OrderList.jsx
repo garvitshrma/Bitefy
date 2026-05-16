@@ -1,0 +1,314 @@
+import { useState, useEffect } from "react";
+
+function OrderList({
+  selectedItems,
+  setSelectedItems,
+  menuItems,
+  orders,
+  setOrders,
+}) {
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/orders/")
+      .then((response) => response.json())
+      .then((data) => setOrders(data))
+      .catch((error) => console.log("Error:", error));
+  }, []);
+  // const [orders, setOrders] = useState([]);
+
+  const [customerName, setCustomerName] = useState("");
+  const [activeTab, setActiveTab] = useState("active");
+  const [completedOrders, setCompletedOrders] = useState([]);
+
+  const containerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    overflowY: "auto",
+    padding: "20px",
+    backgroundColor: "#f1984f",
+    borderRadius: "10px",
+    marginLeft: "10px",
+    marginBottom: "10px",
+    width: "80%",
+    flex: 1,
+  };
+
+  const orderBoxStyle = {
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    padding: "15px",
+    marginBottom: "10px",
+    backgroundColor: "white",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  };
+
+  const customerNameStyle = {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#2c3e50",
+    margin: "5px 0",
+  };
+
+  const itemsStyle = {
+    fontSize: "14px",
+    fontWeight: "normal",
+    color: "#666",
+    margin: "5px 0",
+  };
+
+  const totalStyle = {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#FF8C42",
+    margin: "5px 0",
+  };
+
+  const printButtonStyle = {
+    backgroundColor: "#FF8C42",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+    marginTop: "10px",
+    marginLeft: "10px",
+  };
+
+  const formStyle = {
+    backgroundColor: "white",
+    padding: "15px",
+    borderRadius: "8px",
+    marginBottom: "20px",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxSizing: "border-box",
+    fontSize: "14px",
+  };
+
+  const selectedItemsStyle = {
+    marginBottom: "10px",
+    color: "#2c3e50",
+    fontSize: "14px",
+    fontWeight: "500",
+  };
+
+  const addOrderButtonStyle = {
+    backgroundColor: "#FF8C42",
+    color: "white",
+    border: "none",
+    padding: "12px 24px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "16px",
+  };
+
+  const deleteButtonStyle = {
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+    marginTop: "10px",
+    marginLeft: "10px",
+  };
+
+  const completeButtonStyle = {
+    backgroundColor: "#27ae60",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+    marginTop: "10px",
+    marginLeft: "10px",
+  };
+
+  return (
+    <div style={containerStyle}>
+      <div style={{ display: "flex", marginBottom: "20px", gap: "10px" }}>
+        <button
+          onClick={() => setActiveTab("active")}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: activeTab === "active" ? "#FF8C42" : "#ddd",
+          }}
+        >
+          ACTIVE QUEUE
+        </button>
+
+        <button
+          onClick={() => setActiveTab("completed")}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: activeTab === "completed" ? "#FF8C42" : "#ddd",
+          }}
+        >
+          COMPLETED
+        </button>
+      </div>
+
+      {activeTab === "active" && (
+        <div>
+          <h2
+            style={{ color: "#ffffff", marginBottom: "20px", fontSize: "40px" }}
+          >
+            QUEUE
+          </h2>
+
+          <div style={formStyle}>
+            <h3>Add Order</h3>
+
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Enter Customer Name"
+              style={inputStyle}
+            ></input>
+
+            <p style={selectedItemsStyle}>
+              Selected Items :{" "}
+              {selectedItems.length > 0 ? selectedItems.join(", ") : "None"}
+            </p>
+
+            <button
+              style={addOrderButtonStyle}
+              onClick={() => {
+                if (customerName.trim() && selectedItems.length > 0) {
+                  let total = 0;
+                  for (let itemName of selectedItems) {
+                    const item = menuItems.find((m) => m.name === itemName);
+                    if (item) {
+                      total = total + item.price;
+                    }
+                  }
+
+                  const newOrder = {
+                    name: customerName,
+                    items: selectedItems,
+                    total: total,
+                  };
+
+                  setOrders([...orders, newOrder]);
+
+                  fetch("http://127.0.0.1:8000/api/orders/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newOrder),
+                  })
+                    .then((response) => response.json())
+                    .then((data) => {
+                      setCustomerName("");
+                      setSelectedItems([]);
+                    })
+                    .catch((error) => console.log("Error:", error));
+                }
+              }}
+            >
+              Add Order
+            </button>
+          </div>
+          {orders.map((order, index) => (
+            <div key={order.name} style={orderBoxStyle}>
+              <p style={customerNameStyle}>Customer: {order.name}</p>
+              <p style={itemsStyle}>Items: {order.items.join(", ")}</p>
+              <p style={totalStyle}>total: ₹{order.total}</p>
+              <button style={printButtonStyle}>PRINT</button>
+              <button
+                style={deleteButtonStyle}
+                onClick={() => {
+                  const orderId = orders[index].id;
+
+                  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
+                    method: "DELETE",
+                  })
+                    .then(() => {
+                      const newOrders = orders.filter((_, i) => i !== index);
+                      setOrders(newOrders);
+                    })
+                    .catch((error) => console.log("Error:", error));
+                }}
+              >
+                REMOVE
+              </button>
+
+              <button
+                style={completeButtonStyle}
+                onClick={() => {
+  const orderId = orders[index].id;
+  const orderToComplete = orders[index];
+  
+  // Send DELETE to database
+  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
+    method: 'DELETE',
+  })
+  .then(() => {
+    // THEN remove from active and add to completed
+    const newOrders = orders.filter((_, i) => i !== index);
+    setOrders(newOrders);
+    setCompletedOrders([...completedOrders, orderToComplete]);
+  })
+  .catch((error) => console.log('Error:', error));
+}}
+              >
+                COMPLETE
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeTab === "completed" && (
+        <div>
+          <h2>COMPLETED ORDERS</h2>
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "15px",
+              borderRadius: "8px",
+              marginTop: "20px",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <h3 style={{ color: "#FF8C42", fontSize: "24px" }}>
+              Total Revenue: ₹
+              {completedOrders.reduce((sum, order) => sum + order.total, 0)}
+            </h3>
+          </div>
+
+          {completedOrders.length > 0 ? (
+            <div>
+              {completedOrders.map((order, index) => (
+                <div key={index} style={orderBoxStyle}>
+                  <p style={customerNameStyle}>Customer: {order.name}</p>
+                  <p style={itemsStyle}>Items: {order.items.join(", ")}</p>
+                  <p style={totalStyle}>total: ₹{order.total}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: "#ffffff", fontSize: "18px" }}>
+              No completed orders yet
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default OrderList;
