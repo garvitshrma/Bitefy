@@ -1,4 +1,8 @@
-function Header({setShowModal}) {
+import { useState } from "react";
+
+function Header({ setShowModal }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const mainStyle = {
     display: "flex",
     flexDirection: "row", // ← Items LEFT to RIGHT
@@ -9,7 +13,7 @@ function Header({setShowModal}) {
     backgroundColor: "#ffffff",
     borderBottom: "0.3px solid #000000",
     paddingTop: "10px",
-    paddingBottom: '10px'
+    paddingBottom: "10px",
   };
 
   const firstSectionStyle = {
@@ -32,7 +36,7 @@ function Header({setShowModal}) {
   };
 
   const openButtonStyle = {
-    backgroundColor: "#c1f097",
+    backgroundColor: isOpen ? "#ffa9986c" : "#b2ffa1",
     height: "50px",
     padding: "10px",
     border: "none",
@@ -41,7 +45,7 @@ function Header({setShowModal}) {
     paddingLeft: "15px",
     borderRadius: "10px",
     fontSize: "15px",
-    color: "#05931d",
+    color: isOpen ? "#ff2a00ad" : "#188500",
     cursor: "pointer",
   };
 
@@ -53,7 +57,7 @@ function Header({setShowModal}) {
     paddingRight: "15px",
     paddingLeft: "15px",
     borderRadius: "5px",
-    cursor: 'pointer',
+    cursor: "pointer",
   };
 
   const logoutButtonStyle = {
@@ -61,14 +65,14 @@ function Header({setShowModal}) {
     border: "none",
     backgroundColor: "#ffffff",
     cursor: "pointer",
-    fontSize: '20px'
+    fontSize: "20px",
   };
 
   const settingsButtonStyle = {
     border: "none",
     backgroundColor: "#ffffff",
     cursor: "pointer",
-    fontSize: '20px'
+    fontSize: "20px",
   };
   return (
     <div style={mainStyle}>
@@ -78,22 +82,30 @@ function Header({setShowModal}) {
           <p style={defaultPaddingMargin}>Management Dashboard</p>
         </div>
         <div>
-          <button style={openButtonStyle}>
-            {" "}
-            <i class="fa-solid fa-lock-open"></i> Open
+          <button style={openButtonStyle} onClick={() => setIsOpen(!isOpen)}>
+            <i
+              className={isOpen ? "fa-solid fa-lock" : "fa-solid fa-lock-open"}
+            ></i>{" "}
+            {isOpen ? "Closed" : "Open"}
           </button>
         </div>
       </div>
 
       <div style={rightSectionStyle}>
-        <button style={newOrderButtonStyle}
-        onClick={() => (setShowModal(true))}>
+        <button style={newOrderButtonStyle} onClick={() => setShowModal(true)}>
           <i class="fa-solid fa-plus"></i> New Order
         </button>
         <button style={settingsButtonStyle}>
           <i className="fa-solid fa-gear"></i>
         </button>
-        <button style={logoutButtonStyle}>
+        <button
+          style={logoutButtonStyle}
+          onClick={() => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("access_token");
+            window.location.reload();
+          }}
+        >
           <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
       </div>

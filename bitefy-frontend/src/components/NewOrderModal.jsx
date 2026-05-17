@@ -26,7 +26,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
     maxHeight: "80vh",
     overflowY: "auto",
     boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)",
-    position: 'relative'
+    position: "relative",
   };
 
   const closeButtonStyle = {
@@ -101,10 +101,14 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 total: total,
               };
 
+              const token = localStorage.getItem('access_token');
               // Send to Django
               fetch("http://127.0.0.1:8000/api/orders/", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`, // ← Add here!
+                },
                 body: JSON.stringify(newOrder),
               })
                 .then(() => {
@@ -113,7 +117,11 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   setCustomerName("");
                   setSelectedItems([]);
                   // Refresh orders
-                  fetch("http://127.0.0.1:8000/api/orders/")
+                  fetch("http://127.0.0.1:8000/api/orders/", {
+                    headers: {
+                      Authorization: `Bearer ${token}`, // ← Add here too!
+                    },
+                  })
                     .then((r) => r.json())
                     .then((data) => setOrders(data));
                 })

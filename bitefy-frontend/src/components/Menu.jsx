@@ -24,8 +24,8 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     borderRadius: "10px", // Increase this
     boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
     border: "1px solid #000000",
-    display: 'flex',
-    justifyContent: 'space-between'
+    display: "flex",
+    justifyContent: "space-between",
   };
 
   const checkboxStyle = {
@@ -87,20 +87,41 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     borderRadius: "6px",
   };
 
+  const menuHeaderStyle = {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  };
+
+  const addButtonStyle = {
+    paddingRight: '20px',
+    paddingLeft: '20px',
+    marginLeft: '20px',
+    marginRight: '20px',
+    border: 'none',
+    borderRadius: '5px',
+    backgroundColor: '#0084ff',
+    color: 'white'
+  }
+
   return (
     <div style={menuContainerStyle}>
-      <h2
-        style={{
-          color: "#000000",
-          marginBottom: "20px",
-          fontSize: "20px",
-          marginTop: "0px"
-        }}
-      >
-        Menu Management
-      </h2>
+      <div style={menuHeaderStyle}>
+        <h2
+          style={{
+            color: "#000000",
+            marginBottom: "20px",
+            fontSize: "20px",
+            marginTop: "0px",
+          }}
+        >
+          Menu Management
+        </h2>
 
-      {/* <div style={menuFormStyle}>
+        <button style={addButtonStyle}>+ Add Item</button>
+      </div>
+
+      <div style={menuFormStyle}>
         <h3>Add Item</h3>
         <input
           type="text"
@@ -131,7 +152,7 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
         >
           Add Item
         </button>
-      </div> */}
+      </div>
 
       {menuItems.map((item, index) => (
         <div key={item.id} style={menuItemStyle}>

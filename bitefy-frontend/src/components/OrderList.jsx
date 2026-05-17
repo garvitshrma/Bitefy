@@ -13,7 +13,12 @@ function OrderList({
     console.log("activeTab changed to:", activeTab);
   }, [activeTab]);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/orders/")
+    const token = localStorage.getItem('access_token');
+    fetch("http://127.0.0.1:8000/api/orders/" , {
+      headers: {
+      "Authorization": `Bearer ${token}`
+    }
+    })
       .then((response) => response.json())
       .then((data) => setOrders(data))
       .catch((error) => console.log("Error:", error));
@@ -180,18 +185,18 @@ function OrderList({
 
           <p style={{ marginTop: "5px" }}>Drag orders to adjust priority</p>
 
-          <div style={formStyle}>
-            <h3>Add Order</h3>
+          {/* <div style={formStyle}> */}
+          {/* <h3>Add Order</h3> */}
 
-            <input
+          {/* <input
               type="text"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="Enter Customer Name"
               style={inputStyle}
-            ></input>
+            ></input> */}
 
-            <p style={selectedItemsStyle}>
+          {/* <p style={selectedItemsStyle}>
               Selected Items :{" "}
               {selectedItems.length > 0 ? selectedItems.join(", ") : "None"}
             </p>
@@ -203,36 +208,36 @@ function OrderList({
                   let total = 0;
                   for (let itemName of selectedItems) {
                     const item = menuItems.find((m) => m.name === itemName);
-                    if (item) {
-                      total = total + item.price;
-                    }
-                  }
+                    if (item) { */}
+          {/* //     total = total + item.price; */}
+          {/* //   } */}
+          {/* // } */}
 
-                  const newOrder = {
-                    name: customerName,
-                    items: selectedItems,
-                    total: total,
-                  };
+          {/* // const newOrder = { */}
+          {/* //   name: customerName,
+                  //   items: selectedItems,
+                  //   total: total,
+                  // }; */}
+          {/* 
+                  // setOrders([...orders, newOrder]);
 
-                  setOrders([...orders, newOrder]);
-
-                  fetch("http://127.0.0.1:8000/api/orders/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newOrder),
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      setCustomerName("");
-                      setSelectedItems([]);
-                    })
-                    .catch((error) => console.log("Error:", error));
-                }
-              }}
-            >
-              Add Order
-            </button>
-          </div>
+                  // fetch("http://127.0.0.1:8000/api/orders/", { */}
+          {/* //   method: "POST",
+                  //   headers: { "Content-Type": "application/json" },
+                  //   body: JSON.stringify(newOrder),
+                  // })
+                  //   .then((response) => response.json())
+                  //   .then((data) => { */}
+          {/* //     setCustomerName("");
+                  //     setSelectedItems([]);
+                  //   })
+          //           .catch((error) => console.log("Error:", error));
+          //       }
+          //     }}
+          //   >
+          //     Add Order
+          //   </button> */}
+          {/* // </div> */}
           {orders.map((order, index) => (
             <div key={order.name} style={orderBoxStyle}>
               <p style={customerNameStyle}>Customer: {order.name}</p>
@@ -243,9 +248,13 @@ function OrderList({
                 style={deleteButtonStyle}
                 onClick={() => {
                   const orderId = orders[index].id;
+                  const token = localStorage.getItem("access_token");
 
                   fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
                     method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
                   })
                     .then(() => {
                       const newOrders = orders.filter((_, i) => i !== index);
@@ -262,10 +271,13 @@ function OrderList({
                 onClick={() => {
                   const orderId = orders[index].id;
                   const orderToComplete = orders[index];
-
+                  const token = localStorage.getItem("access_token");
                   // Send DELETE to database
                   fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
                     method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${token}`, // ← Add!
+                    },
                   })
                     .then(() => {
                       // THEN remove from active and add to completed
