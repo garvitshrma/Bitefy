@@ -33,28 +33,6 @@ function App() {
     <div>
       {token ? <Dashboard /> : <Auth />}
     </div>
-    // <div style={appStyle}>
-    //   <div style={{ display: "flex", justifyContent: "center" }}>
-    //     <Navbar />
-    //   </div>
-    //   <div
-    //     style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden" }}
-    //   >
-    //     <OrderList
-    //       selectedItems={selectedItems}
-    //       setSelectedItems={setSelectedItems}
-    //       orders={orders}
-    //       setOrders={setOrders}
-    //       menuItems={menuItems}
-    //     />
-    //     <Menu
-    //       selectedItems={selectedItems}
-    //       setSelectedItems={setSelectedItems}
-    //       menuItems={menuItems}
-    //       setMenuItems={setMenuItems}
-    //     />
-    //   </div>
-    // </div>
   );
 }
 

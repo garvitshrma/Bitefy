@@ -254,50 +254,6 @@ Real-time queue update
 
 ---
 
-## 📊 Current Status
-
-### MVP (Minimum Viable Product) - Aug 1, 2026
-
-**Completed:**
-- ✅ User authentication
-- ✅ Queue management
-- ✅ Menu management
-- ✅ Basic billing
-- ✅ GitHub repo
-- ⏳ UI Polish (in progress)
-
-**Remaining:**
-- ⏳ Deploy to production
-- ⏳ Security hardening
-- ⏳ Pre-order system
-- ⏳ WhatsApp integration
-- ⏳ QR code generation
-
----
-
-## 🎯 Business Model
-
-**Target:** Restaurants with high customer footfall
-
-**Revenue Model:** Monthly SaaS subscription
-- Starter: ₹500/month (small cafes)
-- Pro: ₹2,000/month (medium restaurants)
-- Enterprise: ₹5,000/month (large restaurants)
-
-**First Customer:** Tech Cafe, IIT Bhilai (confirmed)
-
----
-
-## 📈 Growth Plan
-
-**Phase 1:** IIT Bhilai campus (Aug 2026)
-**Phase 2:** Bhilai/Raipur city (Sep 2026)
-**Phase 3:** Chhattisgarh state (Oct 2026)
-**Phase 4:** National expansion (2027)
-**Phase 5:** SEAsia/Middle East (2027-2028)
-
----
-
 ## 🛠️ Development Commands
 
 ### Django
@@ -338,12 +294,6 @@ npm run build
 - IIT Bhilai Student
 - Full Stack Developer
 - Learning: Django, React, DevOps
-
----
-
-## 📝 License
-
-MIT License - Free to use and modify
 
 ---
 
