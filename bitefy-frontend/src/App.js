@@ -3,6 +3,8 @@ import OrderList from "./components/OrderList";
 import Menu from "./components/Menu";
 import Auth from "./components/Auth";
 import Dashboard from "./components/Dashboard";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 

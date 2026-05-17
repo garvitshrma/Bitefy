@@ -6,14 +6,13 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
 
   const menuContainerStyle = {
     padding: "20px",
-    backgroundColor: "#f1984f",
+    backgroundColor: "#f9fafb",
     borderLeft: "1px solid #ddd",
     overflowY: "auto",
-    width: "30%",
-    borderRadius: "35px",
-    marginLeft: "10px",
-    marginRight: "10px",
+    PaddingLeft: "10px",
+    PaddingRight: "10px",
     flex: "None",
+    width: "97%",
   };
 
   const menuItemStyle = {
@@ -24,6 +23,9 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     backgroundColor: "white",
     borderRadius: "10px", // Increase this
     boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+    border: "1px solid #000000",
+    display: 'flex',
+    justifyContent: 'space-between'
   };
 
   const checkboxStyle = {
@@ -56,7 +58,7 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     width: "100%",
     padding: "10px",
     marginBottom: "10px",
-    border: "1px solid #ddd",
+    border: "1px solid #000000",
     borderRadius: "5px",
     boxSizing: "border-box",
     fontSize: "14px",
@@ -74,12 +76,12 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
   };
 
   const removeButtonStyle = {
-    backgroundColor: "#e64d2e",
-    color: "white",
+    backgroundColor: "white",
+    color: "red",
     border: "none",
     cursor: "pointer",
     fontWeight: "bold",
-    fontSize: "16px",
+    fontSize: "px",
     padding: "12px 24px",
     marginLeft: "20px",
     borderRadius: "6px",
@@ -89,16 +91,16 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     <div style={menuContainerStyle}>
       <h2
         style={{
-          textAlign: "center",
-          color: "#ffffff",
+          color: "#000000",
           marginBottom: "20px",
-          fontSize: "40px",
+          fontSize: "20px",
+          marginTop: "0px"
         }}
       >
-        MENU
+        Menu Management
       </h2>
 
-      <div style={menuFormStyle}>
+      {/* <div style={menuFormStyle}>
         <h3>Add Item</h3>
         <input
           type="text"
@@ -129,27 +131,29 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
         >
           Add Item
         </button>
-      </div>
+      </div> */}
 
       {menuItems.map((item, index) => (
         <div key={item.id} style={menuItemStyle}>
-          <input
-            checked={selectedItems.includes(item.name)}
-            type="checkbox"
-            style={checkboxStyle}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setSelectedItems([...selectedItems, item.name]);
-              } else {
-                setSelectedItems(
-                  selectedItems.filter((name) => name !== item.name),
-                );
-              }
-            }}
-          />
-          <label style={labelStyle}>
-            {item.name} - <span style={priceStyle}>₹{item.price}</span>
-          </label>
+          <div>
+            <input
+              checked={selectedItems.includes(item.name)}
+              type="checkbox"
+              style={checkboxStyle}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedItems([...selectedItems, item.name]);
+                } else {
+                  setSelectedItems(
+                    selectedItems.filter((name) => name !== item.name),
+                  );
+                }
+              }}
+            />
+            <label style={labelStyle}>
+              {item.name} - <span style={priceStyle}>₹{item.price}</span>
+            </label>
+          </div>
 
           <button
             style={removeButtonStyle}
@@ -158,7 +162,7 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
               setMenuItems(newItems);
             }}
           >
-            REMOVE
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       ))}

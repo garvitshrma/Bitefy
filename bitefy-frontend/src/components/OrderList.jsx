@@ -6,7 +6,12 @@ function OrderList({
   menuItems,
   orders,
   setOrders,
+  activeTab,
+  setActiveTab,
 }) {
+  useEffect(() => {
+    console.log("activeTab changed to:", activeTab);
+  }, [activeTab]);
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/orders/")
       .then((response) => response.json())
@@ -16,15 +21,14 @@ function OrderList({
   // const [orders, setOrders] = useState([]);
 
   const [customerName, setCustomerName] = useState("");
-  const [activeTab, setActiveTab] = useState("active");
   const [completedOrders, setCompletedOrders] = useState([]);
 
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
     overflowY: "auto",
-    padding: "20px",
-    backgroundColor: "#f1984f",
+    // padding: "20px",
+    backgroundColor: "#ffffff",
     borderRadius: "10px",
     marginLeft: "10px",
     marginBottom: "10px",
@@ -36,8 +40,9 @@ function OrderList({
     border: "1px solid #ccc",
     borderRadius: "8px",
     padding: "15px",
+    marginRight: "15px",
     marginBottom: "10px",
-    backgroundColor: "white",
+    backgroundColor: "#fcf8c8",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   };
 
@@ -76,7 +81,7 @@ function OrderList({
   };
 
   const formStyle = {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     padding: "15px",
     borderRadius: "8px",
     marginBottom: "20px",
@@ -138,7 +143,7 @@ function OrderList({
 
   return (
     <div style={containerStyle}>
-      <div style={{ display: "flex", marginBottom: "20px", gap: "10px" }}>
+      {/* <div style={{ display: "flex", marginBottom: "20px", gap: "10px" }}>
         <button
           onClick={() => setActiveTab("active")}
           style={{
@@ -158,15 +163,22 @@ function OrderList({
         >
           COMPLETED
         </button>
-      </div>
+      </div> */}
 
-      {activeTab === "active" && (
+      {activeTab === "order" && (
         <div>
-          <h2
-            style={{ color: "#ffffff", marginBottom: "20px", fontSize: "40px" }}
+          <h4
+            style={{
+              color: "#000000",
+              fontSize: "20px",
+              marginTop: "10px",
+              marginBottom: "0px",
+            }}
           >
-            QUEUE
-          </h2>
+            Order Queue
+          </h4>
+
+          <p style={{ marginTop: "5px" }}>Drag orders to adjust priority</p>
 
           <div style={formStyle}>
             <h3>Add Order</h3>
@@ -248,21 +260,21 @@ function OrderList({
               <button
                 style={completeButtonStyle}
                 onClick={() => {
-  const orderId = orders[index].id;
-  const orderToComplete = orders[index];
-  
-  // Send DELETE to database
-  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
-    method: 'DELETE',
-  })
-  .then(() => {
-    // THEN remove from active and add to completed
-    const newOrders = orders.filter((_, i) => i !== index);
-    setOrders(newOrders);
-    setCompletedOrders([...completedOrders, orderToComplete]);
-  })
-  .catch((error) => console.log('Error:', error));
-}}
+                  const orderId = orders[index].id;
+                  const orderToComplete = orders[index];
+
+                  // Send DELETE to database
+                  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
+                    method: "DELETE",
+                  })
+                    .then(() => {
+                      // THEN remove from active and add to completed
+                      const newOrders = orders.filter((_, i) => i !== index);
+                      setOrders(newOrders);
+                      setCompletedOrders([...completedOrders, orderToComplete]);
+                    })
+                    .catch((error) => console.log("Error:", error));
+                }}
               >
                 COMPLETE
               </button>
