@@ -101,30 +101,24 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 total: total,
               };
 
-              const token = localStorage.getItem('access_token');
+              const token = localStorage.getItem("access_token");
               // Send to Django
               fetch("https://bitefy.onrender.com/api/orders/", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`, // ← Add here!
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newOrder),
               })
-                .then(() => {
-                  // Close modal and refresh
-                  setOrders(prev => [...prev, data]);
+                .then((r) => r.json()) // ← Parse response!
+                .then((data) => {
+                  // ← NOW data is defined!
+                  setOrders((prev) => [...prev, data]); // ← Add to state!
                   setShowModal(false);
                   setCustomerName("");
                   setSelectedItems([]);
-                  // Refresh orders
-                  fetch("http://127.0.0.1:8000/api/orders/", {
-                    headers: {
-                      Authorization: `Bearer ${token}`, // ← Add here too!
-                    },
-                  })
-                    .then((r) => r.json())
-                    .then((data) => setOrders(data));
+                  // Remove the old refresh fetch completely!
                 })
                 .catch((error) => console.log("Error:", error));
             }}
