@@ -132,6 +132,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newOrder),
+                targetAddressSpace: 'public'
               })
                 .then((r) => r.json()) // ← Parse response!
                 .then((data) => {
