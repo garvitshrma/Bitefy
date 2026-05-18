@@ -1,6 +1,10 @@
 import { useState } from "react";
 
 function NewOrderModal({ setShowModal, menuItems, setOrders }) {
+
+  console.log("NewOrderModal mounted!");  
+  console.log("setOrders:", setOrders);
+
   const [customerName, setCustomerName] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
 
