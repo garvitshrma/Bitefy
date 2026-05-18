@@ -113,8 +113,13 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               })
                 .then((r) => r.json()) // ← Parse response!
                 .then((data) => {
-                  console.log("POST response:", data); 
-                  setOrders((prev) => [...prev, data]); // ← Add to state!
+                  console.log("POST response:", data);
+                  console.log("Type:", typeof data); // ← What type?
+                  console.log("Is array:", Array.isArray(data));
+                  setOrders((prev) => {
+                    console.log("Previous orders:", prev);
+                    return [...prev, data]
+                  }); // ← Add to state!
                   setShowModal(false);
                   setCustomerName("");
                   setSelectedItems([]);
