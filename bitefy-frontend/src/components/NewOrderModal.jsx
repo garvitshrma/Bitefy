@@ -113,7 +113,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               })
                 .then((r) => r.json()) // ← Parse response!
                 .then((data) => {
-                  console.log("Created order response:", data); 
+                  console.log("POST response:", data); 
                   setOrders((prev) => [...prev, data]); // ← Add to state!
                   setShowModal(false);
                   setCustomerName("");
