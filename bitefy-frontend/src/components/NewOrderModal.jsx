@@ -113,6 +113,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               })
                 .then(() => {
                   // Close modal and refresh
+                  setOrders(prev => [...prev, data]);
                   setShowModal(false);
                   setCustomerName("");
                   setSelectedItems([]);
