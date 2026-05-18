@@ -103,6 +103,8 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
 
               const token = localStorage.getItem("access_token");
               // Send to Django
+              console.log("Token:", token); // ← Add here!
+              console.log("New order:", newOrder);
               fetch("https://bitefy.onrender.com/api/orders/", {
                 method: "POST",
                 headers: {
@@ -118,7 +120,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   console.log("Is array:", Array.isArray(data));
                   setOrders((prev) => {
                     console.log("Previous orders:", prev);
-                    return [...prev, data]
+                    return [...prev, data];
                   }); // ← Add to state!
                   setShowModal(false);
                   setCustomerName("");
