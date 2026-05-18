@@ -9,30 +9,6 @@ function OrderList({
   activeTab,
   setActiveTab,
 }) {
-  useEffect(() => {
-    console.log("activeTab changed to:", activeTab);
-  }, [activeTab]);
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    fetch("https://bitefy.onrender.com/api/orders/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Orders response:", data); // ← Check what's coming!
-        if (Array.isArray(data)) {
-          // ← Only set if it's an array!
-          setOrders(data);
-        } else {
-          setOrders([]); // ← Set empty array if error!
-          console.log("Error from API:", data);
-        }
-      })
-
-      .catch((error) => console.log("Error:", error));
-  }, []);
   // const [orders, setOrders] = useState([]);
 
   const [customerName, setCustomerName] = useState("");
