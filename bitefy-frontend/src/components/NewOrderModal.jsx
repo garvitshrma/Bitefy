@@ -101,6 +101,22 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 total: total,
               };
 
+              console.log("About to get token"); // ← ADD THIS!
+
+              const token = localStorage.getItem("access_token");
+              console.log("Token:", token);
+
+              const total = selectedItems.reduce((sum, itemName) => {
+                const item = menuItems.find((m) => m.name === itemName);
+                return sum + (item ? item.price : 0);
+              }, 0);
+
+              const newOrder = {
+                name: customerName,
+                items: selectedItems,
+                total: total,
+              };
+
               const token = localStorage.getItem("access_token");
               // Send to Django
               console.log("Token:", token); // ← Add here!
