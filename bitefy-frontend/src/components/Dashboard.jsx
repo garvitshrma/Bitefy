@@ -8,6 +8,20 @@ import NewOrderModal from "./NewOrderModal";
 import { useState, useEffect } from "react";
 
 function Dashboard() {
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("order");
+  const [menuItems, setMenuItems] = useState([
+    { id: 1, name: "Chai", price: 50 },
+    { id: 2, name: "Maggi", price: 100 },
+    { id: 3, name: "Sandwich", price: 120 },
+    { id: 4, name: "Cold Coffee", price: 80 },
+    { id: 5, name: "Samosa", price: 30 },
+    { id: 6, name: "Dosa", price: 150 },
+  ]);
+
+  const [orders, setOrders] = useState([]);
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     fetch("https://bitefy.onrender.com/api/orders/", {
@@ -29,19 +43,6 @@ function Dashboard() {
 
       .catch((error) => console.log("Error:", error));
   }, []);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("order");
-  const [menuItems, setMenuItems] = useState([
-    { id: 1, name: "Chai", price: 50 },
-    { id: 2, name: "Maggi", price: 100 },
-    { id: 3, name: "Sandwich", price: 120 },
-    { id: 4, name: "Cold Coffee", price: 80 },
-    { id: 5, name: "Samosa", price: 30 },
-    { id: 6, name: "Dosa", price: 150 },
-  ]);
-
-  const [orders, setOrders] = useState([]);
 
   const appStyle = {
     display: "flex",
