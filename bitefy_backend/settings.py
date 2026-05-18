@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,7 +94,7 @@ DATABASES = {
     #     'PORT': '5432',
     # }
      'default': dj_database_url.config(
-        default='postgresql://postgres:garvit@20012007@db.exlbkqxfkmihhhrzrhey.supabase.co:5432/postgres',
+        default=os.environ.get('DATABASE_URL', 'postgresql://bitefy_user:bitefy123@localhost:5432/bitefy_db'),
         conn_max_age=600
     )
 }
