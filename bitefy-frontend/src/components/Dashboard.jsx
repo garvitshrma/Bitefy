@@ -64,6 +64,7 @@ function Dashboard() {
             setShowModal={setShowModal}
             menuItems={menuItems}
             setOrders={setOrders}
+            orders={orders}
           />
         )}
       </div>

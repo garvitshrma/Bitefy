@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,14 +84,18 @@ WSGI_APPLICATION = 'bitefy_backend.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bitefy_db',
-        'USER': 'bitefy_user',
-        'PASSWORD': 'bitefy123',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'bitefy_db',
+    #     'USER': 'bitefy_user',
+    #     'PASSWORD': 'bitefy123',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
+     'default': dj_database_url.config(
+        default='postgresql://postgres:garvit@20012007@db.exlbkqxfkmihhhrzrhey.supabase.co:5432/postgres',
+        conn_max_age=600
+    )
 }
 
 

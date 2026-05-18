@@ -13,14 +13,24 @@ function OrderList({
     console.log("activeTab changed to:", activeTab);
   }, [activeTab]);
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    fetch("http://127.0.0.1:8000/api/orders/" , {
+    const token = localStorage.getItem("access_token");
+    fetch("https://bitefy.onrender.com/api/orders/", {
       headers: {
-      "Authorization": `Bearer ${token}`
-    }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
-      .then((data) => setOrders(data))
+      .then((data) => {
+        console.log("Orders response:", data); // ← Check what's coming!
+        if (Array.isArray(data)) {
+          // ← Only set if it's an array!
+          setOrders(data);
+        } else {
+          setOrders([]); // ← Set empty array if error!
+          console.log("Error from API:", data);
+        }
+      })
+
       .catch((error) => console.log("Error:", error));
   }, []);
   // const [orders, setOrders] = useState([]);
@@ -250,7 +260,7 @@ function OrderList({
                   const orderId = orders[index].id;
                   const token = localStorage.getItem("access_token");
 
-                  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
+                  fetch(`https://bitefy.onrender.com/api/orders/${orderId}/`, {
                     method: "DELETE",
                     headers: {
                       Authorization: `Bearer ${token}`,
@@ -273,7 +283,7 @@ function OrderList({
                   const orderToComplete = orders[index];
                   const token = localStorage.getItem("access_token");
                   // Send DELETE to database
-                  fetch(`http://127.0.0.1:8000/api/orders/${orderId}/`, {
+                  fetch(`https://bitefy.onrender.com/api/orders/${orderId}/`, {
                     method: "DELETE",
                     headers: {
                       Authorization: `Bearer ${token}`, // ← Add!

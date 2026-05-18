@@ -103,7 +103,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
 
               const token = localStorage.getItem('access_token');
               // Send to Django
-              fetch("http://127.0.0.1:8000/api/orders/", {
+              fetch("https://bitefy.onrender.com/api/orders/", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
