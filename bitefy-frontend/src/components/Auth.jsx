@@ -1,4 +1,5 @@
 import { act, useState } from "react";
+import bg from "../assets/bg.png"
 
 function Auth() {
   // Signup state
@@ -25,6 +26,7 @@ function Auth() {
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
+    backgroundImage: `url(${bg}`
   };
 
   const mainCard = {

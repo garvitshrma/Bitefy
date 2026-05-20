@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import bg from "../assets/bg.png"
 
 function LandingPage() {
 
@@ -30,6 +31,7 @@ function LandingPage() {
     height: "100vh",
     padding: "0",
     margin: "0",
+    backgroundImage: `url(${bg}`
   };
 
   const cardsContainerStyle = {
@@ -82,7 +84,8 @@ function LandingPage() {
     padding: "0",
     alignItems: "flex-start",
     textAlign: "left",
-    marginTop: '25px'
+    marginTop: '25px',
+    marginBottom: '20px'
   };
 
   const defaultPaddingMarginStyle = {

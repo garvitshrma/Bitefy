@@ -12,6 +12,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />}></Route>
       <Route path="/auth" element={token ? <Dashboard /> : <Auth />}></Route>
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
     </BrowserRouter>
   );
