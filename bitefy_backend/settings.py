@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qnvc#9h&di8zb-gwge=^tj3aiokmicf8&3$$$_s23ue_hplp@c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -93,10 +93,17 @@ DATABASES = {
     #     'HOST': 'localhost',
     #     'PORT': '5432',
     # }
-     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', 'postgresql://bitefy_user:bitefy123@localhost:5432/bitefy_db'),
-        conn_max_age=600
-    )
+    #  'default': dj_database_url.config(
+    #     default=os.environ.get('DATABASE_URL', 'postgresql://bitefy_user:bitefy123@localhost:5432/bitefy_db'),
+    #     conn_max_age=600
+    # )
+
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+
+    
 }
 
 

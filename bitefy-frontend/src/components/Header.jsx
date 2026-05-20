@@ -1,7 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Header({ setShowModal }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRestaurant();
+  }, []);
+
+  const fetchRestaurant = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      const response = await fetch(
+        // "http://localhost:8000/api/restaurants/my_restaurant/" 
+        "https://bitefy.onrender.com/api/restaurants/my_restaurant/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch");
+
+      const data = await response.json();
+      setRestaurant(data);
+    } catch (error) {
+      console.log("Error fetching restaurant:", error);
+      setRestaurant({ name: "My Restaurant" }); // Fallback
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const mainStyle = {
     display: "flex",
@@ -78,7 +110,9 @@ function Header({ setShowModal }) {
     <div style={mainStyle}>
       <div style={firstSectionStyle}>
         <div>
-          <h2 style={defaultPaddingMargin}>Demo Restaurant</h2>
+          <h2 style={defaultPaddingMargin}>
+            {loading ? "Loading..." : restaurant?.name || "My Restaurant"}
+          </h2>
           <p style={defaultPaddingMargin}>Management Dashboard</p>
         </div>
         <div>

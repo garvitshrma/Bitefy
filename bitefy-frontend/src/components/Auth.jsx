@@ -185,7 +185,9 @@ function Auth() {
                   email: loginEmail,
                   password: loginPassword,
                 };
-                fetch("https://bitefy.onrender.com/api/auth/login/", {
+                fetch(
+                  // "http://localhost:8000/api/auth/login/"
+                  "https://bitefy.onrender.com/api/auth/login/", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(loginData),
@@ -279,6 +281,7 @@ function Auth() {
                   username: username,
                   email: signupEmail,
                   password: password,
+                  restaurant_name: restaurantName ,
                 };
 
                 if (password !== confirmPassword) {
@@ -288,7 +291,9 @@ function Auth() {
 
                 console.log("Sending:", signupData);
 
-                fetch("https://bitefy.onrender.com/api/auth/signup/", {
+                fetch(
+                  // "http://localhost:8000/api/auth/signup/"
+                  "https://bitefy.onrender.com/api/auth/signup/", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(signupData),
