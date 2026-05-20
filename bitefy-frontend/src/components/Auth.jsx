@@ -139,7 +139,7 @@ function Auth() {
 
   return (
     <div style={pageStyle}>
-      <h3>Bitefy</h3>
+      <h3 style={{fontSize:'35px', marginBottom: '10px'}}><i class="fa-solid fa-burger"></i> Bitefy</h3>
 
       <div style={mainCard}>
           <div>
