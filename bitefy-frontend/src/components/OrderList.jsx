@@ -227,7 +227,7 @@ function OrderList({
           {orders.map((order, index) => (
             <div key={order.name} style={orderBoxStyle}>
               <p style={customerNameStyle}>Customer: {order.name}</p>
-              <p style={itemsStyle}>Items: {order.items.join(", ")}</p>
+              <p style={itemsStyle}>Items: {order.items.join(", ") || 'No Orders'}</p>
               <p style={totalStyle}>total: ₹{order.total}</p>
               <button style={printButtonStyle}>PRINT</button>
               <button
