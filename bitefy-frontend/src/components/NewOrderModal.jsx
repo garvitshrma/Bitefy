@@ -1,8 +1,7 @@
 import { useState } from "react";
 
 function NewOrderModal({ setShowModal, menuItems, setOrders }) {
-
-  console.log("NewOrderModal mounted!");  
+  console.log("NewOrderModal mounted!");
   console.log("setOrders:", setOrders);
 
   const [customerName, setCustomerName] = useState("");
@@ -94,6 +93,11 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 return;
               }
 
+              const total = selectedItems.reduce((sum, itemName) => {
+                const item = menuItems.find((m) => m.name === itemName);
+                return sum + (item ? item.price : 0);
+              }, 0);
+
               const newOrder = {
                 name: customerName,
                 items: selectedItems,
@@ -101,12 +105,6 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               };
 
               console.log("About to get token"); // ← ADD THIS!
-              
-              const total = selectedItems.reduce((sum, itemName) => {
-                const item = menuItems.find((m) => m.name === itemName);
-                return sum + (item ? item.price : 0);
-              }, 0);
-
 
               const token = localStorage.getItem("access_token");
               // Send to Django
@@ -119,7 +117,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newOrder),
-                targetAddressSpace: 'public'
+                targetAddressSpace: "public",
               })
                 .then((r) => r.json()) // ← Parse response!
                 .then((data) => {
