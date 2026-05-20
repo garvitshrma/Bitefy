@@ -5,6 +5,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Statistics from "./Statistics";
 import NewOrderModal from "./NewOrderModal";
+import bg from "../assets/bg.png"
 import { useState, useEffect } from "react";
 
 function Dashboard() {
@@ -57,7 +58,7 @@ function Dashboard() {
       <Header setShowModal={setShowModal} />
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div
-        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden" }}
+        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden", backgroundImage: `url(${bg}`}}
       >
         {activeTab === "order" && (
           <OrderList
