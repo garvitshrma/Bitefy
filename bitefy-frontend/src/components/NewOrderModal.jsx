@@ -6,6 +6,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
 
   const [customerName, setCustomerName] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const modalBackdropStyle = {
     position: "fixed",
@@ -82,6 +83,10 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
           <p>Total: ₹{/* Calculate total here */}</p>
 
           <button
+            style={{
+              opacity: isLoading ? 0.6 : 1, // ← Make it look disabled
+              cursor: isLoading ? "not-allowed" : "pointer",
+            }}
             onClick={() => {
               if (!customerName.trim()) {
                 alert("Please enter customer name");
@@ -110,6 +115,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               // Send to Django
               console.log("Token:", token); // ← Add here!
               console.log("New order:", newOrder);
+              setIsLoading(true);
               fetch("https://bitefy.onrender.com/api/orders/", {
                 method: "POST",
                 headers: {
@@ -121,6 +127,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               })
                 .then((r) => r.json()) // ← Parse response!
                 .then((data) => {
+                  setIsLoading(false);
                   console.log("POST response:", data);
                   console.log("Type:", typeof data); // ← What type?
                   console.log("Is array:", Array.isArray(data));
@@ -133,10 +140,13 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   setSelectedItems([]);
                   // Remove the old refresh fetch completely!
                 })
-                .catch((error) => console.log("Error:", error));
+                .catch((error) => {
+                  console.log("Error:", error);
+                  setIsLoading(false);
+                });
             }}
           >
-            Create Order
+            {isLoading ? "⏳ Creating..." : "Create Order"}
           </button>
         </div>
       </div>
