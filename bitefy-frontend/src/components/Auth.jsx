@@ -227,7 +227,7 @@ function Auth() {
         {activeTab === "signup" && (
           <div style={loginPageStyle}>
             <div>
-              <h4 style={h4style}>Your Name</h4>
+              <h4 style={h4style}>Username (only one word is allowed)</h4>
               <input
                 style={inputStyle}
                 placeholder="Enter username"
