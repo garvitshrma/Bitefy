@@ -33,15 +33,173 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
     position: "relative",
   };
 
+  // const closeButtonStyle = {
+  //   position: "absolute",
+  //   top: "15px",
+  //   right: "15px",
+  //   backgroundColor: "transparent",
+  //   border: "none",
+  //   fontSize: "24px",
+  //   cursor: "pointer",
+  //   color: "#666",
+  // };
+
+  // const inputCustNameStyle = {
+  //   width: "500px",
+  //   maxWidth: "90%",
+  //   height: "30px",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   marginBottom: "20px",
+  //   borderRadius: "5px",
+  // };
+
+  const inputContainerCustNameStyle = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const modalOverlayStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    backdropFilter: "blur(8px)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  };
+
+  const modalStyle = {
+    width: "500px",
+    maxWidth: "90%",
+    backgroundColor: "#ffffff",
+    borderRadius: "24px",
+    padding: "30px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+    position: "relative",
+  };
+
+  const headingStyle = {
+    fontSize: "36px",
+    fontWeight: "700",
+    color: "#1f2937",
+    margin: 0,
+  };
+
   const closeButtonStyle = {
     position: "absolute",
-    top: "15px",
-    right: "15px",
-    backgroundColor: "transparent",
+    top: "20px",
+    right: "20px",
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
     border: "none",
+    backgroundColor: "#f3f4f6",
     fontSize: "24px",
     cursor: "pointer",
-    color: "#666",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  const inputCustNameStyle = {
+    width: "100%",
+    height: "50px",
+    padding: "0 16px",
+    borderRadius: "12px",
+    border: "1px solid #d1d5db",
+    fontSize: "16px",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const searchInputStyle = {
+    width: "100%",
+    height: "45px",
+    padding: "0 14px",
+    borderRadius: "10px",
+    border: "1px solid #d1d5db",
+    fontSize: "15px",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const menuContainerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    maxHeight: "300px",
+    overflowY: "auto",
+  };
+
+  const menuItemStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "14px 16px",
+    borderRadius: "14px",
+    border: "1px solid #e5e7eb",
+    backgroundColor: "#f9fafb",
+    cursor: "pointer",
+    transition: "0.2s",
+  };
+
+  const selectedMenuItemStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "14px 16px",
+    borderRadius: "14px",
+    border: "2px solid #00c903",
+    backgroundColor: "#fff3ee",
+    cursor: "pointer",
+    transition: "0.2s",
+  };
+
+  const itemNameStyle = {
+    fontSize: "18px",
+    fontWeight: "500",
+    color: "#1f2937",
+  };
+
+  const itemPriceStyle = {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#ff6b35",
+  };
+
+  const totalContainerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "10px",
+    paddingTop: "20px",
+    borderTop: "1px solid #e5e7eb",
+  };
+
+  const totalTextStyle = {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "#111827",
+  };
+
+  const createOrderButtonStyle = {
+    width: "100%",
+    height: "55px",
+    border: "none",
+    borderRadius: "14px",
+    backgroundColor: "#00c903",
+    color: "#ffffff",
+    fontSize: "18px",
+    fontWeight: "600",
+    transition: "0.2s",
   };
 
   return (
@@ -53,42 +211,50 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
         <div>
           <h2>New Order</h2>
 
-          <input
-            type="text"
-            placeholder="Enter customer name (optional)"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-          />
+          <div style={inputContainerCustNameStyle}>
+            <input
+              type="text"
+              style={inputCustNameStyle}
+              placeholder="Enter customer name (optional)"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+            />
+          </div>
 
-          {menuItems.map((item) => (
-            <div key={item.id}>
-              <input
-                type="checkbox"
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setSelectedItems([...selectedItems, item.name]);
-                  } else {
-                    setSelectedItems(
-                      selectedItems.filter((name) => name !== item.name),
-                    );
-                  }
-                }}
-              />
-              <label>
-                {item.name} - ₹{item.price}
-              </label>
-            </div>
-          ))}
+          <div style={menuContainerStyle}>
+            {menuItems.map((item) => (
+              <div key={item.id}>
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedItems([...selectedItems, item.name]);
+                    } else {
+                      setSelectedItems(
+                        selectedItems.filter((name) => name !== item.name),
+                      );
+                    }
+                  }}
+                />
+                <label style={menuItemStyle}>
+                  <span style={itemNameStyle}>{item.name} - </span>
+                  <span style={itemPriceStyle}>₹{item.price}</span>
+                </label>
+              </div>
+            ))}
+          </div>
 
-          <p>Total: ₹{/* Calculate total here */}</p>
+          <div style={totalContainerStyle}>
+            <p style={totalTextStyle}>Total: ₹{/* Calculate total here */}</p>
+          </div>
 
           <button
             style={{
+              ...createOrderButtonStyle,
               opacity: isLoading ? 0.6 : 1, // ← Make it look disabled
               cursor: isLoading ? "not-allowed" : "pointer",
             }}
             onClick={() => {
-
               if (selectedItems.length === 0) {
                 alert("Please select items");
                 return;
@@ -102,7 +268,9 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               const orderNumber = Math.floor(Math.random() * 900000) + 100000;
 
               const newOrder = {
-                name: customerName.trim() ? customerName: `Order #${orderNumber}`,
+                name: customerName.trim()
+                  ? customerName
+                  : `Order #${orderNumber}`,
                 items: selectedItems,
                 total: total,
               };
