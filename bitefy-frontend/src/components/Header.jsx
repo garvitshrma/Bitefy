@@ -137,7 +137,7 @@ function Header({ setShowModal }) {
           onClick={() => {
             localStorage.removeItem("user");
             localStorage.removeItem("access_token");
-            window.location.reload();
+            window.location.href = "/auth";
           }}
         >
           <i className="fa-solid fa-arrow-right-from-bracket"></i>
