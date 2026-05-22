@@ -55,7 +55,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
 
           <input
             type="text"
-            placeholder="Enter customer name"
+            placeholder="Enter customer name (optional)"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
           />
@@ -88,10 +88,6 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               cursor: isLoading ? "not-allowed" : "pointer",
             }}
             onClick={() => {
-              if (!customerName.trim()) {
-                alert("Please enter customer name");
-                return;
-              }
 
               if (selectedItems.length === 0) {
                 alert("Please select items");
@@ -103,8 +99,10 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 return sum + (item ? item.price : 0);
               }, 0);
 
+              const orderNumber = Math.floor(Math.random() * 900000) + 100000;
+
               const newOrder = {
-                name: customerName,
+                name: customerName.trim() ? customerName: `Order #${orderNumber}`,
                 items: selectedItems,
                 total: total,
               };
