@@ -303,6 +303,7 @@ function Auth() {
                   .then((response) => response.json())
                   .then((data) => {
                     console.log("Django response:", data);
+                    alert("You are Signed Up, Please Login!!")
                   })
                   .catch((error) => console.log("Error:", error));
               }}
