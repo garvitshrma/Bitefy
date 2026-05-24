@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from restaurants.models import Restaurant
 from rest_framework_simplejwt.tokens import RefreshToken
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 @api_view(['POST'])
 def signup(request):
@@ -70,3 +72,47 @@ def login_view(request):
             'email': user.email
         }
     })
+
+@api_view(['POST'])
+def google_login(request):
+    token = request.data.get('token')
+
+    CLIENT_ID = "1008158849735-sjgl25v6jk6k9do60ispsafqg3cbumj4.apps.googleusercontent.com"
+
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            token,
+            google_requests.Request(),
+            CLIENT_ID
+        )
+    except ValueError:
+        return Response({'error': 'Invalid token'}, status=400)
+    
+    
+    email = idinfo['email']
+    name = idinfo['name']
+
+    user, created = User.objects.get_or_create(
+        email=email,
+        defaults={'username': email.split('@')[0]}
+    )
+
+    if created:
+        Restaurant.objects.create(
+            owner=user,
+            name=f"{name}'s Restaurant"
+        )
+
+    refresh = RefreshToken.for_user(user)
+
+    return Response({
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        }
+    })
+
+    

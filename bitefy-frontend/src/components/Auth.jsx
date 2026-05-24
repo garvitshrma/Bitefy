@@ -1,5 +1,6 @@
 import { act, useState } from "react";
-import bg from "../assets/bg.png"
+import bg from "../assets/bg.png";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Auth() {
   // Signup state
@@ -26,7 +27,7 @@ function Auth() {
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
-    backgroundImage: `url(${bg}`
+    backgroundImage: `url(${bg}`,
   };
 
   const mainCard = {
@@ -50,7 +51,7 @@ function Auth() {
     marginRight: "5px",
     border: "none",
     borderRadius: "4px",
-    cursor: "pointer"
+    cursor: "pointer",
   };
 
   const signupToggleStyle = {
@@ -62,7 +63,7 @@ function Auth() {
     marginRight: "5px",
     border: "none",
     borderRadius: "4px",
-    cursor: "pointer"
+    cursor: "pointer",
   };
 
   const loginPageStyle = {
@@ -90,7 +91,7 @@ function Auth() {
     color: "#ffffff",
     border: "none",
     marginTop: "10px",
-    cursor: "pointer"
+    cursor: "pointer",
   };
 
   const inputStyle = {
@@ -125,7 +126,7 @@ function Auth() {
 
   const selectedStyle = {
     backgroundColor: "#5582fd",
-  }
+  };
 
   const notSelectedStyle = {
     backgroundColor: "#b9cbfc59",
@@ -136,25 +137,29 @@ function Auth() {
     marginRight: "5px",
     border: "none",
     borderRadius: "4px",
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  };
 
   return (
     <div style={pageStyle}>
-      <h3 style={{fontSize:'35px', marginBottom: '10px'}}><i class="fa-solid fa-burger"></i> Bitefy</h3>
+      <h3 style={{ fontSize: "35px", marginBottom: "10px" }}>
+        <i class="fa-solid fa-burger"></i> Bitefy
+      </h3>
 
       <div style={mainCard}>
-          <div>
-            <button
-              style={activeTab === 'login' ? loginToggleStyle : notSelectedStyle}
-              onClick={() => setActiveTab("login")}
-            >
-              Log In
-            </button>
-            <button
-              style={activeTab === 'signup' ? signupToggleStyle : notSelectedStyle}
-              onClick={() => setActiveTab("signup")}
-            >
+        <div>
+          <button
+            style={activeTab === "login" ? loginToggleStyle : notSelectedStyle}
+            onClick={() => setActiveTab("login")}
+          >
+            Log In
+          </button>
+          <button
+            style={
+              activeTab === "signup" ? signupToggleStyle : notSelectedStyle
+            }
+            onClick={() => setActiveTab("signup")}
+          >
             Sign Up
           </button>
         </div>
@@ -189,11 +194,13 @@ function Auth() {
                 };
                 fetch(
                   // "http://localhost:8000/api/auth/login/"
-                  "https://bitefy-backend.onrender.com/api/auth/login/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(loginData),
-                })
+                  "https://bitefy-backend.onrender.com/api/auth/login/",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(loginData),
+                  },
+                )
                   .then((response) => response.json())
                   .then((data) => {
                     console.log("Full login response:", data);
@@ -220,7 +227,38 @@ function Auth() {
               <div style={lineStyle}></div>
             </div>
 
-            <button style={guestButtonStyle}>Continue as Guest</button>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                console.log("Google login success!", credentialResponse);
+                // Send to Django next!
+              }}
+              onError={() => {
+                alert("Google login failed!");
+              }}
+              onSuccess={(credentialResponse) => {
+                fetch("https://bitefy-backend.onrender.com/api/auth/google/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    token: credentialResponse.credential,
+                  }),
+                })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    console.log("Django response:", data);
+                    if (data.access) {
+                      localStorage.setItem("access_token", data.access);
+                      localStorage.setItem("user", JSON.stringify(data.user));
+                      window.location.href = "/dashboard";
+                    } else {
+                      alert("Google login failed: " + data.error);
+                    }
+                  })
+                  .catch((error) => console.log("Error:", error));
+              }}
+            />
+
+            <button style={guestButtonStyle}>Login by Google</button>
           </div>
         )}
 
@@ -283,7 +321,7 @@ function Auth() {
                   username: username,
                   email: signupEmail,
                   password: password,
-                  restaurant_name: restaurantName ,
+                  restaurant_name: restaurantName,
                 };
 
                 if (password !== confirmPassword) {
@@ -295,15 +333,17 @@ function Auth() {
 
                 fetch(
                   // "http://localhost:8000/api/auth/signup/"
-                  "https://bitefy-backend.onrender.com/api/auth/signup/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(signupData),
-                })
+                  "https://bitefy-backend.onrender.com/api/auth/signup/",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(signupData),
+                  },
+                )
                   .then((response) => response.json())
                   .then((data) => {
                     console.log("Django response:", data);
-                    alert("You are Signed Up, Please Login!!")
+                    alert("You are Signed Up, Please Login!!");
                   })
                   .catch((error) => console.log("Error:", error));
               }}
@@ -317,7 +357,58 @@ function Auth() {
               <div style={lineStyle}></div>
             </div>
 
-            <button style={guestButtonStyle}>Continue as Guest</button>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                console.log("Google login success!", credentialResponse);
+
+                // Send Google token to Django!
+                fetch("https://bitefy-backend.onrender.com/api/auth/google/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    token: credentialResponse.credential,
+                  }),
+                })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    console.log("Django response:", data);
+                    if (data.access) {
+                      localStorage.setItem("access_token", data.access);
+                      localStorage.setItem("user", JSON.stringify(data.user));
+                      window.location.href = "/dashboard";
+                    } else {
+                      alert("Google login failed: " + data.error);
+                    }
+                  })
+                  .catch((error) => console.log("Error:", error));
+              }}
+              onError={() => {
+                alert("Google login failed!");
+              }}
+              onSuccess={(credentialResponse) => {
+                fetch("https://bitefy-backend.onrender.com/api/auth/google/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    token: credentialResponse.credential,
+                  }),
+                })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    console.log("Django response:", data);
+                    if (data.access) {
+                      localStorage.setItem("access_token", data.access);
+                      localStorage.setItem("user", JSON.stringify(data.user));
+                      window.location.href = "/dashboard";
+                    } else {
+                      alert("Google login failed: " + data.error);
+                    }
+                  })
+                  .catch((error) => console.log("Error:", error));
+              }}
+            />
+
+            <button style={guestButtonStyle}>Signup by Google</button>
           </div>
         )}
       </div>
