@@ -282,7 +282,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               console.log("Token:", token); // ← Add here!
               console.log("New order:", newOrder);
               setIsLoading(true);
-              fetch("https://bitefy.onrender.com/api/orders/", {
+              fetch("https://bitefy-backend.onrender.com/api/orders/", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

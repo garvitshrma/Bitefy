@@ -5,7 +5,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Statistics from "./Statistics";
 import NewOrderModal from "./NewOrderModal";
-import bg from "../assets/bg.png"
+
 import { useState, useEffect } from "react";
 
 function Dashboard() {
@@ -25,7 +25,7 @@ function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    fetch("https://bitefy.onrender.com/api/orders/", {
+    fetch("https://bitefy-backend.onrender.com/api/orders/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -58,7 +58,7 @@ function Dashboard() {
       <Header setShowModal={setShowModal} />
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div
-        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden", backgroundImage: `url(${bg}`}}
+        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden"}}
       >
         {activeTab === "order" && (
           <OrderList

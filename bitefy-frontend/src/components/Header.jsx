@@ -15,7 +15,7 @@ function Header({ setShowModal }) {
 
       const response = await fetch(
         // "http://localhost:8000/api/restaurants/my_restaurant/" 
-        "https://bitefy.onrender.com/api/restaurants/my_restaurant/",
+        "https://bitefy-backend.onrender.com/api/restaurants/my_restaurant/",
         {
           headers: {
             Authorization: `Bearer ${token}`,

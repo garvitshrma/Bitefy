@@ -238,7 +238,7 @@ function OrderList({
                   const orderId = orders[index].id;
                   const token = localStorage.getItem("access_token");
 
-                  fetch(`https://bitefy.onrender.com/api/orders/${orderId}/`, {
+                  fetch(`https://bitefy-backend.onrender.com/api/orders/${orderId}/`, {
                     method: "DELETE",
                     headers: {
                       Authorization: `Bearer ${token}`,
@@ -261,7 +261,7 @@ function OrderList({
                   const orderToComplete = orders[index];
                   const token = localStorage.getItem("access_token");
                   // Send DELETE to database
-                  fetch(`https://bitefy.onrender.com/api/orders/${orderId}/`, {
+                  fetch(`https://bitefy-backend.onrender.com/api/orders/${orderId}/`, {
                     method: "DELETE",
                     headers: {
                       Authorization: `Bearer ${token}`, // ← Add!
