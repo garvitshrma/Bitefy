@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import bg from "../assets/bg.png"
+import bg from "../assets/bg.png";
 
 function OrderList({
   selectedItems,
@@ -26,7 +26,7 @@ function OrderList({
     marginBottom: "10px",
     width: "80%",
     flex: 1,
-    backgroundImage: `url(${bg}`
+    backgroundImage: `url(${bg}`,
   };
 
   const orderBoxStyle = {
@@ -227,9 +227,17 @@ function OrderList({
           //   </button> */}
           {/* // </div> */}
           {orders.map((order, index) => (
-            <div key={order.name} style={orderBoxStyle}>
+            console.log("Order data:", order),
+            <div key={order.id || index} style={orderBoxStyle}>
               <p style={customerNameStyle}>Customer: {order.name}</p>
-              <p style={itemsStyle}>Items: {order.items?.join(", ") || 'No Orders'}</p>
+              <p>
+                Items:{" "}
+                {Array.isArray(order.items)
+                  ? order.items
+                      .map((item) => `${item.name} x${item.quantity}`)
+                      .join(", ")
+                  : "No items"}
+              </p>
               <p style={totalStyle}>total: ₹{order.total}</p>
               <button style={printButtonStyle}>PRINT</button>
               <button
@@ -238,12 +246,15 @@ function OrderList({
                   const orderId = orders[index].id;
                   const token = localStorage.getItem("access_token");
 
-                  fetch(`https://bitefy-backend.onrender.com/api/orders/${orderId}/`, {
-                    method: "DELETE",
-                    headers: {
-                      Authorization: `Bearer ${token}`,
+                  fetch(
+                    `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
                     },
-                  })
+                  )
                     .then(() => {
                       const newOrders = orders.filter((_, i) => i !== index);
                       setOrders(newOrders);
@@ -261,12 +272,15 @@ function OrderList({
                   const orderToComplete = orders[index];
                   const token = localStorage.getItem("access_token");
                   // Send DELETE to database
-                  fetch(`https://bitefy-backend.onrender.com/api/orders/${orderId}/`, {
-                    method: "DELETE",
-                    headers: {
-                      Authorization: `Bearer ${token}`, // ← Add!
+                  fetch(
+                    `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${token}`, // ← Add!
+                      },
                     },
-                  })
+                  )
                     .then(() => {
                       // THEN remove from active and add to completed
                       const newOrders = orders.filter((_, i) => i !== index);
@@ -307,7 +321,9 @@ function OrderList({
               {completedOrders.map((order, index) => (
                 <div key={index} style={orderBoxStyle}>
                   <p style={customerNameStyle}>Customer: {order.name}</p>
-                  <p style={itemsStyle}>Items: {order.items?.join(", ") || "No Items"}</p>
+                  <p style={itemsStyle}>
+                    Items: {order.items?.join(", ") || "No Items"}
+                  </p>
                   <p style={totalStyle}>total: ₹{order.total}</p>
                 </div>
               ))}

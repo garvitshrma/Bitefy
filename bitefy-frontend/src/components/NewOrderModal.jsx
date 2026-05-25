@@ -6,6 +6,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
 
   const [customerName, setCustomerName] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [quantities, setQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const modalBackdropStyle = {
@@ -202,6 +203,41 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
     transition: "0.2s",
   };
 
+  const qtyButtonStyle = {
+    width: "42px",
+    height: "42px",
+    borderRadius: "12px",
+    border: "1.5px solid #d1d5db",
+    backgroundColor: "#ffffff",
+    fontSize: "24px",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#1f2937",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+  };
+
+  const increaseQty = (item) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [item.id]: (prev[item.id] || 0) + 1,
+    }));
+  };
+
+  const decreaseQty = (item) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [item.id]: Math.max(0, (prev[item.id] || 0) - 1),
+    }));
+  };
+
+  const total = menuItems.reduce((sum, item) => {
+    return sum + item.price * (quantities[item.id] || 0);
+  }, 0);
+
   return (
     <div style={modalBackdropStyle}>
       <div style={modalBoxStyle}>
@@ -224,7 +260,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
           <div style={menuContainerStyle}>
             {menuItems.map((item) => (
               <div key={item.id}>
-                <input
+                {/* <input
                   type="checkbox"
                   onChange={(e) => {
                     if (e.target.checked) {
@@ -239,13 +275,29 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                 <label style={menuItemStyle}>
                   <span style={itemNameStyle}>{item.name} - </span>
                   <span style={itemPriceStyle}>₹{item.price}</span>
-                </label>
+                </label> */}
+
+                <div style={menuItemStyle}>
+                  <span style={itemNameStyle}>{item.name}</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <span style={itemPriceStyle}>₹{item.price}</span>
+                    <button style={qtyButtonStyle} onClick={() => decreaseQty(item)}>-</button>
+                    <span>{quantities[item.id] || 0}</span>
+                    <button style={qtyButtonStyle} onClick={() => increaseQty(item)}>+</button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
 
           <div style={totalContainerStyle}>
-            <p style={totalTextStyle}>Total: ₹{/* Calculate total here */}</p>
+            <p style={totalTextStyle}>Total: ₹{total}</p>
           </div>
 
           <button
@@ -255,23 +307,26 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
               cursor: isLoading ? "not-allowed" : "pointer",
             }}
             onClick={() => {
-              if (selectedItems.length === 0) {
+              const orderNumber = Math.floor(Math.random() * 900000) + 100000;
+
+              const items = menuItems
+                .filter((item) => quantities[item.id] > 0)
+                .map((item) => ({
+                  name: item.name,
+                  quantity: quantities[item.id],
+                  price: item.price,
+                }));
+
+              if (items.length === 0) {
                 alert("Please select items");
                 return;
               }
-
-              const total = selectedItems.reduce((sum, itemName) => {
-                const item = menuItems.find((m) => m.name === itemName);
-                return sum + (item ? item.price : 0);
-              }, 0);
-
-              const orderNumber = Math.floor(Math.random() * 900000) + 100000;
 
               const newOrder = {
                 name: customerName.trim()
                   ? customerName
                   : `Order #${orderNumber}`,
-                items: selectedItems,
+                items: items, // ← Change from selectedItems to items!
                 total: total,
               };
 
@@ -304,6 +359,7 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
                   setShowModal(false);
                   setCustomerName("");
                   setSelectedItems([]);
+                  setQuantities({});
                   // Remove the old refresh fetch completely!
                 })
                 .catch((error) => {
