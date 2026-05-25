@@ -8,7 +8,7 @@ A modern, full-stack B2B SaaS platform that revolutionizes restaurant operations
 
 ### Prerequisites
 - Python 3.10+
-- Node.js 16+
+- Django
 - PostgreSQL
 - Git
 
