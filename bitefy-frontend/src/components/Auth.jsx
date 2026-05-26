@@ -257,8 +257,6 @@ function Auth() {
                   .catch((error) => console.log("Error:", error));
               }}
             />
-
-            <button style={guestButtonStyle}>Login by Google</button>
           </div>
         )}
 
@@ -408,7 +406,6 @@ function Auth() {
               }}
             />
 
-            <button style={guestButtonStyle}>Signup by Google</button>
           </div>
         )}
       </div>
