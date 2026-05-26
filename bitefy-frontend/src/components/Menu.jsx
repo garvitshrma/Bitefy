@@ -117,8 +117,6 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
         >
           Menu Management
         </h2>
-
-        <button style={addButtonStyle}>+ Add Item</button>
       </div>
 
       <div style={menuFormStyle}>
