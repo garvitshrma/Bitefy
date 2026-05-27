@@ -121,6 +121,19 @@ function OrderList({
     marginLeft: "10px",
   };
 
+    const preparingButtonStyle = {
+    backgroundColor: "#b522de",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+    marginTop: "10px",
+    marginLeft: "10px",
+  };
+
   const completeButtonStyle = {
     backgroundColor: "#27ae60",
     color: "white",
@@ -134,6 +147,29 @@ function OrderList({
     marginLeft: "10px",
   };
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const getOrderColor = (status) => {
+    if (status === "preparing") return "#cce5ff";
+    if (status === "completed") return "#d4edda";
+    return "#fcf8c8";
+  };
 
   return (
     <div style={containerStyle}>
@@ -227,80 +263,129 @@ function OrderList({
           //     Add Order
           //   </button> */}
           {/* // </div> */}
-          {orders.map((order, index) => (
-            console.log("Order data:", order),
-            <div key={order.id || index} style={orderBoxStyle}>
-              <p style={customerNameStyle}>Customer: {order.name}</p>
-              <p>
-                Items:{" "}
-                {Array.isArray(order.items)
-                  ? order.items
-                      .map((item) => `${item.name} x${item.quantity}`)
-                      .join(", ")
-                  : "No items"}
-              </p>
-              <p style={totalStyle}>total: ₹{order.total}</p>
-              <button style={printButtonStyle}>PRINT</button>
-              <button
-                style={deleteButtonStyle}
-                onClick={() => {
-                  const orderId = orders[index].id;
-                  const token = localStorage.getItem("access_token");
+          {orders.map(
+            (order, index) => (
+              console.log("Order data:", order),
+              (
+                <div
+                  key={order.id || index}
+                  style={{
+                    ...orderBoxStyle,
+                    backgroundColor: getOrderColor(order.status),
+                  }}
+                >
+                  <p style={customerNameStyle}>Customer: {order.name}</p>
+                  <p>
+                    Items:{" "}
+                    {Array.isArray(order.items)
+                      ? order.items
+                          .map((item) => `${item.name} x${item.quantity}`)
+                          .join(", ")
+                      : "No items"}
+                  </p>
+                  <p style={totalStyle}>total: ₹{order.total}</p>
+                  <p>
+                    🕐 {formatTime(order.created_at)} | 📅{" "}
+                    {formatDate(order.created_at)}
+                  </p>
+                  <button style={printButtonStyle}>PRINT</button>
+                  <button
+                    style={deleteButtonStyle}
+                    onClick={() => {
+                      const orderId = orders[index].id;
+                      const token = localStorage.getItem("access_token");
 
-                  fetch(
-                    `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                    {
-                      method: "DELETE",
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                      },
-                    },
-                  )
-                    .then(() => {
-                      const newOrders = orders.filter((_, i) => i !== index);
-                      setOrders(newOrders);
-                    })
-                    .catch((error) => console.log("Error:", error));
-                }}
-              >
-                REMOVE
-              </button>
+                      fetch(
+                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                        {
+                          method: "DELETE",
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        },
+                      )
+                        .then(() => {
+                          const newOrders = orders.filter(
+                            (_, i) => i !== index,
+                          );
+                          setOrders(newOrders);
+                        })
+                        .catch((error) => console.log("Error:", error));
+                    }}
+                  >
+                    REMOVE
+                  </button>
 
-              <button
-                style={completeButtonStyle}
-                onClick={() => {
-                  const orderId = orders[index].id;
-                  const orderToComplete = orders[index];
-                  const token = localStorage.getItem("access_token");
-                  // Send DELETE to database
-                  fetch(
-                    `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                    {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`, // ← Add!
-                      },
-                      body: JSON.stringify({ is_completed: true }),  
-                    },
-                  )
-                    .then(() => {
-                      // THEN remove from active and add to completed
-                      const newOrders = orders.filter((_, i) => i !== index);
-                      setOrders(newOrders);
-                      setCompletedOrders([...completedOrders, orderToComplete]);
-                    })
-                    .catch((error) => console.log("Error:", error));
-                }}
-              >
-                COMPLETE
-              </button>
-            </div>
-          ))}
+                  <button
+
+                  style={preparingButtonStyle}
+                    onClick={() => {
+                      
+                      const orderId = orders[index].id;
+                      const token = localStorage.getItem("access_token");
+
+                      fetch(
+                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                        {
+                          method: "PATCH",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({ status: "preparing" }),
+                        },
+                      ).then(() => {
+                        // Update order in state
+                        const updatedOrders = orders.map((o, i) =>
+                          i === index ? { ...o, status: "preparing" } : o,
+                        );
+                        setOrders(updatedOrders);
+                      });
+                    }}
+                  >
+                    PREPARE
+                  </button>
+
+                  <button
+                    style={completeButtonStyle}
+                    onClick={() => {
+                      const orderId = orders[index].id;
+                      const orderToComplete = orders[index];
+                      const token = localStorage.getItem("access_token");
+                      // Send DELETE to database
+                      fetch(
+                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                        {
+                          method: "PATCH",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`, // ← Add!
+                          },
+                          body: JSON.stringify({ is_completed: true }),
+                        },
+                      )
+                        .then(() => {
+                          // THEN remove from active and add to completed
+                          const newOrders = orders.filter(
+                            (_, i) => i !== index,
+                          );
+                          setOrders(newOrders);
+                          setCompletedOrders([
+                            ...completedOrders,
+                            orderToComplete,
+                          ]);
+                        })
+                        .catch((error) => console.log("Error:", error));
+                    }}
+                  >
+                    COMPLETE
+                  </button>
+                </div>
+              )
+            ),
+          )}
         </div>
       )}
-
-      
     </div>
   );
 }

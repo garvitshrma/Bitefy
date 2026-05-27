@@ -29,8 +29,9 @@ function History() {
     padding: "15px",
     marginRight: "15px",
     marginBottom: "10px",
-    backgroundColor: "#fcf8c8",
+    backgroundColor: "#85f36ac5",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    marginLeft: '15px'
   };
 
   const customerNameStyle = {
@@ -48,6 +49,24 @@ function History() {
     fontSize: "16px",
     fontWeight: "bold",
     color: "#FF8C42",
+  };
+
+   const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   return (
@@ -82,6 +101,7 @@ function History() {
                       .join(", ")
                   : "No items"}
               </p>
+              <p>🕐 {formatTime(order.created_at)} | 📅 {formatDate(order.created_at)}</p>
               <p style={totalStyle}>total: ₹{order.total}</p>
             </div>
           ))}

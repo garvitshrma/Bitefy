@@ -4,4 +4,4 @@ from .models import Order
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'name', 'items', 'total', 'created_at', 'is_completed']
+        fields = ['id', 'name', 'items', 'total', 'created_at', 'is_completed', 'status']
