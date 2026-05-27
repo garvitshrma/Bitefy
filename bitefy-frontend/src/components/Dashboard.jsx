@@ -13,14 +13,7 @@ function Dashboard() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("order");
-  const [menuItems, setMenuItems] = useState([
-    { id: 1, name: "Chai", price: 50 },
-    { id: 2, name: "Maggi", price: 100 },
-    { id: 3, name: "Sandwich", price: 120 },
-    { id: 4, name: "Cold Coffee", price: 80 },
-    { id: 5, name: "Samosa", price: 30 },
-    { id: 6, name: "Dosa", price: 150 },
-  ]);
+  const [menuItems, setMenuItems] = useState([]);
 
   const [orders, setOrders] = useState([]);
 
@@ -41,6 +34,14 @@ function Dashboard() {
           setOrders([]); // ← Set empty array if error!
           console.log("Error from API:", data);
         }
+      });
+
+    fetch("https://bitefy-backend.onrender.com/api/menu-items/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setMenuItems(data);
       })
 
       .catch((error) => console.log("Error:", error));
@@ -59,7 +60,7 @@ function Dashboard() {
       <Header setShowModal={setShowModal} />
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div
-        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden"}}
+        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden" }}
       >
         {activeTab === "order" && (
           <OrderList

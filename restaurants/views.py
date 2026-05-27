@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Restaurant
+from .models import Restaurant, MenuItem
 from .serializers import RestaurantSerializer
 
 class RestaurantViewSet(viewsets.ModelViewSet):
@@ -24,3 +24,16 @@ class RestaurantViewSet(viewsets.ModelViewSet):
                 {'error': 'Restaurant not found'},
                 status=404
             )
+        
+
+class MenuItemViewSet(viewsets.ModelViewSet):
+    serializer_class = RestaurantSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        restaurant = Restaurant.objects.get(owner=self.request.user)
+        return MenuItem.objects.filter(restaurant=restaurant)
+
+    def perform_create(self, serializer):
+        restaurant = Restaurant.objects.get(owner=self.request.user)
+        serializer.save(restaurant=restaurant)
