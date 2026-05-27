@@ -278,8 +278,10 @@ function OrderList({
                     {
                       method: "PATCH",
                       headers: {
+                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`, // ← Add!
                       },
+                      body: JSON.stringify({ is_completed: true }),  
                     },
                   )
                     .then(() => {

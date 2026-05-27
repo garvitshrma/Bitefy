@@ -18,12 +18,19 @@ function History() {
       .catch((error) => console.log("Error:", error));
   }, []);
 
+  const historyTabStyle = {
+    width: '100%',
+    overflow: 'auto'
+  }
+
   const orderBoxStyle = {
     border: "1px solid #ccc",
     borderRadius: "8px",
     padding: "15px",
+    marginRight: "15px",
     marginBottom: "10px",
     backgroundColor: "#fcf8c8",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   };
 
   const customerNameStyle = {
@@ -44,7 +51,7 @@ function History() {
   };
 
   return (
-    <div>
+    <div style={historyTabStyle}>
       <h2>COMPLETED ORDERS</h2>
       <div
         style={{
