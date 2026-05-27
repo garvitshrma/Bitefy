@@ -4,6 +4,7 @@ import Menu from "./Menu";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Statistics from "./Statistics";
+import History from "./History";
 import NewOrderModal from "./NewOrderModal";
 
 import { useState, useEffect } from "react";
@@ -90,6 +91,8 @@ function Dashboard() {
             orders={orders}
           />
         )}
+
+        {activeTab === "history" && <History />}
       </div>
     </div>
   );

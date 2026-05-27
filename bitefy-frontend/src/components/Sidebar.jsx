@@ -65,6 +65,14 @@ function Sidebar({ activeTab, setActiveTab }) {
       >
         <i class="fa-solid fa-chart-line"></i> Statistics
       </button>
+      <button
+        style={
+          activeTab === "history" ? activeButtonStyle : inactiveButtonStyle
+        }
+        onClick={() => setActiveTab("history")}
+      >
+        <i class="fa-regular fa-clock"></i> History
+      </button>
     </div>
   );
 }

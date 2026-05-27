@@ -134,6 +134,7 @@ function OrderList({
     marginLeft: "10px",
   };
 
+
   return (
     <div style={containerStyle}>
       {/* <div style={{ display: "flex", marginBottom: "20px", gap: "10px" }}>
@@ -275,7 +276,7 @@ function OrderList({
                   fetch(
                     `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
                     {
-                      method: "DELETE",
+                      method: "PATCH",
                       headers: {
                         Authorization: `Bearer ${token}`, // ← Add!
                       },
@@ -297,44 +298,7 @@ function OrderList({
         </div>
       )}
 
-      {activeTab === "completed" && (
-        <div>
-          <h2>COMPLETED ORDERS</h2>
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "15px",
-              borderRadius: "8px",
-              marginTop: "20px",
-              textAlign: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ color: "#FF8C42", fontSize: "24px" }}>
-              Total Revenue: ₹
-              {completedOrders.reduce((sum, order) => sum + order.total, 0)}
-            </h3>
-          </div>
-
-          {completedOrders.length > 0 ? (
-            <div>
-              {completedOrders.map((order, index) => (
-                <div key={index} style={orderBoxStyle}>
-                  <p style={customerNameStyle}>Customer: {order.name}</p>
-                  <p style={itemsStyle}>
-                    Items: {order.items?.join(", ") || "No Items"}
-                  </p>
-                  <p style={totalStyle}>total: ₹{order.total}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: "#ffffff", fontSize: "18px" }}>
-              No completed orders yet
-            </p>
-          )}
-        </div>
-      )}
+      
     </div>
   );
 }
