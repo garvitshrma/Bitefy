@@ -104,6 +104,28 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     color: "white",
   };
 
+  const availableButtonStyle = {
+  backgroundColor: "#d4edda",
+  color: "#155724",
+  border: "1px solid #28a745",
+  padding: "6px 12px",
+  borderRadius: "20px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  fontSize: "12px",
+}
+
+const unavailableButtonStyle = {
+  backgroundColor: "#f8d7da",
+  color: "#721c24",
+  border: "1px solid #e74c3c",
+  padding: "6px 12px",
+  borderRadius: "20px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  fontSize: "12px",
+}
+
   return (
     <div style={menuContainerStyle}>
       <div style={menuHeaderStyle}>
@@ -167,46 +189,62 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
       {menuItems.map((item, index) => (
         <div key={item.id} style={menuItemStyle}>
           <div>
-            <input
-              checked={selectedItems.includes(item.name)}
-              type="checkbox"
-              style={checkboxStyle}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedItems([...selectedItems, item.name]);
-                } else {
-                  setSelectedItems(
-                    selectedItems.filter((name) => name !== item.name),
-                  );
-                }
-              }}
-            />
             <label style={labelStyle}>
               {item.name} - <span style={priceStyle}>₹{item.price}</span>
             </label>
           </div>
 
-          <button
-            style={removeButtonStyle}
-            onClick={() => {
-              const token = localStorage.getItem("access_token");
+          <div>
+            <button
+            style={item.is_available ? availableButtonStyle : unavailableButtonStyle}
+              onClick={() => {
+                const token = localStorage.getItem("access_token");
+                fetch(
+                  `https://bitefy-backend.onrender.com/api/menu-items/${item.id}/`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ is_available: !item.is_available }),
+                  },
+                )
+                  .then((r) => r.json())
+                  .then((data) => {
+                    const updatedItems = menuItems.map((m) =>
+                      m.id === item.id
+                        ? { ...m, is_available: !m.is_available }
+                        : m,
+                    );
+                    setMenuItems(updatedItems);
+                  });
+              }}
+            >
+              {item.is_available ? "✅ Available" : "❌ Unavailable"}
+            </button>
+            <button
+              style={removeButtonStyle}
+              onClick={() => {
+                const token = localStorage.getItem("access_token");
 
-              fetch(
-                `https://bitefy-backend.onrender.com/api/menu-items/${item.id}/`,
-                {
-                  method: "DELETE",
-                  headers: { Authorization: `Bearer ${token}` },
-                },
-              )
-                .then(() => {
-                  const newItems = menuItems.filter((_, i) => i !== index);
-                  setMenuItems(newItems);
-                })
-                .catch((error) => console.log("Error:", error));
-            }}
-          >
-            <i class="fa-solid fa-trash"></i>
-          </button>
+                fetch(
+                  `https://bitefy-backend.onrender.com/api/menu-items/${item.id}/`,
+                  {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  },
+                )
+                  .then(() => {
+                    const newItems = menuItems.filter((_, i) => i !== index);
+                    setMenuItems(newItems);
+                  })
+                  .catch((error) => console.log("Error:", error));
+              }}
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
         </div>
       ))}
     </div>

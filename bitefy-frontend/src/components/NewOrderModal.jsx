@@ -258,7 +258,9 @@ function NewOrderModal({ setShowModal, menuItems, setOrders }) {
           </div>
 
           <div style={menuContainerStyle}>
-            {menuItems.map((item) => (
+            {menuItems
+            .filter(item => item.is_available !== false)
+            .map((item) => (
               <div key={item.id}>
                 {/* <input
                   type="checkbox"
