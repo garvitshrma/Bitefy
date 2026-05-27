@@ -94,15 +94,15 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
   };
 
   const addButtonStyle = {
-    paddingRight: '20px',
-    paddingLeft: '20px',
-    marginLeft: '20px',
-    marginRight: '20px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#0084ff',
-    color: 'white'
-  }
+    paddingRight: "20px",
+    paddingLeft: "20px",
+    marginLeft: "20px",
+    marginRight: "20px",
+    border: "none",
+    borderRadius: "5px",
+    backgroundColor: "#0084ff",
+    color: "white",
+  };
 
   return (
     <div style={menuContainerStyle}>
@@ -138,14 +138,26 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
         <button
           style={addItemButtonStyle}
           onClick={() => {
-            const newItem = {
-              id: menuItems.length + 1,
-              name: newItemName,
-              price: parseInt(newPrice),
-            };
-            setMenuItems([...menuItems, newItem]);
-            setNewItemName("");
-            setNewPrice("");
+            const token = localStorage.getItem("access_token");
+
+            fetch("https://bitefy-backend.onrender.com/api/menu-items/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                name: newItemName,
+                price: parseInt(newPrice),
+              }),
+            })
+              .then((r) => r.json())
+              .then((data) => {
+                setMenuItems([...menuItems, data]); // ← Add real item from Django!
+                setNewItemName("");
+                setNewPrice("");
+              })
+              .catch((error) => console.log("Error:", error));
           }}
         >
           Add Item
@@ -177,8 +189,20 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
           <button
             style={removeButtonStyle}
             onClick={() => {
-              const newItems = menuItems.filter((_, i) => i !== index);
-              setMenuItems(newItems);
+              const token = localStorage.getItem("access_token");
+
+              fetch(
+                `https://bitefy-backend.onrender.com/api/menu-items/${item.id}/`,
+                {
+                  method: "DELETE",
+                  headers: { Authorization: `Bearer ${token}` },
+                },
+              )
+                .then(() => {
+                  const newItems = menuItems.filter((_, i) => i !== index);
+                  setMenuItems(newItems);
+                })
+                .catch((error) => console.log("Error:", error));
             }}
           >
             <i class="fa-solid fa-trash"></i>
