@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Restaurant, MenuItem
-from .serializers import RestaurantSerializer
+from .serializers import RestaurantSerializer, MenuItemSerializer
 
 class RestaurantViewSet(viewsets.ModelViewSet):
     serializer_class = RestaurantSerializer
@@ -27,7 +27,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
         
 
 class MenuItemViewSet(viewsets.ModelViewSet):
-    serializer_class = RestaurantSerializer
+    serializer_class = MenuItemSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
