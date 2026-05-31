@@ -168,7 +168,9 @@ function LandingPage() {
               recommendations
             </p>
           </div>
-          <button style={custbuttonStyle}>Continue as Customer</button>
+          <button style={custbuttonStyle}
+          onClick={() => window.location.href = '/order/giantruffian'}>
+            Continue as Customer</button>
         </div>
 
         {/* Restaurant Card */}
