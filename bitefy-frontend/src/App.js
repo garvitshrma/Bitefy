@@ -34,7 +34,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="restaurants" element={<RestaurantList />} />
+        <Route path="/restaurants" element={<RestaurantList />} />
         <Route path="/order/:slug" element={<CustomerOrder />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<Auth />} />

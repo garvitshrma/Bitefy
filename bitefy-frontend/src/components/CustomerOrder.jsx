@@ -50,47 +50,42 @@ function CustomerOrder() {
 
   const pageStyle = {
     minHeight: "100vh",
-    backgroundColor: "#f8fafc",
-    padding: "40px",
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    padding: "40px 20px",
   };
 
-  const contentStyle = {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr",
-    gap: "30px",
-    maxWidth: "1400px",
-    margin: "0 auto",
+  const headingStyle = {
+    color: "#ffffff",
+    fontSize: "2rem",
+    fontWeight: "700",
+    marginBottom: "30px",
+    textAlign: "center",
+    letterSpacing: "1px",
   };
 
   const menuCardStyle = {
-    backgroundColor: "white",
-    borderRadius: "16px",
-    padding: "20px",
-    marginBottom: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    borderRadius: "12px",
+    padding: "20px 24px",
+    marginBottom: "16px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    maxWidth: "600px",
+    margin: "0 auto 16px auto",
   };
 
-  const foodImageStyle = {
-    width: "100px",
-    height: "100px",
-    borderRadius: "12px",
-    objectFit: "cover",
-  };
-
-  const itemInfoStyle = {
-    flex: 1,
-    marginLeft: "20px",
+  const itemNameStyle = {
+    color: "#ffffff",
+    fontSize: "1.1rem",
+    fontWeight: "600",
   };
 
   const priceStyle = {
-    color: "#2563eb",
+    color: "#5582fd",
     fontWeight: "bold",
-    fontSize: "22px",
-    paddingLeft: '20px',
-    marginLeft: '20px'
+    fontSize: "1.1rem",
   };
 
   const quantityContainerStyle = {
@@ -100,30 +95,42 @@ function CustomerOrder() {
   };
 
   const quantityButtonStyle = {
-    width: "40px",
-    height: "40px",
+    width: "36px",
+    height: "36px",
     border: "none",
     borderRadius: "8px",
-    backgroundColor: "#eff6ff",
-    color: "#2563eb",
+    backgroundColor: "rgba(85, 130, 253, 0.15)",
+    color: "#5582fd",
     cursor: "pointer",
     fontSize: "18px",
     fontWeight: "bold",
   };
 
+  const quantityTextStyle = {
+    color: "#ffffff",
+    minWidth: "20px",
+    textAlign: "center",
+    fontWeight: "600",
+  };
+
   const cartStyle = {
-    backgroundColor: "white",
-    borderRadius: "20px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-    position: "sticky",
-    top: "20px",
-    height: "fit-content",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    borderRadius: "12px",
+    padding: "24px",
+    maxWidth: "600px",
+    margin: "24px auto 0 auto",
+  };
+
+  const totalStyle = {
+    color: "#ffffff",
+    fontSize: "1.3rem",
+    fontWeight: "700",
   };
 
   const orderButtonStyle = {
     width: "100%",
-    backgroundColor: "#2563eb",
+    backgroundColor: "#5582fd",
     color: "white",
     border: "none",
     borderRadius: "10px",
@@ -131,18 +138,21 @@ function CustomerOrder() {
     fontSize: "16px",
     fontWeight: "bold",
     cursor: "pointer",
-    marginTop: "20px",
+    marginTop: "16px",
+    letterSpacing: "0.5px",
   };
+
+  
 
   return (
     <div style={pageStyle}>
-      <div style={contentStyle}>
+      <div>
         <div>
-          <h1>Menu</h1>
+          <h1 style={headingStyle}>Menu</h1>
 
           {menuItems.map((item) => (
             <div style={menuCardStyle} key={item.id}>
-              <span >{item.name}</span>
+              <span style={itemNameStyle}>{item.name}</span>
               <span style={priceStyle}>₹{item.price}</span>
               <div style={quantityContainerStyle}>
                 <button
@@ -151,7 +161,7 @@ function CustomerOrder() {
                 >
                   -
                 </button>
-                <span>{quantities[item.id] || 0}</span>
+                <span style={quantityTextStyle}>{quantities[item.id] || 0}</span>
                 <button
                   style={quantityButtonStyle}
                   onClick={() => increaseQty(item)}
@@ -163,7 +173,7 @@ function CustomerOrder() {
           ))}
 
           <div style={cartStyle}>
-            <h3>Total: ₹{total}</h3>
+            <h3 style={totalStyle}>Total: ₹{total}</h3>
 
             <button
               style={orderButtonStyle}
