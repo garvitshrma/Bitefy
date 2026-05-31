@@ -33,9 +33,22 @@ class OrderViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=['get'])
     def completed(self, request):
-        orders = Order.objects.filter(
-            user=request.user,
-            is_completed=True
-        )
+        from django.db.models import Q
+        from restaurants.models import Restaurant
+    
+        try:
+            restaurant = Restaurant.objects.get(owner=request.user)
+            orders = Order.objects.filter(
+                is_completed=True
+            ).filter(
+                Q(user=request.user) |      # ← Staff orders
+                Q(restaurant=restaurant)     # ← Customer orders
+            )
+        except Restaurant.DoesNotExist:
+            orders = Order.objects.filter(
+                user=request.user,
+                is_completed=True
+            )
+    
         serializer = self.get_serializer(orders, many=True)
-        return Response(serializer.data) # ← Save with their user!
+        return Response(serializer.data)
