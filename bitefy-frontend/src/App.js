@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard";
 import LandingPage from "./components/LandingPage";
 import LoadingScreen from "./components/LoadingScreen";
 import RestaurantList from "./components/RestaurantsList";
+import CustomerOrder from "./components/CustomerOrder";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +34,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/restaurants" element={<RestaurantList />} />
+        <Route path="restaurants" element={<RestaurantList />} />
+        <Route path="/order/:slug" element={<CustomerOrder />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<Auth />} />
         <Route 
