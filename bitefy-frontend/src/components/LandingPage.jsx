@@ -169,7 +169,7 @@ function LandingPage() {
             </p>
           </div>
           <button style={custbuttonStyle}
-          onClick={() => window.location.href = '/order/giantruffian'}>
+          onClick={() => window.location.href = '/restaurants'}>
             Continue as Customer</button>
         </div>
 

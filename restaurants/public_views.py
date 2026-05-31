@@ -52,3 +52,11 @@ def place_order(request, slug):
         'order_id': order.id,
         'order_number': name
     }, status=201)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_restaurants(request):
+    restaurants = Restaurant.objects.all()
+    data = [{'name': r.name, 'slug': r.slug} for r in restaurants]
+    return Response(data)
