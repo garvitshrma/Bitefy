@@ -5,6 +5,7 @@ from restaurants.models import Restaurant
 from rest_framework_simplejwt.tokens import RefreshToken
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+from django.utils.text import slugify
 
 @api_view(['POST'])
 def signup(request):
@@ -31,9 +32,10 @@ def signup(request):
         password=password
     )
     
-    Restaurant.objects.create(
+    restaurant = Restaurant.objects.create(
         owner=user,
-        name=restaurant_name
+        name=restaurant_name,
+        slug=slugify(restaurant_name)
     )
     
     return Response(
@@ -100,7 +102,8 @@ def google_login(request):
     if created:
         Restaurant.objects.create(
             owner=user,
-            name=f"{name}'s Restaurant"
+            name=f"{name}'s Restaurant",
+            slug = slugify(f"{name}s-restaurant")
         )
 
     refresh = RefreshToken.for_user(user)

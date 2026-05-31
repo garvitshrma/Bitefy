@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Restaurant(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
 class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
