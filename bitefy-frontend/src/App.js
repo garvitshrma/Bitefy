@@ -4,6 +4,7 @@ import Auth from "./components/Auth";
 import Dashboard from "./components/Dashboard";
 import LandingPage from "./components/LandingPage";
 import LoadingScreen from "./components/LoadingScreen";
+import CustomerOrder from "./components/CustomerOrder";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +33,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/order/:slug" element={<CustomerOrder />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<Auth />} />
         <Route 

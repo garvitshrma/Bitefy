@@ -11,10 +11,21 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all() 
     
     def get_queryset(self):
-        return Order.objects.filter(
-            user=self.request.user , 
-            is_completed = False
-        )
+        from django.db.models import Q
+        from restaurants.models import Restaurant   
+        try:
+            restaurant = Restaurant.objects.get(owner=self.request.user)
+            return Order.objects.filter(
+                is_completed=False
+            ).filter(
+                Q(user=self.request.user) |  # Staff orders
+                Q(restaurant=restaurant)      # Customer orders
+            )
+        except Restaurant.DoesNotExist:
+            return Order.objects.filter(
+                user=self.request.user,
+                is_completed=False
+            )
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user) 
