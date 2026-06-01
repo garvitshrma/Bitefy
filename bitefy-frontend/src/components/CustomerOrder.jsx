@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Lottie from "lottie-react";
+import deliveryAnimation from "./order-placed.json";
 
 function CustomerOrder() {
   const { slug } = useParams();
@@ -38,6 +40,10 @@ function CustomerOrder() {
     }));
   };
 
+  const backgroundStyle = {
+    backgroundColor: "rgba(0, 0, 0, 0.85)"
+  }
+
   if (isLoading) return <p>Loading menu...</p>;
 
   if (orderPlaced)
@@ -45,6 +51,11 @@ function CustomerOrder() {
       <div>
         <h2>🎉 Order Placed!</h2>
         <p>Your order is being prepared!</p>
+        <Lottie
+      animationData={deliveryAnimation}
+      loop={true}
+      style={{ width: 200 }}
+    />
       </div>
     );
 
