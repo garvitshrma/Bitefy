@@ -190,7 +190,6 @@ function OrderList({
 
   return (
     <div style={containerStyle}>
-
       {activeTab === "order" && (
         <div>
           <h4
@@ -290,34 +289,32 @@ function OrderList({
                   <button
                     style={completeButtonStyle}
                     onClick={() => {
-                      const orderId = orders[index].id;
-                      const orderToComplete = orders[index];
+                      const orderId = order.id;
                       const token = localStorage.getItem("access_token");
-                      updateStatus(order.id, "ready");
-                      // Send DELETE to database
-                      fetch(
-                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                        {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`, // ← Add!
-                          },
-                          body: JSON.stringify({ is_completed: true }),
-                        },
-                      )
+
+                      // 1. update status first
+                      fetch(`/api/orders/${orderId}/update_status/`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ status: "ready" }),
+                      })
                         .then(() => {
-                          // THEN remove from active and add to completed
-                          const newOrders = orders.filter(
-                            (_, i) => i !== index,
-                          );
-                          setOrders(newOrders);
-                          setCompletedOrders([
-                            ...completedOrders,
-                            orderToComplete,
-                          ]);
+                          // 2. then mark completed
+                          return fetch(`/api/orders/${orderId}/`, {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({ is_completed: true }),
+                          });
                         })
-                        .catch((error) => console.log("Error:", error));
+                        .then(() => {
+                          // 3. then update UI
+                          setOrders((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          );
+                        });
                     }}
                   >
                     COMPLETE
