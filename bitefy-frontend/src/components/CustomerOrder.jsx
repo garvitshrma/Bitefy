@@ -25,15 +25,19 @@ function CustomerOrder() {
   useEffect(() => {
     if (!placedOrder) return;
 
-    fetch(
-      `https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`,
-    )
-      .then((r) => r.json())
-      .then((data) => {
-        console.log("STATUS RESPONSE:", data);
-        setOrderStatus(data.status);
-      })
-      .catch((err) => console.error(err));
+    const interval = setInterval(() => {
+      fetch(
+        `https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`,
+      )
+        .then((r) => r.json())
+        .then((data) => {
+          console.log("STATUS RESPONSE:", data);
+          setOrderStatus(data.status);
+        })
+        .catch((err) => console.error(err));
+    }, 3000); // 👈 every 3 seconds
+
+    return () => clearInterval(interval);
   }, [placedOrder]);
   // Calculate total
   const total = menuItems.reduce((sum, item) => {
