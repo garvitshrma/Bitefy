@@ -52,3 +52,17 @@ class OrderViewSet(viewsets.ModelViewSet):
     
         serializer = self.get_serializer(orders, many=True)
         return Response(serializer.data)
+    
+
+    @action(detail=True, methods=["patch"])
+    def update_status(self, request, pk=None):
+        order = self.get_object()
+
+        new_status = request.data.get("status")
+        order.status = new_status
+        order.save()
+
+        return Response({
+            "order_id": order.id,
+            "status": order.status
+        })

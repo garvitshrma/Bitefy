@@ -15,6 +15,23 @@ function OrderList({
   const [customerName, setCustomerName] = useState("");
   const [completedOrders, setCompletedOrders] = useState([]);
 
+  const updateStatus = (orderId, status) => {
+    fetch(
+      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      },
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("Updated:", data);
+      });
+  };
+
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -121,7 +138,7 @@ function OrderList({
     marginLeft: "10px",
   };
 
-    const preparingButtonStyle = {
+  const preparingButtonStyle = {
     backgroundColor: "#b522de",
     color: "white",
     border: "none",
@@ -173,27 +190,6 @@ function OrderList({
 
   return (
     <div style={containerStyle}>
-      {/* <div style={{ display: "flex", marginBottom: "20px", gap: "10px" }}>
-        <button
-          onClick={() => setActiveTab("active")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: activeTab === "active" ? "#FF8C42" : "#ddd",
-          }}
-        >
-          ACTIVE QUEUE
-        </button>
-
-        <button
-          onClick={() => setActiveTab("completed")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: activeTab === "completed" ? "#FF8C42" : "#ddd",
-          }}
-        >
-          COMPLETED
-        </button>
-      </div> */}
 
       {activeTab === "order" && (
         <div>
@@ -263,12 +259,11 @@ function OrderList({
                   </button>
 
                   <button
-
-                  style={preparingButtonStyle}
+                    style={preparingButtonStyle}
                     onClick={() => {
-                      
                       const orderId = orders[index].id;
                       const token = localStorage.getItem("access_token");
+                      updateStatus(order.id, "preparing");
 
                       fetch(
                         `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
@@ -298,6 +293,7 @@ function OrderList({
                       const orderId = orders[index].id;
                       const orderToComplete = orders[index];
                       const token = localStorage.getItem("access_token");
+                      updateStatus(order.id, "ready");
                       // Send DELETE to database
                       fetch(
                         `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
