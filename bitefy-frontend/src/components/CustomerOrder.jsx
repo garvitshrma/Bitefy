@@ -25,10 +25,12 @@ function CustomerOrder() {
   useEffect(() => {
   if (!placedOrder) return;
 
+
+  console.log("placedOrder:", placedOrder);
   fetch(`https://bitefy-backend.onrender.com/api/orders/${placedOrder.order_id}`)
-    .then((r) => r.json())
-    .then((status_data) => {
-      console.log(status_data);
+    .then((r) => r.text())
+    .then((text) => {
+      console.log(text);
     })
     .catch((err) => console.error(err));
 }, [placedOrder]);
