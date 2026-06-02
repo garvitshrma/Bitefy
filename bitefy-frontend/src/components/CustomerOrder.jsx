@@ -9,11 +9,13 @@ function CustomerOrder() {
   const [quantities, setQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState(null);
 
   useEffect(() => {
     fetch(`https://bitefy-backend.onrender.com/api/public/menu/${slug}/`)
       .then((r) => r.json())
       .then((data) => {
+        console.log(data);
         setMenuItems(data);
         setIsLoading(false);
       });
@@ -41,21 +43,33 @@ function CustomerOrder() {
   };
 
   const backgroundStyle = {
-    backgroundColor: "rgba(0, 0, 0, 0.85)"
-  }
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+  };
 
   if (isLoading) return <p>Loading menu...</p>;
 
   if (orderPlaced)
     return (
       <div>
-        <h2>🎉 Order Placed!</h2>
+        <h1>🎉 Order Placed!</h1>
+        <h2>{placedOrder?.order_number}</h2>
+        <div>
+          <h3>Order Summary:</h3>
+          {placedOrder?.items?.map((item, index) => (
+            <div key={index}>
+              <p>
+                {item.name} x {item.quantity} - ₹{item.price * item.quantity}
+              </p>
+            </div>
+          ))}
+          <h3>Total: ₹{placedOrder?.total}</h3>
+        </div>
         <p>Your order is being prepared!</p>
         <Lottie
-      animationData={deliveryAnimation}
-      loop={true}
-      style={{ width: 200 }}
-    />
+          animationData={deliveryAnimation}
+          loop={true}
+          style={{ width: 200 }}
+        />
       </div>
     );
 
@@ -153,8 +167,6 @@ function CustomerOrder() {
     letterSpacing: "0.5px",
   };
 
-  
-
   return (
     <div style={pageStyle}>
       <div>
@@ -172,7 +184,9 @@ function CustomerOrder() {
                 >
                   -
                 </button>
-                <span style={quantityTextStyle}>{quantities[item.id] || 0}</span>
+                <span style={quantityTextStyle}>
+                  {quantities[item.id] || 0}
+                </span>
                 <button
                   style={quantityButtonStyle}
                   onClick={() => increaseQty(item)}
@@ -202,6 +216,9 @@ function CustomerOrder() {
                   return;
                 }
 
+                const orderTotal = total;
+                const orderItems = items;
+
                 const orderNumber = Math.floor(Math.random() * 900000) + 100000;
 
                 fetch(
@@ -219,6 +236,11 @@ function CustomerOrder() {
                   .then((r) => r.json())
                   .then((data) => {
                     console.log("Order placed:", data);
+                    setPlacedOrder({
+                      ...data,
+                      items: orderItems,
+                      total: orderTotal,
+                    });
                     setOrderPlaced(true);
                     setQuantities({});
                   })

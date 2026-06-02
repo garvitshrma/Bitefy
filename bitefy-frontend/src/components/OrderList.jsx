@@ -209,60 +209,6 @@ function OrderList({
           </h4>
 
           <p style={{ marginTop: "5px" }}>Drag orders to adjust priority</p>
-
-          {/* <div style={formStyle}> */}
-          {/* <h3>Add Order</h3> */}
-
-          {/* <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Enter Customer Name"
-              style={inputStyle}
-            ></input> */}
-
-          {/* <p style={selectedItemsStyle}>
-              Selected Items :{" "}
-              {selectedItems.length > 0 ? selectedItems.join(", ") : "None"}
-            </p>
-
-            <button
-              style={addOrderButtonStyle}
-              onClick={() => {
-                if (customerName.trim() && selectedItems.length > 0) {
-                  let total = 0;
-                  for (let itemName of selectedItems) {
-                    const item = menuItems.find((m) => m.name === itemName);
-                    if (item) { */}
-          {/* //     total = total + item.price; */}
-          {/* //   } */}
-          {/* // } */}
-
-          {/* // const newOrder = { */}
-          {/* //   name: customerName,
-                  //   items: selectedItems,
-                  //   total: total,
-                  // }; */}
-          {/* 
-                  // setOrders([...orders, newOrder]);
-
-                  
-          {/* //   method: "POST",
-                  //   headers: { "Content-Type": "application/json" },
-                  //   body: JSON.stringify(newOrder),
-                  // })
-                  //   .then((response) => response.json())
-                  //   .then((data) => { */}
-          {/* //     setCustomerName("");
-                  //     setSelectedItems([]);
-                  //   })
-          //           .catch((error) => console.log("Error:", error));
-          //       }
-          //     }}
-          //   >
-          //     Add Order
-          //   </button> */}
-          {/* // </div> */}
           {orders.map(
             (order, index) => (
               console.log("Order data:", order),
