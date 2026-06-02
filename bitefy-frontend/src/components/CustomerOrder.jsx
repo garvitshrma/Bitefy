@@ -10,6 +10,7 @@ function CustomerOrder() {
   const [isLoading, setIsLoading] = useState(true);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [orderStatus, setOrderStatus] = useState('placed');
 
   useEffect(() => {
     fetch(`https://bitefy-backend.onrender.com/api/public/menu/${slug}/`)
@@ -20,6 +21,17 @@ function CustomerOrder() {
         setIsLoading(false);
       });
   }, [slug]);
+
+  useEffect(() => {
+  if (!placedOrder) return;
+
+  fetch(`https://bitefy-backend.onrender.com/api/orders/${placedOrder.order_id}`)
+    .then((r) => r.json())
+    .then((status_data) => {
+      console.log(status_data);
+    })
+    .catch((err) => console.error(err));
+}, [placedOrder]);
 
   // Calculate total
   const total = menuItems.reduce((sum, item) => {
