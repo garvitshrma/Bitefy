@@ -6,7 +6,7 @@ class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('preparing', 'Preparing'),
-        ('completed', 'Completed'),
+        ('ready', 'Ready'),
     ]
 
     user = models.ForeignKey(
