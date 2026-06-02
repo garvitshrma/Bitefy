@@ -10,7 +10,7 @@ function CustomerOrder() {
   const [isLoading, setIsLoading] = useState(true);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
-  const [orderStatus, setOrderStatus] = useState('placed');
+  const [orderStatus, setOrderStatus] = useState("placed");
 
   useEffect(() => {
     fetch(`https://bitefy-backend.onrender.com/api/public/menu/${slug}/`)
@@ -23,18 +23,18 @@ function CustomerOrder() {
   }, [slug]);
 
   useEffect(() => {
-  if (!placedOrder) return;
+    if (!placedOrder) return;
 
-
-  console.log("placedOrder:", placedOrder);
-  fetch(`https://bitefy-backend.onrender.com/api/orders/${placedOrder.order_id}`)
-    .then((r) => r.text())
-    .then((text) => {
-      console.log(text);
-    })
-    .catch((err) => console.error(err));
-}, [placedOrder]);
-
+    fetch(
+      `https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`,
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("STATUS RESPONSE:", data);
+        setOrderStatus(data.status);
+      })
+      .catch((err) => console.error(err));
+  }, [placedOrder]);
   // Calculate total
   const total = menuItems.reduce((sum, item) => {
     return sum + item.price * (quantities[item.id] || 0);
@@ -67,6 +67,7 @@ function CustomerOrder() {
       <div>
         <h1>🎉 Order Placed!</h1>
         <h2>{placedOrder?.order_number}</h2>
+        <h2>Order Status: {orderStatus}</h2>
         <div>
           <h3>Order Summary:</h3>
           {placedOrder?.items?.map((item, index) => (
