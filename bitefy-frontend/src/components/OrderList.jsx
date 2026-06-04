@@ -292,29 +292,27 @@ function OrderList({
                       const orderId = order.id;
                       const token = localStorage.getItem("access_token");
 
-                      // 1. update status first
-                      fetch(`/api/orders/${orderId}/update_status/`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ status: "ready" }),
-                      })
+                      fetch(
+                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                        {
+                          method: "PATCH",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({
+                            status: "ready", // ← Update status
+                            is_completed: true, // ← Mark completed
+                          }),
+                        },
+                      )
                         .then(() => {
-                          // 2. then mark completed
-                          return fetch(`/api/orders/${orderId}/`, {
-                            method: "PATCH",
-                            headers: {
-                              "Content-Type": "application/json",
-                              Authorization: `Bearer ${token}`,
-                            },
-                            body: JSON.stringify({ is_completed: true }),
-                          });
-                        })
-                        .then(() => {
-                          // 3. then update UI
+                          // Remove from active orders
                           setOrders((prev) =>
                             prev.filter((_, i) => i !== index),
                           );
-                        });
+                        })
+                        .catch((error) => console.log("Error:", error));
                     }}
                   >
                     COMPLETE
