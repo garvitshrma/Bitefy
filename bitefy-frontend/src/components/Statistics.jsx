@@ -1,7 +1,50 @@
+import { useState, useEffect } from "react";
+
 function Statistics() {
+  const [completedOrders, setCompletedOrders] = useState([]);
+  const [filter, setFilter] = useState("week"); // "week", "month", "year"
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    fetch("https://bitefy-backend.onrender.com/api/orders/completed/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setCompletedOrders(data);
+      })
+      .catch((error) => console.log("Error:", error));
+  }, []);
+
+  // Calculate based on filter
+  const getFilteredOrders = () => {
+    const now = new Date();
+    return completedOrders.filter((order) => {
+      const orderDate = new Date(order.created_at);
+
+      if (filter === "week") {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return orderDate >= weekAgo;
+      } else if (filter === "month") {
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return orderDate >= monthAgo;
+      } else {
+        // year
+        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        return orderDate >= yearAgo;
+      }
+    });
+  };
+
+  const filtered = getFilteredOrders();
+  const totalRevenue = filtered.reduce((sum, order) => sum + order.total, 0);
+  const totalOrders = filtered.length;
+  const avgOrderValue =
+    totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+
   const topContainerStyle = {
     display: "flex",
-        width: '100%',
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     flex: 1,
@@ -12,13 +55,12 @@ function Statistics() {
     borderRadius: "10px",
     marginBottom: "10px",
     overflowY: "auto",
-    alignItems: 'center'
+    alignItems: "center",
   };
 
-
   const mainStyle = {
-    width: '98%'
-  }
+    width: "98%",
+  };
   const titleStyle = {
     color: "#000000",
     marginBottom: "20px",
@@ -38,21 +80,84 @@ function Statistics() {
     gap: "10px",
   };
 
+  const statCardStyle = {
+    backgroundColor: "#f5f5f5",
+    padding: "20px",
+    borderRadius: "10px",
+    marginBottom: "15px",
+    border: "1px solid #ddd",
+  };
+
+  const statLabelStyle = {
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "8px",
+  };
+
+  const statValueStyle = {
+    fontSize: "28px",
+    fontWeight: "bold",
+    color: "#FF8C42",
+  };
+
   return (
     <div style={mainStyle}>
+      {/* Header with filters */}
       <div style={topContainerStyle}>
         <h2 style={titleStyle}>Statistics & Analytics</h2>
         <div style={filterStyle}>
-          <button style={filterButtonStyle}>Week</button>
-          <button style={filterButtonStyle}>Month</button>
-          <button style={filterButtonStyle}>Year</button>
+          <button
+            style={{
+              ...filterButtonStyle,
+              backgroundColor: filter === "week" ? "#FF8C42" : "#ddd",
+            }}
+            onClick={() => setFilter("week")}
+          >
+            Week
+          </button>
+          <button
+            style={{
+              ...filterButtonStyle,
+              backgroundColor: filter === "month" ? "#FF8C42" : "#ddd",
+            }}
+            onClick={() => setFilter("month")}
+          >
+            Month
+          </button>
+          <button
+            style={{
+              ...filterButtonStyle,
+              backgroundColor: filter === "year" ? "#FF8C42" : "#ddd",
+            }}
+            onClick={() => setFilter("year")}
+          >
+            Year
+          </button>
         </div>
       </div>
 
-      <div>
-        <div>Total Revenue</div>
-        <div>Completed Orders</div>
-        <div>Avg Order Value</div>
+      {/* Stats Cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "15px",
+        }}
+      >
+        <div style={statCardStyle}>
+          <div style={statLabelStyle}>Total Revenue</div>
+          <div style={statValueStyle}>₹{totalRevenue}</div>
+        </div>
+
+        <div style={statCardStyle}>
+          <div style={statLabelStyle}>Completed Orders</div>
+          <div style={statValueStyle}>{totalOrders}</div>
+        </div>
+
+        <div style={statCardStyle}>
+          <div style={statLabelStyle}>Avg Order Value</div>
+          <div style={statValueStyle}>₹{avgOrderValue}</div>
+        </div>
       </div>
     </div>
   );
