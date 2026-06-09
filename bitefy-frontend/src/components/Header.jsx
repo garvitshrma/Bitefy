@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function Header({ setShowModal }) {
+function Header({ setShowModal, setActiveTab}) {
   const [isOpen, setIsOpen] = useState(false);
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -129,7 +129,8 @@ function Header({ setShowModal }) {
         <button style={newOrderButtonStyle} onClick={() => setShowModal(true)}>
           <i class="fa-solid fa-plus"></i> New Order
         </button>
-        <button style={settingsButtonStyle}>
+        <button style={settingsButtonStyle} 
+        onClick={() => setActiveTab("settings")}>
           <i className="fa-solid fa-gear"></i>
         </button>
         <button

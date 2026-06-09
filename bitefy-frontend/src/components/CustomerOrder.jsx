@@ -83,7 +83,6 @@ function CustomerOrder() {
           ))}
           <h3>Total: ₹{placedOrder?.total}</h3>
         </div>
-        <p>Your order is being prepared!</p>
         <Lottie
           animationData={deliveryAnimation}
           loop={true}
