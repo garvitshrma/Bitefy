@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 function Statistics() {
   const [completedOrders, setCompletedOrders] = useState([]);
-  const [filter, setFilter] = useState("week"); // "week", "month", "year"
+  const [filter, setFilter] = useState("day");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -22,7 +22,10 @@ function Statistics() {
     return completedOrders.filter((order) => {
       const orderDate = new Date(order.created_at);
 
-      if (filter === "week") {
+      if (filter === "day") {
+        const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        return orderDate >= dayAgo;
+      } else if (filter === "week") {
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         return orderDate >= weekAgo;
       } else if (filter === "month") {
@@ -106,6 +109,15 @@ function Statistics() {
       <div style={topContainerStyle}>
         <h2 style={titleStyle}>Statistics & Analytics</h2>
         <div style={filterStyle}>
+          <button
+            style={{
+              ...filterButtonStyle,
+              backgroundColor: filter === "day" ? "#FF8C42" : "#ddd",
+            }}
+            onClick={() => setFilter("day")}
+          >
+            Day
+          </button>
           <button
             style={{
               ...filterButtonStyle,
