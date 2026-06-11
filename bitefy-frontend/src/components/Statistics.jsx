@@ -76,6 +76,7 @@ function Statistics() {
     width: "80px",
     border: "none",
     borderRadius: "5px",
+    cursor: 'pointer'
   };
 
   const filterStyle = {
@@ -113,6 +114,8 @@ function Statistics() {
             style={{
               ...filterButtonStyle,
               backgroundColor: filter === "day" ? "#FF8C42" : "#ddd",
+              color: filter === "day" ? "white" : "#333",
+              transition: "all 0.2s ease",
             }}
             onClick={() => setFilter("day")}
           >
@@ -122,6 +125,8 @@ function Statistics() {
             style={{
               ...filterButtonStyle,
               backgroundColor: filter === "week" ? "#FF8C42" : "#ddd",
+              color: filter === "week" ? "white" : "#333",
+              transition: "all 0.2s ease",
             }}
             onClick={() => setFilter("week")}
           >
@@ -131,6 +136,8 @@ function Statistics() {
             style={{
               ...filterButtonStyle,
               backgroundColor: filter === "month" ? "#FF8C42" : "#ddd",
+              color: filter === "month" ? "white" : "#333",
+              transition: "all 0.2s ease",
             }}
             onClick={() => setFilter("month")}
           >
@@ -140,6 +147,8 @@ function Statistics() {
             style={{
               ...filterButtonStyle,
               backgroundColor: filter === "year" ? "#FF8C42" : "#ddd",
+              color: filter === "year" ? "white" : "#333",
+              transition: "all 0.2s ease",
             }}
             onClick={() => setFilter("year")}
           >
