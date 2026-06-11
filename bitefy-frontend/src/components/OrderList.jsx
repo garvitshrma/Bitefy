@@ -32,20 +32,15 @@ function OrderList({
   };
 
   const updateStatus = (orderId, status) => {
-    fetch(
+    return fetch(
+      // ← add return here
       `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       },
-    )
-      .then((r) => r.json())
-      .then((data) => {
-        console.log("Updated:", data);
-      });
+    ).then((r) => r.json());
   };
 
   const containerStyle = {
@@ -319,23 +314,21 @@ function OrderList({
                   handleButtonClick(`remove-${order.id}`, () => {
                     const token = localStorage.getItem("access_token");
 
-                    updateStatus(order.id, "cancelled");
-
-                    fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${order.id}/`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
+                    updateStatus(order.id, "cancelled").then(() => {
+                      fetch(
+                        `https://bitefy-backend.onrender.com/api/orders/${order.id}/`,
+                        {
+                          method: "DELETE",
+                          headers: { Authorization: `Bearer ${token}` },
                         },
-                      },
-                    )
-                      .then(() => {
-                        setOrders((prev) =>
-                          prev.filter((o) => o.id !== order.id),
-                        );
-                      })
-                      .catch((error) => console.log("Error:", error));
+                      )
+                        .then(() => {
+                          setOrders((prev) =>
+                            prev.filter((o) => o.id !== order.id),
+                          );
+                        })
+                        .catch((error) => console.log("Error:", error));
+                    });
                   })
                 }
               >
