@@ -98,14 +98,6 @@ function Header({ setShowModal, setActiveTab }) {
     cursor: "pointer",
   };
 
-  const logoutButtonStyle = {
-    color: "#e73838",
-    border: "none",
-    backgroundColor: "#ffffff",
-    cursor: "pointer",
-    fontSize: "20px",
-  };
-
   const settingsButtonStyle = {
     border: "none",
     backgroundColor: "#ffffff",
@@ -150,16 +142,6 @@ function Header({ setShowModal, setActiveTab }) {
             style={{ width: 40 }}
             onComplete={() => lottieRef.current.stop()}
           />
-        </button>
-        <button
-          style={logoutButtonStyle}
-          onClick={() => {
-            localStorage.removeItem("user");
-            localStorage.removeItem("access_token");
-            window.location.href = "/auth";
-          }}
-        >
-          <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
       </div>
     </div>

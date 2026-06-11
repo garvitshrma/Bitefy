@@ -100,6 +100,17 @@ function Settings() {
     marginTop: "20px",
   };
 
+    const logoutButtonStyle = {
+    color: "#ffffff",
+    border: "none",
+    backgroundColor: "#fc3b3bf3",
+    cursor: "pointer",
+    fontSize: "20px",
+    marginTop: '30px',
+    padding: '10px',
+    borderRadius: '5px'
+  };
+
   if (isLoading) return <p>Loading settings...</p>;
 
   return (
@@ -142,6 +153,19 @@ function Settings() {
       >
         {isSaving ? "⏳ Saving..." : "💾 Save Settings"}
       </button>
+
+     <div>
+        <button
+          style={logoutButtonStyle}
+          onClick={() => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("access_token");
+            window.location.href = "/auth";
+          }}
+        >
+         Log Out <i className="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+     </div>
     </div>
   );
 }
