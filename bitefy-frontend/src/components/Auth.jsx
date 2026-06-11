@@ -182,6 +182,7 @@ function Auth() {
                 style={inputStyle}
                 placeholder="Enter password"
                 value={loginPassword}
+                type="password"
                 onChange={(e) => setLoginPassword(e.target.value)}
               ></input>
             </div>
@@ -288,6 +289,7 @@ function Auth() {
                 style={inputStyle}
                 placeholder="Create password"
                 value={password}
+                type="password"
                 onChange={(e) => setPassword(e.target.value)}
               ></input>
             </div>
@@ -297,6 +299,7 @@ function Auth() {
               <input
                 style={inputStyle}
                 placeholder="Confirm Password"
+                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               ></input>
