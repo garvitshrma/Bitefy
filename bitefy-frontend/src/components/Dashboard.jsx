@@ -29,13 +29,14 @@ function Dashboard() {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Orders response:", data); // ← Check what's coming!
+          console.log("Orders response:", data);
           if (Array.isArray(data)) {
-            // ← Only set if it's an array!
-            setOrders(data);
+            const sorted = data.sort((a, b) => {
+              return new Date(b.created_at) - new Date(a.created_at);
+            });
+            setOrders(sorted);
           } else {
-            setOrders([]); // ← Set empty array if error!
-            console.log("Error from API:", data);
+            setOrders([]);
           }
         })
         .catch((error) => console.log("Error:", error));
@@ -51,7 +52,7 @@ function Dashboard() {
 
       .catch((error) => console.log("Error:", error));
 
-    fetchOrders(); 
+    fetchOrders();
 
     const interval = setInterval(fetchOrders, 3000);
 
@@ -68,7 +69,7 @@ function Dashboard() {
 
   return (
     <div style={appStyle}>
-      <Header setShowModal={setShowModal} setActiveTab={setActiveTab}/>
+      <Header setShowModal={setShowModal} setActiveTab={setActiveTab} />
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div
         style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden" }}
@@ -105,7 +106,9 @@ function Dashboard() {
         )}
 
         {activeTab === "history" && <History />}
-        {activeTab === "settings" && <Settings activeTab={activeTab} setActiveTab={setActiveTab} />}
+        {activeTab === "settings" && (
+          <Settings activeTab={activeTab} setActiveTab={setActiveTab} />
+        )}
       </div>
     </div>
   );

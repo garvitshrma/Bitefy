@@ -11,8 +11,10 @@ function History() {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          const completed = data.filter((order) => order.is_completed === true);
-          setCompletedOrders(completed);
+          const sorted = data.sort((a,b) => {
+            return new Date(b.created_at) - new Date(a.created_at);
+          });
+          setCompletedOrders(sorted);
         }
       })
       .catch((error) => console.log("Error:", error));
