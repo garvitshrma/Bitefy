@@ -32,14 +32,15 @@ function Auth() {
 
   const mainCard = {
     backgroundColor: "#ffffff",
-    minHeight: "auto",
-    paddingBottom: "32px",
-    width: "31%",
+    width: "100%",
+    maxWidth: "500px",
+    padding: "32px",
+    boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "8px",
+    borderRadius: "20px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   };
 
   const loginToggleStyle = {
@@ -408,7 +409,6 @@ function Auth() {
                   .catch((error) => console.log("Error:", error));
               }}
             />
-
           </div>
         )}
       </div>
