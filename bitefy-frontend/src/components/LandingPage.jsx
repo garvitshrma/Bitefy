@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bg from "../assets/bg.png"
+import bg from "../assets/bg.png";
 
 function LandingPage() {
-
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const headerstyle = {
     display: "flex",
@@ -18,20 +17,23 @@ function LandingPage() {
     justifyContent: "center",
     flexDirection: "column",
     alignItems: "center",
-    maxWidth: "1000px",
-    margin: "0 auto",
+    maxWidth: "800px",
+    margin: "60px auto 0 auto",
     textAlign: "center",
-    paddingBottom: "0",
-    marginBottom: "0px",
+    padding: "0 20px",
     marginTop: "100px",
   };
 
   const mainStyle = {
-    backgroundColor: '#f4f8fe',
-    height: "100vh",
+    backgroundColor: "#f4f8fe",
+    minHeight: "100vh",
+    paddingBottom: "40px",
+    backgroundImage: `url(${bg})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     padding: "0",
     margin: "0",
-    backgroundImage: `url(${bg}`
+    backgroundImage: `url(${bg}`,
   };
 
   const cardsContainerStyle = {
@@ -40,20 +42,20 @@ function LandingPage() {
     gap: "30px", // Space between cards
     marginTop: "16px",
     padding: "20px",
+    flexWrap: "wrap",
   };
 
   const cardStyle = {
     backgroundColor: "#ffffff",
     borderRadius: "12px",
     padding: "30px",
-    width: "400px", // Fixed width
+    width: "100%",
+    maxWidth: "400px",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     textAlign: "center",
   };
 
-
-
-  const custbuttonStyle = { 
+  const custbuttonStyle = {
     backgroundColor: "#5582fd",
     color: "white",
     border: "none",
@@ -65,8 +67,8 @@ function LandingPage() {
     marginTop: "20px",
   };
 
-    const restbuttonStyle = {
-    backgroundColor: '#00a410',
+  const restbuttonStyle = {
+    backgroundColor: "#00a410",
     color: "white",
     border: "none",
     padding: "12px 24px",
@@ -84,8 +86,8 @@ function LandingPage() {
     padding: "0",
     alignItems: "flex-start",
     textAlign: "left",
-    marginTop: '25px',
-    marginBottom: '20px'
+    marginTop: "25px",
+    marginBottom: "20px",
   };
 
   const defaultPaddingMarginStyle = {
@@ -103,10 +105,10 @@ function LandingPage() {
     alignItems: "center",
     margin: "0 auto", // Centers the circle itself
     marginBottom: "25px",
-    color: '#2761ff'
+    color: "#2761ff",
   };
 
-    const restaurantImageStyle = {
+  const restaurantImageStyle = {
     width: "60px",
     height: "60px",
     backgroundColor: "#1dcf2948", // Light blue background
@@ -116,21 +118,31 @@ function LandingPage() {
     alignItems: "center",
     margin: "0 auto", // Centers the circle itself
     marginBottom: "25px",
-    color: '#00a410'
+    color: "#00a410",
   };
 
   const resticonsStyle = {
-    color: '#00a410'
-  }
+    color: "#00a410",
+  };
 
-    const custiconsStyle = {
-    color: '#2761ff'
-  }
+  const custiconsStyle = {
+    color: "#2761ff",
+  };
 
   return (
     <div style={mainStyle}>
       <div style={headerstyle}>
-        <h2 style={{fontSize: '40px', padding: '0', margin: '0', paddingTop: '10px', paddingBottom: '10px'}}><i class="fa-solid fa-burger"></i> Bitefy</h2>
+        <h2
+          style={{
+            fontSize: "clamp(28px, 6vw, 40px)",
+            padding: "0",
+            margin: "0",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+          }}
+        >
+          <i class="fa-solid fa-burger"></i> Bitefy
+        </h2>
       </div>
 
       <div style={aboveCardsTextStyle}>
@@ -139,8 +151,7 @@ function LandingPage() {
         </h3>
         <p style={defaultPaddingMarginStyle}>
           Whether you're managing a restaurant or looking for your next great
-          meal, Bitefy connects diners with exceptional dining
-          experiences.
+          meal, Bitefy connects diners with exceptional dining experiences.
         </p>
       </div>
 
@@ -157,20 +168,27 @@ function LandingPage() {
           </p>
           <div style={threePointStyle}>
             <p style={defaultPaddingMarginStyle}>
-              <i style={custiconsStyle}  class="fa-solid fa-magnifying-glass"></i> Search local
-              restaurants
+              <i
+                style={custiconsStyle}
+                class="fa-solid fa-magnifying-glass"
+              ></i>{" "}
+              Search local restaurants
             </p>
             <p style={defaultPaddingMarginStyle}>
-              <i style={custiconsStyle} class="fa-solid fa-utensils"></i> Browse menus & prices
+              <i style={custiconsStyle} class="fa-solid fa-utensils"></i> Browse
+              menus & prices
             </p>
             <p style={defaultPaddingMarginStyle}>
-              <i style={custiconsStyle} class="fa-solid fa-arrow-trend-up"></i> Get personalized
-              recommendations
+              <i style={custiconsStyle} class="fa-solid fa-arrow-trend-up"></i>{" "}
+              Get personalized recommendations
             </p>
           </div>
-          <button style={custbuttonStyle}
-          onClick={() => window.location.href = '/restaurants'}>
-            Continue as Customer</button>
+          <button
+            style={custbuttonStyle}
+            onClick={() => (window.location.href = "/restaurants")}
+          >
+            Continue as Customer
+          </button>
         </div>
 
         {/* Restaurant Card */}
@@ -185,16 +203,21 @@ function LandingPage() {
           </p>
           <div style={threePointStyle}>
             <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-regular fa-clock"></i> Manage order queue
+              <i style={resticonsStyle} class="fa-regular fa-clock"></i> Manage
+              order queue
             </p>
             <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-solid fa-utensils"></i> Update menu & pricing
+              <i style={resticonsStyle} class="fa-solid fa-utensils"></i> Update
+              menu & pricing
             </p>
             <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-solid fa-arrow-trend-up"></i> Track sales & analytics
+              <i style={resticonsStyle} class="fa-solid fa-arrow-trend-up"></i>{" "}
+              Track sales & analytics
             </p>
           </div>
-          <button onClick={() => navigate("/auth")} style={restbuttonStyle}>Continue as Restaurant</button>
+          <button onClick={() => navigate("/auth")} style={restbuttonStyle}>
+            Continue as Restaurant
+          </button>
         </div>
       </div>
     </div>
