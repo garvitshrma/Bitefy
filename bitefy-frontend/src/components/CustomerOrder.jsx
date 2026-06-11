@@ -197,7 +197,7 @@ function CustomerOrder() {
 
           {orderStatus == "cancelled" && (
             <Lottie
-              animationData={readyAnimation}
+              animationData={cancelAnimation}
               loop={true}
               style={{
                 width: 250,

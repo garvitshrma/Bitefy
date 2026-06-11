@@ -319,15 +319,15 @@ function OrderList({
                   handleButtonClick(`remove-${order.id}`, () => {
                     const token = localStorage.getItem("access_token");
 
+                    updateStatus(order.id, "cancelled");
+
                     fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${order.id}/update_status/`,
+                      `https://bitefy-backend.onrender.com/api/orders/${order.id}/`,
                       {
-                        method: "PATCH",
+                        method: "DELETE",
                         headers: {
-                          "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
                         },
-                        body: JSON.stringify({ status: "cancelled" }),
                       },
                     )
                       .then(() => {
