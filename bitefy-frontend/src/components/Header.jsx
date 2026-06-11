@@ -1,6 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import settingsAnimation from "./gear.json";
+import Lottie from "lottie-react";
 
-function Header({ setShowModal, setActiveTab}) {
+function Header({ setShowModal, setActiveTab }) {
+  const lottieRef = useRef();
+
+  const [play, setPlay] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +20,7 @@ function Header({ setShowModal, setActiveTab}) {
       const token = localStorage.getItem("access_token");
 
       const response = await fetch(
-        // "http://localhost:8000/api/restaurants/my_restaurant/" 
+        // "http://localhost:8000/api/restaurants/my_restaurant/"
         "https://bitefy-backend.onrender.com/api/restaurants/my_restaurant/",
         {
           headers: {
@@ -129,9 +135,21 @@ function Header({ setShowModal, setActiveTab}) {
         <button style={newOrderButtonStyle} onClick={() => setShowModal(true)}>
           <i class="fa-solid fa-plus"></i> New Order
         </button>
-        <button style={settingsButtonStyle} 
-        onClick={() => setActiveTab("settings")}>
-          <i className="fa-solid fa-gear"></i>
+        <button
+          style={settingsButtonStyle}
+          onClick={() => {
+            setActiveTab("settings");
+            lottieRef.current.goToAndPlay(0); // ← play from start every click
+          }}
+        >
+          <Lottie
+            lottieRef={lottieRef} // ← attach the ref
+            animationData={settingsAnimation}
+            autoplay={false} // ← never autoplay
+            loop={false}
+            style={{ width: 40 }}
+            onComplete={() => lottieRef.current.stop()}
+          />
         </button>
         <button
           style={logoutButtonStyle}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import bg from "../assets/bg.png";
+import nothingAnimation from "./trolley.json";
+import Lottie from "lottie-react";
 
 function OrderList({
   selectedItems,
@@ -14,6 +16,7 @@ function OrderList({
 
   const [customerName, setCustomerName] = useState("");
   const [completedOrders, setCompletedOrders] = useState([]);
+  const [numberOfOrders, setNumberOfOrders] = useState("1");
 
   const updateStatus = (orderId, status) => {
     fetch(
@@ -204,6 +207,26 @@ function OrderList({
           </h4>
 
           <p style={{ marginTop: "5px" }}>Drag orders to adjust priority</p>
+          {orders.every(
+            (order) => !Array.isArray(order.items) || order.items.length === 0,
+          ) && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: '80px'
+              }}
+            >
+              <Lottie
+                animationData={nothingAnimation}
+                loop={true}
+                style={{ width: 200 }}
+              />
+              <p>No Orders</p>
+            </div>
+          )}
           {orders.map(
             (order, index) => (
               console.log("Order data:", order),
