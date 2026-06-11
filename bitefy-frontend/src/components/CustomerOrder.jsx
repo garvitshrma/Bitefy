@@ -66,53 +66,132 @@ function CustomerOrder() {
     backgroundColor: "rgba(0, 0, 0, 0.85)",
   };
 
+  const statusText = {
+    pending: "Order Received",
+    placed: "Waiting for Confirmation",
+    preparing: "Preparing Your Food",
+    ready: "Ready for Pickup",
+  };
+
   if (isLoading) return <p>Loading menu...</p>;
 
   if (orderPlaced)
     return (
-      <div>
-        <h1>🎉 Order Placed!</h1>
-        <h2>{placedOrder?.order_number}</h2>
-        <h2>Order Status: {orderStatus}</h2>
-        <div>
-          <h3>Order Summary:</h3>
-          {placedOrder?.items?.map((item, index) => (
-            <div key={index}>
-              <p>
-                {item.name} x {item.quantity} - ₹{item.price * item.quantity}
-              </p>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "20px",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "500px",
+            background: "white",
+            borderRadius: "24px",
+            padding: "32px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            textAlign: "center",
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-10px)";
+          }}
+          onMouseLeave={(e) => {
+  e.currentTarget.style.transform = "translateY(0)";
+}}
+        >
+          <h1
+            style={{
+              fontSize: "2rem",
+              marginBottom: "10px",
+              color: "#f97316",
+            }}
+          >
+            🎉 Order Placed!
+          </h1>
+          <p
+            style={{
+              color: "#64748b",
+              marginBottom: "20px",
+            }}
+          >
+            {placedOrder?.order_number}
+          </p>
+          <h2>{statusText[orderStatus] || orderStatus}</h2>
+          <div>
+            <h3>Order Summary:</h3>
+            {placedOrder?.items?.map((item, index) => (
+              <div key={index}>
+                <p>
+                  {item.name} x {item.quantity} - ₹{item.price * item.quantity}
+                </p>
+              </div>
+            ))}
+
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid #a0a2a6",
+                margin: "16px 0",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                fontSize: "1.3rem",
+                fontWeight: "bold",
+              }}
+            >
+              <h3>Total: ₹{placedOrder?.total}</h3>
             </div>
-          ))}
-          <h3>Total: ₹{placedOrder?.total}</h3>
+          </div>
+          {orderStatus == "placed" && (
+            <Lottie
+              animationData={deliveryAnimation}
+              loop={true}
+              style={{
+                width: 250,
+                margin: "0 auto",
+              }}
+            />
+          )}
+          {orderStatus == "pending" && (
+            <Lottie
+              animationData={deliveryAnimation}
+              loop={true}
+              style={{
+                width: 250,
+                margin: "0 auto",
+              }}
+            />
+          )}
+          {orderStatus == "preparing" && (
+            <Lottie
+              animationData={preparingAnimation}
+              loop={true}
+              style={{
+                width: 250,
+                margin: "0 auto",
+              }}
+            />
+          )}
+          {orderStatus == "ready" && (
+            <Lottie
+              animationData={readyAnimation}
+              loop={true}
+              style={{
+                width: 250,
+                margin: "0 auto",
+              }}
+            />
+          )}
         </div>
-        {orderStatus == "placed" && (
-          <Lottie
-            animationData={deliveryAnimation}
-            loop={true}
-            style={{ width: 200 }}
-          />
-        )}
-        {orderStatus == "pending" && (
-          <Lottie
-            animationData={deliveryAnimation}
-            loop={true}
-            style={{ width: 200 }}
-          />
-        )}
-        {orderStatus == "preparing" && (
-          <Lottie
-            animationData={preparingAnimation}
-            loop={true}
-            style={{ width: 200 }}
-          />
-        )}
-        {orderStatus == "ready" && (
-          <Lottie
-            animationData={readyAnimation}
-            loop={true}
-            style={{ width: 200 }}
-          />
-        )}
       </div>
     );
 
