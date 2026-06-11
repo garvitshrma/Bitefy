@@ -21,7 +21,7 @@ function Auth() {
     backgroundColor: "#ecf1fe",
     margin: "0",
     padding: "0",
-    height: "100vh",
+    minHeight: "100vh",
     overflow: "auto",
     display: "flex",
     justifyContent: "center",
@@ -32,7 +32,7 @@ function Auth() {
 
   const mainCard = {
     backgroundColor: "#ffffff",
-    width: "100%",
+    width: "90%",
     maxWidth: "500px",
     padding: "32px",
     boxSizing: "border-box",
@@ -46,13 +46,17 @@ function Auth() {
   const loginToggleStyle = {
     backgroundColor: "#5582fd",
     color: "#ffffff",
-    width: "175px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    marginTop: "32px",
     padding: "12px",
     marginTop: "30px",
     marginRight: "5px",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+    width: "100%",
   };
 
   const signupToggleStyle = {
@@ -96,13 +100,13 @@ function Auth() {
   };
 
   const inputStyle = {
-    height: "50pxpx", // Taller input
-    padding: "10px", // Space inside
-    fontSize: "14px", // Text size
-    border: "1px solid #ddd", // Light gray border
-    borderRadius: "4px", // Rounded corners
-    width: "100%", // Full width
-    boxSizing: "border-box", // Include padding in width
+    height: "50px",
+    padding: "10px",
+    fontSize: "14px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    width: "100%",
+    boxSizing: "border-box",
   };
 
   const lineStyle = {
@@ -127,12 +131,18 @@ function Auth() {
 
   const selectedStyle = {
     backgroundColor: "#5582fd",
+    background: "#5582fd",
+    color: "white",
   };
 
   const notSelectedStyle = {
-    backgroundColor: "#b9cbfc59",
+    backgroundColor: "#dde7ff",
     color: "#000000",
-    width: "175px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    width: "100%",
+    marginTop: "32px",
     padding: "12px",
     marginTop: "30px",
     marginRight: "5px",
@@ -148,7 +158,14 @@ function Auth() {
       </h3>
 
       <div style={mainCard}>
-        <div>
+        <div
+          style={{
+            display: "flex",
+            background: "#ffffff",
+            borderRadius: "12px",
+            width: "100%",
+          }}
+        >
           <button
             style={activeTab === "login" ? loginToggleStyle : notSelectedStyle}
             onClick={() => setActiveTab("login")}
@@ -157,7 +174,7 @@ function Auth() {
           </button>
           <button
             style={
-              activeTab === "signup" ? signupToggleStyle : notSelectedStyle
+              activeTab === "signup" ? loginToggleStyle : notSelectedStyle
             }
             onClick={() => setActiveTab("signup")}
           >
@@ -359,56 +376,70 @@ function Auth() {
               <div style={lineStyle}></div>
             </div>
 
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                console.log("Google login success!", credentialResponse);
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  console.log("Google login success!", credentialResponse);
 
-                // Send Google token to Django!
-                fetch("https://bitefy-backend.onrender.com/api/auth/google/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    token: credentialResponse.credential,
-                  }),
-                })
-                  .then((r) => r.json())
-                  .then((data) => {
-                    console.log("Django response:", data);
-                    if (data.access) {
-                      localStorage.setItem("access_token", data.access);
-                      localStorage.setItem("user", JSON.stringify(data.user));
-                      window.location.href = "/dashboard";
-                    } else {
-                      alert("Google login failed: " + data.error);
-                    }
-                  })
-                  .catch((error) => console.log("Error:", error));
-              }}
-              onError={() => {
-                alert("Google login failed!");
-              }}
-              onSuccess={(credentialResponse) => {
-                fetch("https://bitefy-backend.onrender.com/api/auth/google/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    token: credentialResponse.credential,
-                  }),
-                })
-                  .then((r) => r.json())
-                  .then((data) => {
-                    console.log("Django response:", data);
-                    if (data.access) {
-                      localStorage.setItem("access_token", data.access);
-                      localStorage.setItem("user", JSON.stringify(data.user));
-                      window.location.href = "/dashboard";
-                    } else {
-                      alert("Google login failed: " + data.error);
-                    }
-                  })
-                  .catch((error) => console.log("Error:", error));
-              }}
-            />
+                  // Send Google token to Django!
+                  fetch(
+                    "https://bitefy-backend.onrender.com/api/auth/google/",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        token: credentialResponse.credential,
+                      }),
+                    },
+                  )
+                    .then((r) => r.json())
+                    .then((data) => {
+                      console.log("Django response:", data);
+                      if (data.access) {
+                        localStorage.setItem("access_token", data.access);
+                        localStorage.setItem("user", JSON.stringify(data.user));
+                        window.location.href = "/dashboard";
+                      } else {
+                        alert("Google login failed: " + data.error);
+                      }
+                    })
+                    .catch((error) => console.log("Error:", error));
+                }}
+                onError={() => {
+                  alert("Google login failed!");
+                }}
+                onSuccess={(credentialResponse) => {
+                  fetch(
+                    "https://bitefy-backend.onrender.com/api/auth/google/",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        token: credentialResponse.credential,
+                      }),
+                    },
+                  )
+                    .then((r) => r.json())
+                    .then((data) => {
+                      console.log("Django response:", data);
+                      if (data.access) {
+                        localStorage.setItem("access_token", data.access);
+                        localStorage.setItem("user", JSON.stringify(data.user));
+                        window.location.href = "/dashboard";
+                      } else {
+                        alert("Google login failed: " + data.error);
+                      }
+                    })
+                    .catch((error) => console.log("Error:", error));
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
