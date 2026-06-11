@@ -17,6 +17,17 @@ function OrderList({
   const [customerName, setCustomerName] = useState("");
   const [completedOrders, setCompletedOrders] = useState([]);
   const [numberOfOrders, setNumberOfOrders] = useState("1");
+  const [isHovering, setIsHovering] = useState(false);
+  const [hoveredButton, setHoveredButton] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const [clickedButton, setClickedButton] = useState(null);
+
+  const handleButtonClick = (buttonId, callback) => {
+    setClickedButton(buttonId);
+    callback();
+    setTimeout(() => setClickedButton(null), 200); // ← Resets after 200ms
+  };
 
   const updateStatus = (orderId, status) => {
     fetch(
@@ -139,6 +150,7 @@ function OrderList({
     fontSize: "14px",
     marginTop: "10px",
     marginLeft: "10px",
+    transition: "all 0.2s ease",
   };
 
   const preparingButtonStyle = {
@@ -152,6 +164,7 @@ function OrderList({
     fontSize: "14px",
     marginTop: "10px",
     marginLeft: "10px",
+    transition: "all 0.2s ease",
   };
 
   const completeButtonStyle = {
@@ -165,6 +178,7 @@ function OrderList({
     fontSize: "14px",
     marginTop: "10px",
     marginLeft: "10px",
+    transition: "all 0.2s ease",
   };
 
   const formatTime = (dateString) => {
@@ -216,7 +230,7 @@ function OrderList({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                marginTop: '80px'
+                marginTop: "80px",
               }}
             >
               <Lottie
@@ -252,10 +266,55 @@ function OrderList({
                     🕐 {formatTime(order.created_at)} | 📅{" "}
                     {formatDate(order.created_at)}
                   </p>
-                  <button style={printButtonStyle}>PRINT</button>
                   <button
-                    style={deleteButtonStyle}
-                    onClick={() => {
+                    style={{
+                      ...printButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `print-${order.id}`
+                          ? "#ff7a1a"
+                          : "#FF8C42",
+                      transform:
+                        hoveredButton === `print-${order.id}`
+                          ? "scale(1.05)"
+                          : "scale(1)",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `print-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `print-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() => handleButtonClick(`print-${order.id}`, () => {
+
+                    })}
+                  >
+                    PRINT
+                  </button>
+                  <button
+                    style={{
+                      ...deleteButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `remove-${order.id}`
+                          ? "rgb(255, 64, 26)"
+                          : "#e74c3c",
+                      transform:
+                        hoveredButton === `remove-${order.id}`
+                          ? "scale(1.05)"
+                          : "scale(1)",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `remove-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `remove-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`remove-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() => handleButtonClick(`remove-${order.id}`, () => {
                       const orderId = orders[index].id;
                       const token = localStorage.getItem("access_token");
 
@@ -275,14 +334,29 @@ function OrderList({
                           setOrders(newOrders);
                         })
                         .catch((error) => console.log("Error:", error));
-                    }}
+                    })}
                   >
                     REMOVE
                   </button>
 
                   <button
-                    style={preparingButtonStyle}
-                    onClick={() => {
+                    style={{
+                      ...preparingButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `prepare-${order.id}`
+                          ? "#c209f5"
+                          : "#b522de",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `prepare-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `prepare-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`prepare-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() => handleButtonClick(`prepare-${order.id}`, () => {
                       const orderId = orders[index].id;
                       const token = localStorage.getItem("access_token");
                       updateStatus(order.id, "preparing");
@@ -304,14 +378,31 @@ function OrderList({
                         );
                         setOrders(updatedOrders);
                       });
-                    }}
+                    })}
                   >
                     PREPARE
                   </button>
 
                   <button
-                    style={completeButtonStyle}
-                    onClick={() => {
+                    style={{
+                      ...preparingButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `complete-${order.id}`
+                          ? "#0ad65f"
+                          : "#27ae60",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `complete-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `complete-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() =>
+                      setHoveredButton(`complete-${order.id}`)
+                    }
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() => handleButtonClick(`complete-${order.id}`, () => {
                       const orderId = order.id;
                       const token = localStorage.getItem("access_token");
 
@@ -336,7 +427,7 @@ function OrderList({
                           );
                         })
                         .catch((error) => console.log("Error:", error));
-                    }}
+                    })}
                   >
                     COMPLETE
                   </button>
