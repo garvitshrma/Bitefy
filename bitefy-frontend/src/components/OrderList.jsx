@@ -3,6 +3,7 @@ import bg from "../assets/bg.png";
 import nothingAnimation from "./trolley.json";
 import Lottie from "lottie-react";
 import { printOrder } from "../utils/printReceipt";
+import { data } from "react-router-dom";
 
 function OrderList({
   selectedItems,
@@ -242,201 +243,199 @@ function OrderList({
               <p>No Orders</p>
             </div>
           )}
-          {orders.map(
-            (order, index) => (
-              console.log("Order data:", order),
-              (
-                <div
-                  key={order.id || index}
-                  style={{
-                    ...orderBoxStyle,
-                    backgroundColor: getOrderColor(order.status),
-                  }}
-                >
-                  <p style={customerNameStyle}>Customer: {order.name}</p>
-                  <p>
-                    Items:{" "}
-                    {Array.isArray(order.items)
-                      ? order.items
-                          .map((item) => `${item.name} x${item.quantity}`)
-                          .join(", ")
-                      : "No items"}
-                  </p>
-                  <p style={totalStyle}>total: ₹{order.total}</p>
-                  <p>
-                    🕐 {formatTime(order.created_at)} | 📅{" "}
-                    {formatDate(order.created_at)}
-                  </p>
-                  <button
-                    style={{
-                      ...printButtonStyle,
-                      backgroundColor:
-                        hoveredButton === `print-${order.id}`
-                          ? "#ff7a1a"
-                          : "#FF8C42",
-                      transform:
-                        hoveredButton === `print-${order.id}`
-                          ? "scale(1.05)"
-                          : "scale(1)",
-                      transition: "all 0.1s ease",
-                      transform:
-                        clickedButton === `print-${order.id}`
-                          ? "scale(0.95)"
-                          : hoveredButton === `print-${order.id}`
-                            ? "scale(1.05) translateY(-2px)"
-                            : "scale(1)",
-                    }}
-                    onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    onClick={() => handleButtonClick(`print-${order.id}`, () => {
-                      printOrder(order)
-                    })}
-                  >
-                    PRINT
-                  </button>
-                  <button
-                    style={{
-                      ...deleteButtonStyle,
-                      backgroundColor:
-                        hoveredButton === `remove-${order.id}`
-                          ? "rgb(255, 64, 26)"
-                          : "#e74c3c",
-                      transform:
-                        hoveredButton === `remove-${order.id}`
-                          ? "scale(1.05)"
-                          : "scale(1)",
-                      transition: "all 0.1s ease",
-                      transform:
-                        clickedButton === `remove-${order.id}`
-                          ? "scale(0.95)"
-                          : hoveredButton === `remove-${order.id}`
-                            ? "scale(1.05) translateY(-2px)"
-                            : "scale(1)",
-                    }}
-                    onMouseEnter={() => setHoveredButton(`remove-${order.id}`)}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    onClick={() => handleButtonClick(`remove-${order.id}`, () => {
-                      const orderId = orders[index].id;
-                      const token = localStorage.getItem("access_token");
+          {orders.map((order, index) => (
+            <div
+              key={order.id || index}
+              style={{
+                ...orderBoxStyle,
+                backgroundColor: getOrderColor(order.status),
+              }}
+            >
+              <p style={customerNameStyle}>Customer: {order.name}</p>
+              <p>
+                Items:{" "}
+                {Array.isArray(order.items)
+                  ? order.items
+                      .map((item) => `${item.name} x${item.quantity}`)
+                      .join(", ")
+                  : "No items"}
+              </p>
+              <p style={totalStyle}>total: ₹{order.total}</p>
+              <p>
+                🕐 {formatTime(order.created_at)} | 📅{" "}
+                {formatDate(order.created_at)}
+              </p>
+              <button
+                style={{
+                  ...printButtonStyle,
+                  backgroundColor:
+                    hoveredButton === `print-${order.id}`
+                      ? "#ff7a1a"
+                      : "#FF8C42",
+                  transform:
+                    hoveredButton === `print-${order.id}`
+                      ? "scale(1.05)"
+                      : "scale(1)",
+                  transition: "all 0.1s ease",
+                  transform:
+                    clickedButton === `print-${order.id}`
+                      ? "scale(0.95)"
+                      : hoveredButton === `print-${order.id}`
+                        ? "scale(1.05) translateY(-2px)"
+                        : "scale(1)",
+                }}
+                onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() =>
+                  handleButtonClick(`print-${order.id}`, () => {
+                    printOrder(order);
+                  })
+                }
+              >
+                PRINT
+              </button>
+              <button
+                style={{
+                  ...deleteButtonStyle,
+                  backgroundColor:
+                    hoveredButton === `remove-${order.id}`
+                      ? "rgb(255, 64, 26)"
+                      : "#e74c3c",
+                  transform:
+                    hoveredButton === `remove-${order.id}`
+                      ? "scale(1.05)"
+                      : "scale(1)",
+                  transition: "all 0.1s ease",
+                  transform:
+                    clickedButton === `remove-${order.id}`
+                      ? "scale(0.95)"
+                      : hoveredButton === `remove-${order.id}`
+                        ? "scale(1.05) translateY(-2px)"
+                        : "scale(1)",
+                }}
+                onMouseEnter={() => setHoveredButton(`remove-${order.id}`)}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() =>
+                  handleButtonClick(`remove-${order.id}`, () => {
+                    const token = localStorage.getItem("access_token");
 
-                      fetch(
-                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                        {
-                          method: "DELETE",
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
+                    fetch(
+                      `https://bitefy-backend.onrender.com/api/orders/${order.id}/update_status/`,
+                      {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
                         },
-                      )
-                        .then(() => {
-                          const newOrders = orders.filter(
-                            (_, i) => i !== index,
-                          );
-                          setOrders(newOrders);
-                          updateStatus(order.id, "cancelled");
-                        })
-                        .catch((error) => console.log("Error:", error));
-                    })}
-                  >
-                    REMOVE
-                  </button>
-
-                  <button
-                    style={{
-                      ...preparingButtonStyle,
-                      backgroundColor:
-                        hoveredButton === `prepare-${order.id}`
-                          ? "#c209f5"
-                          : "#b522de",
-                      transition: "all 0.1s ease",
-                      transform:
-                        clickedButton === `prepare-${order.id}`
-                          ? "scale(0.95)"
-                          : hoveredButton === `prepare-${order.id}`
-                            ? "scale(1.05) translateY(-2px)"
-                            : "scale(1)",
-                    }}
-                    onMouseEnter={() => setHoveredButton(`prepare-${order.id}`)}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    onClick={() => handleButtonClick(`prepare-${order.id}`, () => {
-                      const orderId = orders[index].id;
-                      const token = localStorage.getItem("access_token");
-                      updateStatus(order.id, "preparing");
-
-                      fetch(
-                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                        {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                          },
-                          body: JSON.stringify({ status: "preparing" }),
-                        },
-                      ).then(() => {
-                        // Update order in state
-                        const updatedOrders = orders.map((o, i) =>
-                          i === index ? { ...o, status: "preparing" } : o,
+                        body: JSON.stringify({ status: "cancelled" }),
+                      },
+                    )
+                      .then(() => {
+                        setOrders((prev) =>
+                          prev.filter((o) => o.id !== order.id),
                         );
-                        setOrders(updatedOrders);
-                      });
-                    })}
-                  >
-                    PREPARE
-                  </button>
+                      })
+                      .catch((error) => console.log("Error:", error));
+                  })
+                }
+              >
+                REMOVE
+              </button>
 
-                  <button
-                    style={{
-                      ...preparingButtonStyle,
-                      backgroundColor:
-                        hoveredButton === `complete-${order.id}`
-                          ? "#0ad65f"
-                          : "#27ae60",
-                      transition: "all 0.1s ease",
-                      transform:
-                        clickedButton === `complete-${order.id}`
-                          ? "scale(0.95)"
-                          : hoveredButton === `complete-${order.id}`
-                            ? "scale(1.05) translateY(-2px)"
-                            : "scale(1)",
-                    }}
-                    onMouseEnter={() =>
-                      setHoveredButton(`complete-${order.id}`)
-                    }
-                    onMouseLeave={() => setHoveredButton(null)}
-                    onClick={() => handleButtonClick(`complete-${order.id}`, () => {
-                      const orderId = order.id;
-                      const token = localStorage.getItem("access_token");
+              <button
+                style={{
+                  ...preparingButtonStyle,
+                  backgroundColor:
+                    hoveredButton === `prepare-${order.id}`
+                      ? "#c209f5"
+                      : "#b522de",
+                  transition: "all 0.1s ease",
+                  transform:
+                    clickedButton === `prepare-${order.id}`
+                      ? "scale(0.95)"
+                      : hoveredButton === `prepare-${order.id}`
+                        ? "scale(1.05) translateY(-2px)"
+                        : "scale(1)",
+                }}
+                onMouseEnter={() => setHoveredButton(`prepare-${order.id}`)}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() =>
+                  handleButtonClick(`prepare-${order.id}`, () => {
+                    const orderId = orders[index].id;
+                    const token = localStorage.getItem("access_token");
+                    updateStatus(order.id, "preparing");
 
-                      fetch(
-                        `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
-                        {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                          },
-                          body: JSON.stringify({
-                            status: "ready", // ← Update status
-                            is_completed: true, // ← Mark completed
-                          }),
+                    fetch(
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                      {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
                         },
-                      )
-                        .then(() => {
-                          // Remove from active orders
-                          setOrders((prev) =>
-                            prev.filter((_, i) => i !== index),
-                          );
-                        })
-                        .catch((error) => console.log("Error:", error));
-                    })}
-                  >
-                    COMPLETE
-                  </button>
-                </div>
-              )
-            ),
-          )}
+                        body: JSON.stringify({ status: "preparing" }),
+                      },
+                    ).then(() => {
+                      // Update order in state
+                      const updatedOrders = orders.map((o, i) =>
+                        i === index ? { ...o, status: "preparing" } : o,
+                      );
+                      setOrders(updatedOrders);
+                    });
+                  })
+                }
+              >
+                PREPARE
+              </button>
+
+              <button
+                style={{
+                  ...preparingButtonStyle,
+                  backgroundColor:
+                    hoveredButton === `complete-${order.id}`
+                      ? "#0ad65f"
+                      : "#27ae60",
+                  transition: "all 0.1s ease",
+                  transform:
+                    clickedButton === `complete-${order.id}`
+                      ? "scale(0.95)"
+                      : hoveredButton === `complete-${order.id}`
+                        ? "scale(1.05) translateY(-2px)"
+                        : "scale(1)",
+                }}
+                onMouseEnter={() => setHoveredButton(`complete-${order.id}`)}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() =>
+                  handleButtonClick(`complete-${order.id}`, () => {
+                    const orderId = order.id;
+                    const token = localStorage.getItem("access_token");
+
+                    fetch(
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                      {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                          status: "ready", // ← Update status
+                          is_completed: true, // ← Mark completed
+                        }),
+                      },
+                    )
+                      .then(() => {
+                        // Remove from active orders
+                        setOrders((prev) => prev.filter((_, i) => i !== index));
+                      })
+                      .catch((error) => console.log("Error:", error));
+                  })
+                }
+              >
+                COMPLETE
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>
