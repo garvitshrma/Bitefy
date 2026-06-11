@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import bg from "../assets/bg.png";
 import nothingAnimation from "./trolley.json";
 import Lottie from "lottie-react";
+import { printOrder } from "../utils/printReceipt";
 
 function OrderList({
   selectedItems,
@@ -288,7 +289,7 @@ function OrderList({
                     onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
                     onMouseLeave={() => setHoveredButton(null)}
                     onClick={() => handleButtonClick(`print-${order.id}`, () => {
-
+                      printOrder(order)
                     })}
                   >
                     PRINT
