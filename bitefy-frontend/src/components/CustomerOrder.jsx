@@ -14,38 +14,36 @@ function CustomerOrder() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
   const [orderStatus, setOrderStatus] = useState("placed");
+  const intervalRef = useRef(null);
 
   useEffect(() => {
-    fetch(`https://bitefy-backend.onrender.com/api/public/menu/${slug}/`)
-      .then((r) => r.json())
+  if (!placedOrder) return;
+
+  intervalRef.current = setInterval(() => {
+    fetch(`https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`)
+      .then((r) => {
+        if (!r.ok) {
+          setOrderStatus("cancelled");
+          clearInterval(intervalRef.current);
+          return null;
+        }
+        return r.json();
+      })
       .then((data) => {
-        console.log(data);
-        setMenuItems(data);
-        setIsLoading(false);
+        if (!data) return;
+        setOrderStatus(data.status);
+        if (data.status === "cancelled" || data.status === "ready") {
+          clearInterval(intervalRef.current);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        clearInterval(intervalRef.current);
       });
-  }, [slug]);
+  }, 3000);
 
-  useEffect(() => {
-    if (!placedOrder) return;
-
-    const interval = setInterval(() => {
-      fetch(
-        `https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`,
-      )
-        .then((r) => r.json())
-        .then((data) => {
-          console.log("STATUS RESPONSE:", data);
-          setOrderStatus(data.status);
-        })
-        .catch((err) => console.error(err));
-    }, 3000); // 👈 every 3 seconds
-
-    return () => clearInterval(interval);
-  }, [placedOrder]);
-  // Calculate total
-  const total = menuItems.reduce((sum, item) => {
-    return sum + item.price * (quantities[item.id] || 0);
-  }, 0);
+  return () => clearInterval(intervalRef.current);
+}, [placedOrder]);
 
   // Increase quantity
   const increaseQty = (item) => {

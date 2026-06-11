@@ -6,10 +6,12 @@ from .models import Order
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def order_status(request, order_id):
-    order = Order.objects.get(id=order_id)
-
-    return Response({
-        "order_number": order.name,
-        "status": order.status,
-        "total": order.total,
-    })
+    try:
+        order = Order.objects.get(id=order_id)
+        return Response({
+            "order_number": order.name,
+            "status": order.status,
+            "total": order.total,
+        })
+    except Order.DoesNotExist:
+        return Response({"status": "cancelled"}, status=404)
