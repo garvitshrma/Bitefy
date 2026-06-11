@@ -333,6 +333,7 @@ function OrderList({
                             (_, i) => i !== index,
                           );
                           setOrders(newOrders);
+                          updateStatus(order.id, "cancelled");
                         })
                         .catch((error) => console.log("Error:", error));
                     })}

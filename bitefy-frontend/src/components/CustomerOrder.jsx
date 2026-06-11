@@ -4,6 +4,7 @@ import Lottie from "lottie-react";
 import deliveryAnimation from "./order-placed.json";
 import preparingAnimation from "./coffee.json";
 import readyAnimation from "./food-truck.json";
+import cancelAnimation from "./cancel.json";
 
 function CustomerOrder() {
   const { slug } = useParams();
@@ -71,6 +72,7 @@ function CustomerOrder() {
     placed: "Waiting for Confirmation",
     preparing: "Preparing Your Food",
     ready: "Ready for Pickup",
+    cancelled: 'We are sorry, your order has been cancelled.'
   };
 
   if (isLoading) return <p>Loading menu...</p>;
@@ -190,6 +192,19 @@ function CustomerOrder() {
                 margin: "0 auto",
               }}
             />
+            
+          )}
+
+          {orderStatus == "cancelled" && (
+            <Lottie
+              animationData={readyAnimation}
+              loop={true}
+              style={{
+                width: 250,
+                margin: "0 auto",
+              }}
+            />
+            
           )}
         </div>
       </div>
