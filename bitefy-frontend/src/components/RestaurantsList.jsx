@@ -16,6 +16,7 @@ function RestaurantList() {
     minHeight: "100vh",
     background: "linear-gradient(135deg, #0f172a, #1e293b)",
     padding: "40px 20px",
+      overflowX: "hidden",
   };
 
   const logoStyle = {
@@ -36,15 +37,16 @@ function RestaurantList() {
   };
 
   const searchStyle = {
-    width: "100%",
-    maxWidth: "600px",
-    display: "block",
-    margin: "0 auto 30px auto",
-    padding: "14px",
-    borderRadius: "12px",
-    border: "none",
-    outline: "none",
-    fontSize: "1rem",
+  width: "100%",
+  maxWidth: "600px",
+  display: "block",
+  margin: "0 auto 30px auto",
+  padding: "14px",
+  borderRadius: "12px",
+  border: "none",
+  outline: "none",
+  fontSize: "1rem",
+  boxSizing: "border-box",
   };
 
   const cardStyle = {
