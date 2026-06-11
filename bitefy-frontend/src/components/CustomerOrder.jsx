@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import deliveryAnimation from "./order-placed.json";
+import preparingAnimation from "./coffee.json";
+import readyAnimation from "./food-truck.json";
 
 function CustomerOrder() {
   const { slug } = useParams();
@@ -83,11 +85,34 @@ function CustomerOrder() {
           ))}
           <h3>Total: ₹{placedOrder?.total}</h3>
         </div>
-        <Lottie
-          animationData={deliveryAnimation}
-          loop={true}
-          style={{ width: 200 }}
-        />
+        {orderStatus == "placed" && (
+          <Lottie
+            animationData={deliveryAnimation}
+            loop={true}
+            style={{ width: 200 }}
+          />
+        )}
+        {orderStatus == "pending" && (
+          <Lottie
+            animationData={deliveryAnimation}
+            loop={true}
+            style={{ width: 200 }}
+          />
+        )}
+        {orderStatus == "preparing" && (
+          <Lottie
+            animationData={preparingAnimation}
+            loop={true}
+            style={{ width: 200 }}
+          />
+        )}
+        {orderStatus == "ready" && (
+          <Lottie
+            animationData={readyAnimation}
+            loop={true}
+            style={{ width: 200 }}
+          />
+        )}
       </div>
     );
 
