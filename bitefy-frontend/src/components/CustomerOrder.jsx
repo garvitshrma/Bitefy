@@ -80,7 +80,7 @@ function CustomerOrder() {
       <div
         style={{
           minHeight: "100vh",
-          background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          background: "linear-gradient(135deg,#0f172a,#1e293b)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -102,8 +102,8 @@ function CustomerOrder() {
             e.currentTarget.style.transform = "translateY(-10px)";
           }}
           onMouseLeave={(e) => {
-  e.currentTarget.style.transform = "translateY(0)";
-}}
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
         >
           <h1
             style={{
@@ -197,7 +197,7 @@ function CustomerOrder() {
 
   const pageStyle = {
     minHeight: "100vh",
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    background: "linear-gradient(135deg,#0f172a,#1e293b)",
     padding: "40px 20px",
   };
 
@@ -210,29 +210,16 @@ function CustomerOrder() {
     letterSpacing: "1px",
   };
 
-  const menuCardStyle = {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: "12px",
-    padding: "20px 24px",
-    marginBottom: "16px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    maxWidth: "600px",
-    margin: "0 auto 16px auto",
-  };
-
   const itemNameStyle = {
     color: "#ffffff",
-    fontSize: "1.1rem",
-    fontWeight: "600",
+    fontSize: "1.25rem",
+    fontWeight: "700",
   };
 
   const priceStyle = {
-    color: "#5582fd",
-    fontWeight: "bold",
-    fontSize: "1.1rem",
+    color: "#22c55e",
+    fontWeight: "700",
+    fontSize: "1.2rem",
   };
 
   const quantityContainerStyle = {
@@ -246,8 +233,8 @@ function CustomerOrder() {
     height: "36px",
     border: "none",
     borderRadius: "8px",
-    backgroundColor: "rgba(85, 130, 253, 0.15)",
-    color: "#5582fd",
+    background: "linear-gradient(135deg,#5582fd,#7c97ff)",
+    color: "#fff",
     cursor: "pointer",
     fontSize: "18px",
     fontWeight: "bold",
@@ -261,12 +248,13 @@ function CustomerOrder() {
   };
 
   const cartStyle = {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: "12px",
-    padding: "24px",
-    maxWidth: "600px",
-    margin: "24px auto 0 auto",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "20px",
+    padding: "28px",
+    maxWidth: "700px",
+    margin: "30px auto 0 auto",
   };
 
   const totalStyle = {
@@ -277,7 +265,10 @@ function CustomerOrder() {
 
   const orderButtonStyle = {
     width: "100%",
-    backgroundColor: "#5582fd",
+    background: "linear-gradient(135deg,#5582fd,#7c97ff)",
+    boxShadow: "0 8px 20px rgba(85,130,253,0.35)",
+    padding: "18px",
+    fontSize: "17px",
     color: "white",
     border: "none",
     borderRadius: "10px",
@@ -289,14 +280,64 @@ function CustomerOrder() {
     letterSpacing: "0.5px",
   };
 
+  const menuCardStyle = {
+    backgroundColor: "rgba(255,255,255,0.05)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "16px",
+    padding: "22px 24px",
+    maxWidth: "700px",
+    margin: "0 auto 18px auto",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    transition: "all 0.2s ease",
+  };
+
   return (
     <div style={pageStyle}>
       <div>
         <div>
-          <h1 style={headingStyle}>Menu</h1>
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: "40px",
+            }}
+          >
+            <h1
+              style={{
+                color: "#ffffff",
+                fontSize: "3rem",
+                marginBottom: "10px",
+              }}
+            >
+              🍔 Bitefy
+            </h1>
+
+            <p
+              style={{
+                color: "#94a3b8",
+                marginBottom: "25px",
+              }}
+            >
+              Select your items
+            </p>
+          </div>
 
           {menuItems.map((item) => (
-            <div style={menuCardStyle} key={item.id}>
+            <div
+              key={item.id}
+              style={menuCardStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.borderColor = "#5582fd";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+              }}
+              key={item.id}
+            >
               <span style={itemNameStyle}>{item.name}</span>
               <span style={priceStyle}>₹{item.price}</span>
               <div style={quantityContainerStyle}>
@@ -320,7 +361,32 @@ function CustomerOrder() {
           ))}
 
           <div style={cartStyle}>
-            <h3 style={totalStyle}>Total: ₹{total}</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{
+                  color: "#94a3b8",
+                  fontSize: "1rem",
+                }}
+              >
+                Order Total
+              </span>
+
+              <span
+                style={{
+                  color: "#ffffff",
+                  fontSize: "1.6rem",
+                  fontWeight: "700",
+                }}
+              >
+                ₹{total}
+              </span>
+            </div>
 
             <button
               style={orderButtonStyle}
