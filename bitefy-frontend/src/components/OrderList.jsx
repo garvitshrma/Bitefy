@@ -315,24 +315,40 @@ function OrderList({
                     const token = localStorage.getItem("access_token");
                     const orderId = order.id;
 
-                    // Create removed order record
+                    // 1. FIRST: Update order status to "cancelled"
                     fetch(
-                      `https://bitefy-backend.onrender.com/api/removed-orders/`,
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
                       {
-                        method: "POST",
+                        method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({
-                          order: orderId,
-                          reason: "Staff removed",
+                          status: "cancelled", // ← Update status!
                         }),
                       },
                     )
                       .then(() => {
-                        console.log("✅ Order moved to removed");
-                        // Remove from active orders
+                        // 2. THEN: Create removed order record
+                        return fetch(
+                          `https://bitefy-backend.onrender.com/api/removed-orders/`,
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                              order: orderId,
+                              reason: "Staff removed",
+                            }),
+                          },
+                        );
+                      })
+                      .then(() => {
+                        console.log("✅ Order cancelled and moved to removed");
+                        // 3. THEN: Remove from active orders UI
                         setOrders((prev) =>
                           prev.filter((o) => o.id !== orderId),
                         );
