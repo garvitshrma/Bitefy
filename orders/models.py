@@ -35,3 +35,13 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.name} - ₹{self.total}"
+    
+
+class RemovedOrder(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    removed_at = models.DateTimeField(auto_now_add=True)
+    removed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    reason = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"Removed: {self.order.name}"

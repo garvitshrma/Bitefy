@@ -313,22 +313,34 @@ function OrderList({
                 onClick={() =>
                   handleButtonClick(`remove-${order.id}`, () => {
                     const token = localStorage.getItem("access_token");
+                    const orderId = order.id;
 
-                    updateStatus(order.id, "cancelled").then(() => {
-                      fetch(
-                        `https://bitefy-backend.onrender.com/api/orders/${order.id}/`,
-                        {
-                          method: "DELETE",
-                          headers: { Authorization: `Bearer ${token}` },
+                    // Create removed order record
+                    fetch(
+                      `https://bitefy-backend.onrender.com/api/removed-orders/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
                         },
-                      )
-                        .then(() => {
-                          setOrders((prev) =>
-                            prev.filter((o) => o.id !== order.id),
-                          );
-                        })
-                        .catch((error) => console.log("Error:", error));
-                    });
+                        body: JSON.stringify({
+                          order: orderId,
+                          reason: "Staff removed",
+                        }),
+                      },
+                    )
+                      .then(() => {
+                        console.log("✅ Order moved to removed");
+                        // Remove from active orders
+                        setOrders((prev) =>
+                          prev.filter((o) => o.id !== orderId),
+                        );
+                      })
+                      .catch((error) => {
+                        console.error("Error:", error);
+                        alert("Failed to remove order!");
+                      });
                   })
                 }
               >
