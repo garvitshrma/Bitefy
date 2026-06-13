@@ -4,7 +4,7 @@ from .models import Order, RemovedOrder
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'name', 'items', 'total', 'created_at', 'is_completed', 'status']
+        fields = ['id', 'name', 'items', 'total', 'created_at', 'is_completed', 'order_type']
 
 
 class RemovedOrderSerializer(serializers.ModelSerializer):

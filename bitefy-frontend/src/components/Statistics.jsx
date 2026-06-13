@@ -45,11 +45,9 @@ function Statistics() {
   const avgOrderValue =
     totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
-  const onlineOrders = filtered.filter(
-    (o) => o.payment_method === "online",
-  ).length;
+  const onlineOrders = filtered.filter((o) => o.order_type === "online").length;
   const offlineOrders = filtered.filter(
-    (o) => o.payment_method === "offline",
+    (o) => o.order_type === "offline",
   ).length;
 
   const topContainerStyle = {
