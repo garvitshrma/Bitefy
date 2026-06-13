@@ -37,7 +37,7 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
-    order_source = models.CharField(max_length=20, choices=ORDER_SOURCE_CHOICES, default='offline') 
+    order_type = models.CharField(max_length=20, choices=ORDER_SOURCE_CHOICES, default='offline') 
 
     def __str__(self):
         return f"{self.name} - ₹{self.total}"
