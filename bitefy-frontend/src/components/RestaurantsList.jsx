@@ -9,8 +9,7 @@ function RestaurantList() {
     fetch("https://bitefy-backend.onrender.com/api/public/restaurants/")
       .then((r) => r.json())
       .then((data) => {
-        const activeRestaurants = data.filter((r) => r.is_active === true);
-        setRestaurants(activeRestaurants);
+        setRestaurants(data);
       })
       .catch((error) => console.log("Error:", error));
   }, []);
