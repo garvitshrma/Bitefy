@@ -57,6 +57,8 @@ def place_order(request, slug):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_restaurants(request):
-    restaurants = Restaurant.objects.all()
+    restaurants = Restaurant.objects.filter(
+        is_active=True
+    ).exclude(slug=None).exclude(slug='')
     data = [{'name': r.name, 'slug': r.slug} for r in restaurants]
     return Response(data)

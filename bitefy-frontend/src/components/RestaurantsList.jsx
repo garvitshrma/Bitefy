@@ -8,7 +8,10 @@ function RestaurantList() {
   useEffect(() => {
     fetch("https://bitefy-backend.onrender.com/api/public/restaurants/")
       .then((r) => r.json())
-      .then((data) => setRestaurants(data))
+      .then((data) => {
+        const activeRestaurants = data.filter((r) => r.is_active === true);
+        setRestaurants(activeRestaurants);
+      })
       .catch((error) => console.log("Error:", error));
   }, []);
 
@@ -16,7 +19,7 @@ function RestaurantList() {
     minHeight: "100vh",
     background: "linear-gradient(135deg, #0f172a, #1e293b)",
     padding: "40px 20px",
-      overflowX: "hidden",
+    overflowX: "hidden",
   };
 
   const logoStyle = {
@@ -37,16 +40,16 @@ function RestaurantList() {
   };
 
   const searchStyle = {
-  width: "100%",
-  maxWidth: "600px",
-  display: "block",
-  margin: "0 auto 30px auto",
-  padding: "14px",
-  borderRadius: "12px",
-  border: "none",
-  outline: "none",
-  fontSize: "1rem",
-  boxSizing: "border-box",
+    width: "100%",
+    maxWidth: "600px",
+    display: "block",
+    margin: "0 auto 30px auto",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "none",
+    outline: "none",
+    fontSize: "1rem",
+    boxSizing: "border-box",
   };
 
   const cardStyle = {
@@ -120,18 +123,13 @@ function RestaurantList() {
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.borderColor =
-                "rgba(255,255,255,0.1)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
             }}
           >
             <div>
-              <h3 style={restaurantNameStyle}>
-                🍽️ {restaurant.name}
-              </h3>
+              <h3 style={restaurantNameStyle}>🍽️ {restaurant.name}</h3>
 
-              <div style={restaurantMetaStyle}>
-                Fast Ordering • QR Menu
-              </div>
+              <div style={restaurantMetaStyle}>Fast Ordering • QR Menu</div>
 
               <div
                 style={{
@@ -146,9 +144,7 @@ function RestaurantList() {
 
             <button
               style={buttonStyle}
-              onClick={() =>
-                navigate(`/order/${restaurant.slug}`)
-              }
+              onClick={() => navigate(`/order/${restaurant.slug}`)}
             >
               🍴 Order Now
             </button>
