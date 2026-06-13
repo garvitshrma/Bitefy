@@ -10,6 +10,11 @@ class Order(models.Model):
         ('cancelled', 'cancelled')
     ]
 
+    ORDER_SOURCE_CHOICES = [
+        ('online', 'Online'),      
+        ('offline', 'Offline'),    
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -32,6 +37,7 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
+    order_source = models.CharField(max_length=20, choices=ORDER_SOURCE_CHOICES, default='offline') 
 
     def __str__(self):
         return f"{self.name} - ₹{self.total}"

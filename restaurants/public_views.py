@@ -44,7 +44,8 @@ def place_order(request, slug):
         restaurant=restaurant,
         name=name,
         items=items,
-        total=total
+        total=total,
+        order_type='online'
     )
 
     return Response({

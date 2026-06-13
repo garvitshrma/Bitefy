@@ -45,6 +45,13 @@ function Statistics() {
   const avgOrderValue =
     totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
+  const onlineOrders = filtered.filter(
+    (o) => o.payment_method === "online",
+  ).length;
+  const offlineOrders = filtered.filter(
+    (o) => o.payment_method === "offline",
+  ).length;
+
   const topContainerStyle = {
     display: "flex",
     width: "100%",
@@ -76,7 +83,7 @@ function Statistics() {
     width: "80px",
     border: "none",
     borderRadius: "5px",
-    cursor: 'pointer'
+    cursor: "pointer",
   };
 
   const filterStyle = {
@@ -178,6 +185,16 @@ function Statistics() {
         <div style={statCardStyle}>
           <div style={statLabelStyle}>Avg Order Value</div>
           <div style={statValueStyle}>₹{avgOrderValue}</div>
+        </div>
+
+        <div style={statCardStyle}>
+          <div style={statLabelStyle}>Online Orders</div>
+          <div style={statValueStyle}>{onlineOrders}</div>
+        </div>
+
+        <div style={statCardStyle}>
+          <div style={statLabelStyle}>Offline Orders</div>
+          <div style={statValueStyle}>{offlineOrders}</div>
         </div>
       </div>
     </div>
