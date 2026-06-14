@@ -6,6 +6,19 @@ import preparingAnimation from "./coffee.json";
 import readyAnimation from "./food-truck.json";
 import cancelAnimation from "./cancel.json";
 
+// ── Design tokens (matches the app) ────────────────────────
+const C = {
+  bg: "#FBF8F4",
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  accentDeep: "#E8722A",
+  accentTint: "#FFF1E6",
+  green: "#3DAA6D",
+};
+
 function CustomerOrder() {
   const { slug } = useParams();
   const [menuItems, setMenuItems] = useState([]);
@@ -63,73 +76,94 @@ function CustomerOrder() {
     }));
   };
 
-  const backgroundStyle = {
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
-  };
-
   const statusText = {
     pending: "Order Received",
     placed: "Waiting for Confirmation",
     preparing: "Preparing Your Food",
     ready: "Ready for Pickup",
-    cancelled: 'We are sorry, your order has been cancelled.'
+    cancelled: "We are sorry, your order has been cancelled.",
   };
 
-  if (isLoading) return <p>Loading menu...</p>;
+  // ── shared styles ────────────────────────────────────────
+  const pageStyle = {
+    minHeight: "100vh",
+    background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
+    padding: "40px 20px",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    color: C.ink,
+    boxSizing: "border-box",
+  };
+
+  if (isLoading)
+    return (
+      <div
+        style={{
+          ...pageStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <p style={{ color: C.muted, fontSize: "16px" }}>Loading menu…</p>
+      </div>
+    );
 
   if (orderPlaced)
     return (
       <div
         style={{
           minHeight: "100vh",
-          background: "linear-gradient(135deg,#0f172a,#1e293b)",
+          background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           padding: "20px",
+          boxSizing: "border-box",
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         }}
       >
         <div
           style={{
             width: "100%",
             maxWidth: "500px",
-            background: "white",
+            background: C.surface,
             borderRadius: "24px",
             padding: "32px",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            border: `1px solid ${C.border}`,
+            boxShadow: "0 20px 50px rgba(42,33,24,0.12)",
             textAlign: "center",
-            transition: "all 0.15s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-10px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
           }}
         >
           <h1
             style={{
               fontSize: "2rem",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
               marginBottom: "10px",
-              color: "#f97316",
+              color: C.accentDeep,
             }}
           >
             🎉 Order Placed!
           </h1>
           <p
             style={{
-              color: "#64748b",
+              color: C.muted,
               marginBottom: "20px",
+              fontWeight: 600,
             }}
           >
             {placedOrder?.order_number}
           </p>
-          <h2>{statusText[orderStatus] || orderStatus}</h2>
+          <h2 style={{ color: C.ink, fontSize: "1.3rem", fontWeight: 700 }}>
+            {statusText[orderStatus] || orderStatus}
+          </h2>
           <div>
-            <h3>Order Summary:</h3>
+            <h3 style={{ color: C.ink, marginTop: "24px" }}>Order Summary</h3>
             {placedOrder?.items?.map((item, index) => (
               <div key={index}>
-                <p>
+                <p style={{ color: C.muted }}>
                   {item.name} x {item.quantity} - ₹{item.price * item.quantity}
                 </p>
               </div>
@@ -138,7 +172,7 @@ function CustomerOrder() {
             <hr
               style={{
                 border: "none",
-                borderTop: "1px solid #a0a2a6",
+                borderTop: `1px solid ${C.border}`,
                 margin: "16px 0",
               }}
             />
@@ -150,7 +184,7 @@ function CustomerOrder() {
                 fontWeight: "bold",
               }}
             >
-              <h3>Total: ₹{placedOrder?.total}</h3>
+              <h3 style={{ color: C.accentDeep }}>Total: ₹{placedOrder?.total}</h3>
             </div>
           </div>
           {orderStatus == "placed" && (
@@ -192,7 +226,6 @@ function CustomerOrder() {
                 margin: "0 auto",
               }}
             />
-            
           )}
 
           {orderStatus == "cancelled" && (
@@ -204,135 +237,125 @@ function CustomerOrder() {
                 margin: "0 auto",
               }}
             />
-            
           )}
         </div>
       </div>
     );
 
-  const pageStyle = {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg,#0f172a,#1e293b)",
-    padding: "40px 20px",
-  };
-
-  const headingStyle = {
-    color: "#ffffff",
-    fontSize: "2rem",
-    fontWeight: "700",
-    marginBottom: "30px",
-    textAlign: "center",
-    letterSpacing: "1px",
-  };
-
+  // ── menu view styles ─────────────────────────────────────
   const itemNameStyle = {
-    color: "#ffffff",
-    fontSize: "1.25rem",
-    fontWeight: "700",
+    color: C.ink,
+    fontSize: "1.1rem",
+    fontWeight: 700,
   };
 
   const priceStyle = {
-    color: "#22c55e",
-    fontWeight: "700",
-    fontSize: "1.2rem",
+    color: C.accentDeep,
+    fontWeight: 700,
+    fontSize: "1rem",
+    marginTop: "4px",
   };
 
   const quantityContainerStyle = {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: "12px",
   };
 
   const quantityButtonStyle = {
-    width: "36px",
-    height: "36px",
+    width: "40px",
+    height: "40px",
     border: "none",
-    borderRadius: "8px",
-    background: "linear-gradient(135deg,#5582fd,#7c97ff)",
+    borderRadius: "10px",
+    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
     color: "#fff",
     cursor: "pointer",
-    fontSize: "18px",
+    fontSize: "20px",
     fontWeight: "bold",
+    boxShadow: "0 4px 10px rgba(255,140,66,0.28)",
   };
 
   const quantityTextStyle = {
-    color: "#ffffff",
-    minWidth: "20px",
+    color: C.ink,
+    minWidth: "22px",
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: 700,
+    fontSize: "16px",
   };
 
   const cartStyle = {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
     borderRadius: "20px",
-    padding: "28px",
+    padding: "26px",
     maxWidth: "700px",
     margin: "30px auto 0 auto",
-  };
-
-  const totalStyle = {
-    color: "#ffffff",
-    fontSize: "1.3rem",
-    fontWeight: "700",
+    boxShadow: "0 10px 30px rgba(42,33,24,0.06)",
   };
 
   const orderButtonStyle = {
     width: "100%",
-    background: "linear-gradient(135deg,#5582fd,#7c97ff)",
-    boxShadow: "0 8px 20px rgba(85,130,253,0.35)",
-    padding: "18px",
+    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+    boxShadow: "0 8px 20px rgba(255,140,66,0.32)",
     fontSize: "17px",
     color: "white",
     border: "none",
-    borderRadius: "10px",
-    padding: "15px",
-    fontSize: "16px",
-    fontWeight: "bold",
+    borderRadius: "12px",
+    padding: "16px",
+    fontWeight: 700,
     cursor: "pointer",
-    marginTop: "16px",
-    letterSpacing: "0.5px",
+    marginTop: "18px",
+    letterSpacing: "0.3px",
   };
 
   const menuCardStyle = {
-    backgroundColor: "rgba(255,255,255,0.05)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
     borderRadius: "16px",
-    padding: "22px 24px",
+    padding: "18px 22px",
     maxWidth: "700px",
-    margin: "0 auto 18px auto",
+    margin: "0 auto 14px auto",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    transition: "all 0.2s ease",
+    gap: "16px",
+    transition: "all 0.18s ease",
   };
 
   return (
     <div style={pageStyle}>
+      <style>{`
+        .bf-menucard:hover { transform: translateY(-3px);
+          box-shadow: 0 10px 26px rgba(42,33,24,0.08);
+          border-color: ${C.accent} !important; }
+        .bf-qty:active { transform: scale(0.92); }
+        .bf-place:active { transform: scale(0.99); }
+      `}</style>
+
       <div>
         <div>
           <div
             style={{
               textAlign: "center",
-              marginBottom: "40px",
+              marginBottom: "36px",
             }}
           >
             <h1
               style={{
-                color: "#ffffff",
-                fontSize: "3rem",
-                marginBottom: "10px",
+                color: C.accentDeep,
+                fontSize: "clamp(30px, 7vw, 44px)",
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                marginBottom: "8px",
               }}
             >
-              🍔 Bitefy
+              <i className="fa-solid fa-burger"></i> Bitefy
             </h1>
 
             <p
               style={{
-                color: "#94a3b8",
-                marginBottom: "25px",
+                color: C.muted,
+                fontWeight: 600,
               }}
             >
               Select your items
@@ -340,23 +363,14 @@ function CustomerOrder() {
           </div>
 
           {menuItems.map((item) => (
-            <div
-              key={item.id}
-              style={menuCardStyle}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.borderColor = "#5582fd";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-              }}
-              key={item.id}
-            >
-              <span style={itemNameStyle}>{item.name}</span>
-              <span style={priceStyle}>₹{item.price}</span>
+            <div key={item.id} className="bf-menucard" style={menuCardStyle}>
+              <div>
+                <div style={itemNameStyle}>{item.name}</div>
+                <div style={priceStyle}>₹{item.price}</div>
+              </div>
               <div style={quantityContainerStyle}>
                 <button
+                  className="bf-qty"
                   style={quantityButtonStyle}
                   onClick={() => decreaseQty(item)}
                 >
@@ -366,6 +380,7 @@ function CustomerOrder() {
                   {quantities[item.id] || 0}
                 </span>
                 <button
+                  className="bf-qty"
                   style={quantityButtonStyle}
                   onClick={() => increaseQty(item)}
                 >
@@ -385,8 +400,9 @@ function CustomerOrder() {
             >
               <span
                 style={{
-                  color: "#94a3b8",
+                  color: C.muted,
                   fontSize: "1rem",
+                  fontWeight: 600,
                 }}
               >
                 Order Total
@@ -394,9 +410,10 @@ function CustomerOrder() {
 
               <span
                 style={{
-                  color: "#ffffff",
+                  color: C.ink,
                   fontSize: "1.6rem",
-                  fontWeight: "700",
+                  fontWeight: 800,
+                  letterSpacing: "-0.02em",
                 }}
               >
                 ₹{total}
@@ -404,6 +421,7 @@ function CustomerOrder() {
             </div>
 
             <button
+              className="bf-place"
               style={orderButtonStyle}
               onClick={() => {
                 const items = menuItems

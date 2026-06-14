@@ -1,8 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// ── Design tokens (matches the app) ────────────────────────
+const C = {
+  bg: "#FBF8F4",
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  accentDeep: "#E8722A",
+  accentTint: "#FFF1E6",
+  green: "#3DAA6D",
+};
+
 function RestaurantList() {
   const [restaurants, setRestaurants] = useState([]);
+  const [search, setSearch] = useState(""); // ← new: drives the search box
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,138 +28,175 @@ function RestaurantList() {
       .catch((error) => console.log("Error:", error));
   }, []);
 
+  // client-side filter — purely frontend, no backend involved
+  const filtered = restaurants.filter((r) =>
+    (r.name || "").toLowerCase().includes(search.toLowerCase()),
+  );
+
+  // ── styles ───────────────────────────────────────────────
   const pageStyle = {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0f172a, #1e293b)",
-    padding: "40px 20px",
+    background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
+    padding: "48px 20px",
     overflowX: "hidden",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    color: C.ink,
   };
 
-  const logoStyle = {
-    textAlign: "center",
-    marginBottom: "40px",
-  };
+  const logoWrap = { textAlign: "center", marginBottom: "32px" };
 
   const headingStyle = {
-    color: "#ffffff",
-    fontSize: "3rem",
-    fontWeight: "700",
-    marginBottom: "10px",
+    color: C.accentDeep,
+    fontSize: "clamp(32px, 7vw, 44px)",
+    fontWeight: 800,
+    letterSpacing: "-0.02em",
+    margin: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "12px",
   };
 
   const subtitleStyle = {
-    color: "#94a3b8",
-    fontSize: "1rem",
+    color: C.muted,
+    fontSize: "14px",
+    fontWeight: 600,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    marginTop: "10px",
   };
 
   const searchStyle = {
     width: "100%",
     maxWidth: "600px",
     display: "block",
-    margin: "0 auto 30px auto",
-    padding: "14px",
+    margin: "0 auto 36px auto",
+    padding: "15px 18px",
     borderRadius: "12px",
-    border: "none",
+    border: `1px solid ${C.border}`,
     outline: "none",
-    fontSize: "1rem",
+    fontSize: "15px",
     boxSizing: "border-box",
+    background: C.surface,
+    color: C.ink,
   };
 
   const cardStyle = {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
     borderRadius: "16px",
-    padding: "24px",
+    padding: "22px 24px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "18px",
     maxWidth: "700px",
-    margin: "0 auto 18px auto",
-    transition: "all 0.2s ease",
+    margin: "0 auto 16px auto",
+    transition: "all 0.18s ease",
   };
 
   const restaurantNameStyle = {
-    color: "#ffffff",
-    fontSize: "1.2rem",
-    fontWeight: "700",
-    marginBottom: "8px",
+    color: C.ink,
+    fontSize: "19px",
+    fontWeight: 700,
+    margin: 0,
   };
 
   const restaurantMetaStyle = {
-    color: "#94a3b8",
-    fontSize: "0.9rem",
+    color: C.muted,
+    fontSize: "13px",
+    marginTop: "6px",
   };
 
   const buttonStyle = {
-    background: "#5582fd",
+    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
     color: "#ffffff",
     border: "none",
     borderRadius: "12px",
-    padding: "14px 24px",
-    fontSize: "0.95rem",
-    fontWeight: "700",
+    padding: "13px 22px",
+    fontSize: "15px",
+    fontWeight: 700,
     cursor: "pointer",
-    // boxShadow: "0 6px 18px rgba(85,130,253,0.35)",
+    whiteSpace: "nowrap",
+    boxShadow: "0 6px 16px rgba(255,140,66,0.28)",
   };
 
   return (
     <div style={pageStyle}>
-      <div style={logoStyle}>
-        <h1 style={headingStyle}>🍔 Bitefy</h1>
+      <style>{`
+        .bf-search:focus { border-color: ${C.accent} !important; }
+        .bf-rcard:hover { transform: translateY(-3px);
+          box-shadow: 0 10px 26px rgba(42,33,24,0.08);
+          border-color: ${C.accent} !important; }
+        .bf-order:active { transform: scale(0.97); }
+        @media (max-width: 560px) {
+          .bf-rcard { flex-direction: column; align-items: stretch !important;
+            text-align: left; }
+          .bf-rcard .bf-order { width: 100%; }
+        }
+      `}</style>
+
+      <div style={logoWrap}>
+        <h1 style={headingStyle}>
+          <i className="fa-solid fa-burger"></i> Bitefy
+        </h1>
         <p style={subtitleStyle}>Scan • Order • Enjoy</p>
       </div>
 
       <input
         type="text"
+        className="bf-search"
         placeholder="🔍 Search restaurants..."
         style={searchStyle}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
-      {restaurants.length === 0 ? (
+      {filtered.length === 0 ? (
         <div
           style={{
             textAlign: "center",
-            color: "#94a3b8",
+            color: C.muted,
             marginTop: "50px",
+            fontSize: "16px",
           }}
         >
-          🍽️ No restaurants available
+          {restaurants.length === 0
+            ? "🍽️ No restaurants available yet"
+            : "No restaurants match your search"}
         </div>
       ) : (
-        restaurants.map((restaurant) => (
-          <div
-            key={restaurant.slug}
-            style={cardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.borderColor = "#5582fd";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-            }}
-          >
+        filtered.map((restaurant) => (
+          <div key={restaurant.slug} className="bf-rcard" style={cardStyle}>
             <div>
-              <h3 style={restaurantNameStyle}>🍽️ {restaurant.name}</h3>
+              <h3 style={restaurantNameStyle}>{restaurant.name}</h3>
 
-              <div style={restaurantMetaStyle}>Fast Ordering • QR Menu</div>
+              <div style={restaurantMetaStyle}>Fast ordering • QR menu</div>
 
               <div
                 style={{
-                  color: "#cbd5e1",
-                  fontSize: "0.85rem",
+                  color: C.ink,
+                  fontSize: "13px",
                   marginTop: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
                 }}
               >
-                ⭐ 4.5 • 🕒 10-15 mins
+                <span style={{ color: C.accentDeep, fontWeight: 700 }}>
+                  ⭐ 4.5
+                </span>
+                <span style={{ color: C.muted }}>🕒 10–15 mins</span>
               </div>
             </div>
 
             <button
+              className="bf-order"
               style={buttonStyle}
               onClick={() => navigate(`/order/${restaurant.slug}`)}
             >
-              🍴 Order Now
+              Order Now
             </button>
           </div>
         ))

@@ -1,224 +1,265 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bg from "../assets/bg.png";
+import bg from "../assets/bg.png"; // now unused — safe to delete if you like
+
+// ── Design tokens (matches the app) ────────────────────────
+const C = {
+  bg: "#FBF8F4",
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  accentDeep: "#E8722A",
+  accentTint: "#FFF1E6",
+  green: "#3DAA6D",
+};
 
 function LandingPage() {
   const navigate = useNavigate();
 
-  const headerstyle = {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "#ffffff",
-    borderBottom: "0.1px solid #41414199",
-  };
-
-  const aboveCardsTextStyle = {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    alignItems: "center",
-    maxWidth: "800px",
-    margin: "60px auto 0 auto",
-    textAlign: "center",
-    padding: "0 20px",
-    marginTop: "100px",
-  };
-
+  // ── styles ───────────────────────────────────────────────
   const mainStyle = {
-    backgroundColor: "#f4f8fe",
     minHeight: "100vh",
-    paddingBottom: "40px",
-    backgroundImage: `url(${bg})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    padding: "0",
-    margin: "0",
-    backgroundImage: `url(${bg}`,
-  };
-
-  const cardsContainerStyle = {
-    display: "flex",
-    justifyContent: "center",
-    gap: "30px", // Space between cards
-    marginTop: "16px",
-    padding: "20px",
-    flexWrap: "wrap",
-  };
-
-  const cardStyle = {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "30px",
-    width: "100%",
-    maxWidth: "400px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
-  };
-
-  const custbuttonStyle = {
-    backgroundColor: "#5582fd",
-    color: "white",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "16px",
-    fontWeight: "bold",
-    marginTop: "20px",
-  };
-
-  const restbuttonStyle = {
-    backgroundColor: "#00a410",
-    color: "white",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "16px",
-    fontWeight: "bold",
-    marginTop: "20px",
-  };
-
-  const threePointStyle = {
-    display: "flex",
-    flexDirection: "column",
-    margin: "0",
-    padding: "0",
-    alignItems: "flex-start",
-    textAlign: "left",
-    marginTop: "25px",
-    marginBottom: "20px",
-  };
-
-  const defaultPaddingMarginStyle = {
     margin: 0,
-    padding: 0,
+    background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    color: C.ink,
   };
 
-  const customerImageStyle = {
-    width: "60px",
-    height: "60px",
-    backgroundColor: "#e8f0ff", // Light blue background
-    borderRadius: "50%", // Makes it circular
+  const navStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px 28px",
+    background: C.surface,
+    borderBottom: `1px solid ${C.border}`,
+  };
+
+  const logoStyle = {
+    fontSize: "24px",
+    fontWeight: 800,
+    letterSpacing: "-0.02em",
+    color: C.accentDeep,
+    margin: 0,
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  };
+
+  const navLinkStyle = {
+    background: "transparent",
+    border: "none",
+    color: C.muted,
+    fontSize: "14px",
+    fontWeight: 600,
+    cursor: "pointer",
+  };
+
+  const heroStyle = {
+    maxWidth: "760px",
+    margin: "0 auto",
+    textAlign: "center",
+    padding: "72px 20px 40px",
+  };
+
+  const eyebrow = {
+    textTransform: "uppercase",
+    letterSpacing: "0.12em",
+    fontSize: "12px",
+    fontWeight: 700,
+    color: C.accentDeep,
+    margin: 0,
+  };
+
+  const heroTitle = {
+    fontSize: "clamp(34px, 7vw, 56px)",
+    fontWeight: 800,
+    letterSpacing: "-0.03em",
+    lineHeight: 1.05,
+    margin: "14px 0 0",
+  };
+
+  const heroSub = {
+    fontSize: "clamp(16px, 2.5vw, 19px)",
+    color: C.muted,
+    maxWidth: "540px",
+    margin: "18px auto 0",
+    lineHeight: 1.5,
+  };
+
+  const primaryCta = {
+    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+    color: "white",
+    border: "none",
+    padding: "16px 34px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "17px",
+    fontWeight: 700,
+    marginTop: "28px",
+    boxShadow: "0 10px 24px rgba(255,140,66,0.32)",
+  };
+
+  const featureRow = {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-    margin: "0 auto", // Centers the circle itself
-    marginBottom: "25px",
-    color: "#2761ff",
+    gap: "14px",
+    flexWrap: "wrap",
+    marginTop: "44px",
   };
 
-  const restaurantImageStyle = {
-    width: "60px",
-    height: "60px",
-    backgroundColor: "#1dcf2948", // Light blue background
-    borderRadius: "50%", // Makes it circular
+  const featureChip = {
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    margin: "0 auto", // Centers the circle itself
-    marginBottom: "25px",
-    color: "#00a410",
+    gap: "10px",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
+    borderRadius: "999px",
+    padding: "10px 18px",
+    fontSize: "14px",
+    fontWeight: 600,
+    color: C.ink,
   };
 
-  const resticonsStyle = {
-    color: "#00a410",
+  const chipIcon = {
+    color: C.accentDeep,
+    fontSize: "14px",
   };
 
-  const custiconsStyle = {
-    color: "#2761ff",
+  // restaurant band (secondary)
+  const restBand = {
+    maxWidth: "880px",
+    margin: "20px auto 60px",
+    padding: "26px 28px",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
+    borderRadius: "18px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "20px",
+  };
+
+  const restIconCircle = {
+    width: "48px",
+    height: "48px",
+    minWidth: "48px",
+    borderRadius: "12px",
+    background: "#E7F5EC",
+    color: C.green,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "20px",
+  };
+
+  const restCta = {
+    background: "transparent",
+    color: C.accentDeep,
+    border: `1.5px solid ${C.accent}`,
+    padding: "12px 22px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontWeight: 700,
+    whiteSpace: "nowrap",
   };
 
   return (
     <div style={mainStyle}>
-      <div style={headerstyle}>
-        <h2
-          style={{
-            fontSize: "clamp(28px, 6vw, 40px)",
-            padding: "0",
-            margin: "0",
-            paddingTop: "10px",
-            paddingBottom: "10px",
-          }}
-        >
-          <i class="fa-solid fa-burger"></i> Bitefy
+      <style>{`
+        .bf-cta:active { transform: scale(0.98); }
+        .bf-navlink:hover { color: ${C.ink} !important; }
+        @media (max-width: 640px) {
+          .bf-restband {
+            flex-direction: column;
+            align-items: flex-start !important;
+            text-align: left;
+          }
+          .bf-restband .bf-restcta { width: 100%; }
+        }
+      `}</style>
+
+      {/* Top nav */}
+      <div style={navStyle}>
+        <h2 style={logoStyle}>
+          <i className="fa-solid fa-burger"></i> Bitefy
         </h2>
+        <button
+          className="bf-navlink"
+          style={navLinkStyle}
+          onClick={() => navigate("/auth")}
+        >
+          For restaurants →
+        </button>
       </div>
 
-      <div style={aboveCardsTextStyle}>
-        <h3 style={defaultPaddingMarginStyle}>
-          Your Complete Restaurant Solution
-        </h3>
-        <p style={defaultPaddingMarginStyle}>
-          Whether you're managing a restaurant or looking for your next great
-          meal, Bitefy connects diners with exceptional dining experiences.
+      {/* Hero — customer focused */}
+      <div style={heroStyle}>
+        <p style={eyebrow}>Order ahead, skip the wait</p>
+        <h1 style={heroTitle}>Great food from the spots near you</h1>
+        <p style={heroSub}>
+          Browse menus, place your order, and pick it up the moment it's ready.
+          No queues, no waiting around.
         </p>
+        <button
+          className="bf-cta"
+          style={primaryCta}
+          onClick={() => (window.location.href = "/restaurants")}
+        >
+          Browse restaurants
+        </button>
+
+        <div style={featureRow}>
+          <div style={featureChip}>
+            <i className="fa-solid fa-magnifying-glass" style={chipIcon}></i>
+            Search local restaurants
+          </div>
+          <div style={featureChip}>
+            <i className="fa-solid fa-utensils" style={chipIcon}></i>
+            Browse menus &amp; prices
+          </div>
+          <div style={featureChip}>
+            <i className="fa-solid fa-arrow-trend-up" style={chipIcon}></i>
+            Personalized picks
+          </div>
+        </div>
       </div>
 
-      <div style={cardsContainerStyle}>
-        {/* Customer Card */}
-        <div style={cardStyle}>
-          <h1 style={customerImageStyle}>
-            <i class="fa-solid fa-users"></i>
-          </h1>
-          <h3>I'm a Customer</h3>
-          <p>
-            Discover amazing restaurants, browse menus, and enjoy personalized
-            recommendations
-          </p>
-          <div style={threePointStyle}>
-            <p style={defaultPaddingMarginStyle}>
-              <i
-                style={custiconsStyle}
-                class="fa-solid fa-magnifying-glass"
-              ></i>{" "}
-              Search local restaurants
-            </p>
-            <p style={defaultPaddingMarginStyle}>
-              <i style={custiconsStyle} class="fa-solid fa-utensils"></i> Browse
-              menus & prices
-            </p>
-            <p style={defaultPaddingMarginStyle}>
-              <i style={custiconsStyle} class="fa-solid fa-arrow-trend-up"></i>{" "}
-              Get personalized recommendations
+      {/* Restaurant band — secondary */}
+      <div className="bf-restband" style={restBand}>
+        <div
+          style={{ display: "flex", alignItems: "center", gap: "16px" }}
+        >
+          <div style={restIconCircle}>
+            <i className="fa-solid fa-champagne-glasses"></i>
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700 }}>
+              Run a restaurant?
+            </h3>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontSize: "14px",
+                color: C.muted,
+                lineHeight: 1.45,
+              }}
+            >
+              Manage your order queue, menu, and sales analytics — all in one
+              dashboard.
             </p>
           </div>
-          <button
-            style={custbuttonStyle}
-            onClick={() => (window.location.href = "/restaurants")}
-          >
-            Continue as Customer
-          </button>
         </div>
-
-        {/* Restaurant Card */}
-        <div style={cardStyle}>
-          <h1 style={restaurantImageStyle}>
-            <i class="fa-solid fa-champagne-glasses"></i>
-          </h1>
-          <h3>I'm a Restaurant</h3>
-          <p>
-            Powerful management tools to streamline operations and grow your
-            business
-          </p>
-          <div style={threePointStyle}>
-            <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-regular fa-clock"></i> Manage
-              order queue
-            </p>
-            <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-solid fa-utensils"></i> Update
-              menu & pricing
-            </p>
-            <p style={defaultPaddingMarginStyle}>
-              <i style={resticonsStyle} class="fa-solid fa-arrow-trend-up"></i>{" "}
-              Track sales & analytics
-            </p>
-          </div>
-          <button onClick={() => navigate("/auth")} style={restbuttonStyle}>
-            Continue as Restaurant
-          </button>
-        </div>
+        <button
+          className="bf-cta bf-restcta"
+          style={restCta}
+          onClick={() => navigate("/auth")}
+        >
+          Continue as restaurant
+        </button>
       </div>
     </div>
   );
