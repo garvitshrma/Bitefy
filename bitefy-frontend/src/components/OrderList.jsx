@@ -237,7 +237,12 @@ function OrderList({
                 loop={true}
                 style={{ width: 200 }}
               />
-              <p>No Orders</p>
+              <p
+              style={{
+                fontSize: '25px',
+                weight: '900',
+                marginTop:'0px'
+              }}>No Orders</p>
             </div>
           )}
           {orders.map((order, index) => (
