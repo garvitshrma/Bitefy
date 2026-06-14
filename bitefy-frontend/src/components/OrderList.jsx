@@ -43,6 +43,29 @@ function OrderList({
     ).then((r) => r.json());
   };
 
+  const togglePaymentStatus = (orderId, currentStatus) => {
+    const token = localStorage.getItem("access_token");
+
+    fetch(`https://bitefy-backend.onrender.com/api/orders/${orderId}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        is_paid: !currentStatus, // ← Toggle!
+      }),
+    })
+      .then(() => {
+        // Update order in state
+        const updatedOrders = orders.map((o, i) =>
+          o.id === orderId ? { ...o, is_paid: !currentStatus } : o,
+        );
+        setOrders(updatedOrders);
+      })
+      .catch((error) => console.log("Error:", error));
+  };
+
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -260,6 +283,22 @@ function OrderList({
                 🕐 {formatTime(order.created_at)} | 📅{" "}
                 {formatDate(order.created_at)}
               </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "10px",
+                  padding: "10px",
+                  backgroundColor: order.is_paid ? "#d4edda" : "#f8d7da",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  width: '8%'
+                }}
+                onClick={() => togglePaymentStatus(order.id, order.is_paid)}
+              >
+                <span>{order.is_paid ? "✅ PAID" : "❌ NOT PAID"}</span>
+              </div>
               <button
                 style={{
                   ...printButtonStyle,
