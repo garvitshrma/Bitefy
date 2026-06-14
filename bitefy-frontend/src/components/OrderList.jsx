@@ -382,12 +382,11 @@ function OrderList({
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={() =>
                   handleButtonClick(`prepare-${order.id}`, () => {
-                    const orderId = orders[index].id;
+                    const orderId = order.id;
                     const token = localStorage.getItem("access_token");
-                    updateStatus(order.id, "preparing");
 
                     fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
                       {
                         method: "PATCH",
                         headers: {
@@ -397,9 +396,8 @@ function OrderList({
                         body: JSON.stringify({ status: "preparing" }),
                       },
                     ).then(() => {
-                      // Update order in state
-                      const updatedOrders = orders.map((o, i) =>
-                        i === index ? { ...o, status: "preparing" } : o,
+                      const updatedOrders = orders.map((o) =>
+                        o.id === orderId ? { ...o, status: "preparing" } : o,
                       );
                       setOrders(updatedOrders);
                     });
