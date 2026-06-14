@@ -1,8 +1,23 @@
 import { useState, useEffect } from "react";
-import bg from "../assets/bg.png";
+import bg from "../assets/bg.png"; // now unused — safe to delete if you want
 import nothingAnimation from "./trolley.json";
 import Lottie from "lottie-react";
 import { printOrder } from "../utils/printReceipt";
+
+// ── Design tokens (matches Statistics, History, Menu) ──────
+const C = {
+  bg: "#FBF8F4",
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  accentDeep: "#E8722A",
+  accentTint: "#FFF1E6",
+  green: "#3DAA6D",
+  greenTint: "#E7F5EC",
+  blue: "#3B82C4",
+};
 
 function OrderList({
   selectedItems,
@@ -45,140 +60,79 @@ function OrderList({
     ).then((r) => r.json());
   };
 
+  // ── presentation helpers ─────────────────────────────────
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
     overflowY: "auto",
-    // padding: "20px",
-    backgroundColor: "#ffffff",
+    background: C.bg,
     borderRadius: "10px",
     marginLeft: "10px",
     marginBottom: "10px",
     width: "80%",
     flex: 1,
-    backgroundImage: `url(${bg}`,
+    padding: "24px 26px",
+    boxSizing: "border-box",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    color: C.ink,
+  };
+
+  const eyebrow = {
+    textTransform: "uppercase",
+    letterSpacing: "0.09em",
+    fontSize: "11px",
+    fontWeight: 700,
+    color: C.muted,
+    margin: 0,
   };
 
   const orderBoxStyle = {
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    padding: "15px",
-    marginRight: "15px",
-    marginBottom: "10px",
-    backgroundColor: "#fcf8c8",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    background: C.surface,
+    border: `1px solid ${C.border}`,
+    borderRadius: "16px",
+    padding: "18px 20px",
+    marginBottom: "14px",
+    boxShadow: "0 1px 3px rgba(42,33,24,0.04)",
   };
 
   const customerNameStyle = {
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#2c3e50",
-    margin: "5px 0",
+    fontSize: "17px",
+    fontWeight: 700,
+    color: C.ink,
+    margin: 0,
   };
 
   const itemsStyle = {
     fontSize: "14px",
-    fontWeight: "normal",
-    color: "#666",
-    margin: "5px 0",
+    color: C.muted,
+    margin: "10px 0",
+    lineHeight: 1.5,
   };
 
   const totalStyle = {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#FF8C42",
-    margin: "5px 0",
+    fontSize: "18px",
+    fontWeight: 800,
+    color: C.accentDeep,
+    letterSpacing: "-0.02em",
+    margin: 0,
   };
 
-  const printButtonStyle = {
-    backgroundColor: "#FF8C42",
+  // shared button base
+  const btnBase = {
     color: "white",
     border: "none",
-    padding: "10px 20px",
-    borderRadius: "8px",
+    padding: "9px 18px",
+    borderRadius: "10px",
     cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "14px",
-    marginTop: "10px",
-    marginLeft: "10px",
+    fontWeight: 700,
+    fontSize: "12.5px",
+    letterSpacing: "0.04em",
   };
-
-  const formStyle = {
-    backgroundColor: "#ffffff",
-    padding: "15px",
-    borderRadius: "8px",
-    marginBottom: "20px",
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    boxSizing: "border-box",
-    fontSize: "14px",
-  };
-
-  const selectedItemsStyle = {
-    marginBottom: "10px",
-    color: "#2c3e50",
-    fontSize: "14px",
-    fontWeight: "500",
-  };
-
-  const addOrderButtonStyle = {
-    backgroundColor: "#FF8C42",
-    color: "white",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "16px",
-  };
-
-  const deleteButtonStyle = {
-    backgroundColor: "#e74c3c",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "14px",
-    marginTop: "10px",
-    marginLeft: "10px",
-    transition: "all 0.2s ease",
-  };
-
-  const preparingButtonStyle = {
-    backgroundColor: "#b522de",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "14px",
-    marginTop: "10px",
-    marginLeft: "10px",
-    transition: "all 0.2s ease",
-  };
-
-  const completeButtonStyle = {
-    backgroundColor: "#27ae60",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "14px",
-    marginTop: "10px",
-    marginLeft: "10px",
-    transition: "all 0.2s ease",
-  };
+  const printButtonStyle = { ...btnBase };
+  const deleteButtonStyle = { ...btnBase };
+  const preparingButtonStyle = { ...btnBase };
+  const completeButtonStyle = { ...btnBase };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -204,22 +158,38 @@ function OrderList({
     return "#fcf8c8";
   };
 
+  // accent + label for the status strip/badge (display only)
+  const statusAccent = (status) => {
+    if (status === "preparing") return { bar: C.blue, label: "Preparing" };
+    if (status === "completed") return { bar: C.green, label: "Ready" };
+    return { bar: C.accent, label: "New" };
+  };
+
   return (
     <div style={containerStyle}>
+      <style>{`
+        .bf-order { transition: transform .15s ease, box-shadow .15s ease; }
+        .bf-order:hover { box-shadow: 0 6px 20px rgba(42,33,24,0.08); }
+      `}</style>
+
       {activeTab === "order" && (
         <div>
-          <h4
+          {/* Header */}
+          <p style={eyebrow}>Live queue</p>
+          <h1
             style={{
-              color: "#000000",
-              fontSize: "20px",
-              marginTop: "10px",
-              marginBottom: "0px",
+              margin: "4px 0 2px",
+              fontSize: "26px",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
             }}
           >
             Order Queue
-          </h4>
+          </h1>
+          <p style={{ marginTop: "2px", color: C.muted, fontSize: "14px" }}>
+            Drag orders to adjust priority
+          </p>
 
-          <p style={{ marginTop: "5px" }}>Drag orders to adjust priority</p>
           {orders.every(
             (order) => !Array.isArray(order.items) || order.items.length === 0,
           ) && (
@@ -238,237 +208,297 @@ function OrderList({
                 style={{ width: 200 }}
               />
               <p
-              style={{
-                fontSize: '25px',
-                weight: '900',
-                marginTop:'0px'
-              }}>No Orders</p>
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  color: C.ink,
+                  marginTop: "0px",
+                }}
+              >
+                No Orders
+              </p>
+              <p style={{ color: C.muted, marginTop: "4px" }}>
+                New orders will appear here as they come in.
+              </p>
             </div>
           )}
-          {orders.map((order, index) => (
-            <div
-              key={order.id || index}
-              style={{
-                ...orderBoxStyle,
-                backgroundColor: getOrderColor(order.status),
-              }}
-            >
-              <p style={customerNameStyle}>Customer: {order.name}</p>
-              <p>
-                Items:{" "}
-                {Array.isArray(order.items)
-                  ? order.items
-                      .map((item) => `${item.name} x${item.quantity}`)
-                      .join(", ")
-                  : "No items"}
-              </p>
-              <p style={totalStyle}>total: ₹{order.total}</p>
-              <p>
-                🕐 {formatTime(order.created_at)} | 📅{" "}
-                {formatDate(order.created_at)}
-              </p>
-              <button
-                style={{
-                  ...printButtonStyle,
-                  backgroundColor:
-                    hoveredButton === `print-${order.id}`
-                      ? "#ff7a1a"
-                      : "#FF8C42",
-                  transform:
-                    hoveredButton === `print-${order.id}`
-                      ? "scale(1.05)"
-                      : "scale(1)",
-                  transition: "all 0.1s ease",
-                  transform:
-                    clickedButton === `print-${order.id}`
-                      ? "scale(0.95)"
-                      : hoveredButton === `print-${order.id}`
-                        ? "scale(1.05) translateY(-2px)"
-                        : "scale(1)",
-                }}
-                onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
-                onMouseLeave={() => setHoveredButton(null)}
-                onClick={() =>
-                  handleButtonClick(`print-${order.id}`, () => {
-                    printOrder(order);
-                  })
-                }
-              >
-                PRINT
-              </button>
-              <button
-                style={{
-                  ...deleteButtonStyle,
-                  backgroundColor:
-                    hoveredButton === `remove-${order.id}`
-                      ? "rgb(255, 64, 26)"
-                      : "#e74c3c",
-                  transform:
-                    hoveredButton === `remove-${order.id}`
-                      ? "scale(1.05)"
-                      : "scale(1)",
-                  transition: "all 0.1s ease",
-                  transform:
-                    clickedButton === `remove-${order.id}`
-                      ? "scale(0.95)"
-                      : hoveredButton === `remove-${order.id}`
-                        ? "scale(1.05) translateY(-2px)"
-                        : "scale(1)",
-                }}
-                onMouseEnter={() => setHoveredButton(`remove-${order.id}`)}
-                onMouseLeave={() => setHoveredButton(null)}
-                onClick={() =>
-                  handleButtonClick(`remove-${order.id}`, () => {
-                    const token = localStorage.getItem("access_token");
-                    const orderId = order.id;
 
-                    // 1. FIRST: Update order status to "cancelled"
-                    fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
-                      {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ status: "cancelled" }),
-                      },
-                    )
-                      .then(() => {
-                        // 2. THEN: Create removed order record
-                        return fetch(
-                          `https://bitefy-backend.onrender.com/api/removed-orders/`,
+          {orders.map((order, index) => {
+            const accent = statusAccent(order.status);
+            return (
+              <div
+                key={order.id || index}
+                className="bf-order"
+                style={{
+                  ...orderBoxStyle,
+                  borderLeft: `5px solid ${accent.bar}`,
+                  backgroundColor: getOrderColor(order.status),
+                }}
+              >
+                {/* Top row: customer + status badge */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <p style={customerNameStyle}>{order.name}</p>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: accent.bar,
+                      background: "rgba(255,255,255,0.7)",
+                      padding: "4px 10px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    {accent.label}
+                  </span>
+                </div>
+
+                <p style={itemsStyle}>
+                  {Array.isArray(order.items)
+                    ? order.items
+                        .map((item) => `${item.name} ×${item.quantity}`)
+                        .join("  ·  ")
+                    : "No items"}
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span style={{ fontSize: "13px", color: C.muted }}>
+                    <i class="fa-regular fa-clock"></i> {formatTime(order.created_at)} &nbsp;·&nbsp; <i class="fa-regular fa-calendar"></i>{" "}
+                    {formatDate(order.created_at)}
+                  </span>
+                  <p style={totalStyle}>₹{order.total}</p>
+                </div>
+
+                {/* Action row */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                    marginTop: "16px",
+                    paddingTop: "14px",
+                    borderTop: `1px solid ${C.border}`,
+                  }}
+                >
+                  <button
+                    style={{
+                      ...printButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `print-${order.id}`
+                          ? "#ff7a1a"
+                          : "#FF8C42",
+                      transform:
+                        hoveredButton === `print-${order.id}`
+                          ? "scale(1.05)"
+                          : "scale(1)",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `print-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `print-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`print-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() =>
+                      handleButtonClick(`print-${order.id}`, () => {
+                        printOrder(order);
+                      })
+                    }
+                  >
+                    PRINT
+                  </button>
+                  <button
+                    style={{
+                      ...deleteButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `remove-${order.id}`
+                          ? "rgb(255, 64, 26)"
+                          : "#e74c3c",
+                      transform:
+                        hoveredButton === `remove-${order.id}`
+                          ? "scale(1.05)"
+                          : "scale(1)",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `remove-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `remove-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`remove-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() =>
+                      handleButtonClick(`remove-${order.id}`, () => {
+                        const token = localStorage.getItem("access_token");
+                        const orderId = order.id;
+
+                        // 1. FIRST: Update order status to "cancelled"
+                        fetch(
+                          `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
                           {
-                            method: "POST",
+                            method: "PATCH",
                             headers: {
                               "Content-Type": "application/json",
                               Authorization: `Bearer ${token}`,
                             },
-                            body: JSON.stringify({
-                              order: orderId,
-                              reason: "Staff removed",
-                            }),
+                            body: JSON.stringify({ status: "cancelled" }),
                           },
-                        );
+                        )
+                          .then(() => {
+                            // 2. THEN: Create removed order record
+                            return fetch(
+                              `https://bitefy-backend.onrender.com/api/removed-orders/`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({
+                                  order: orderId,
+                                  reason: "Staff removed",
+                                }),
+                              },
+                            );
+                          })
+                          .then(() => {
+                            console.log("✅ Order cancelled and moved to removed");
+                            // 3. THEN: Remove from active orders UI
+                            setOrders((prev) =>
+                              prev.filter((o) => o.id !== orderId),
+                            );
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                            alert("Failed to remove order!");
+                          });
                       })
-                      .then(() => {
-                        console.log("✅ Order cancelled and moved to removed");
-                        // 3. THEN: Remove from active orders UI
-                        setOrders((prev) =>
-                          prev.filter((o) => o.id !== orderId),
-                        );
+                    }
+                  >
+                    REMOVE
+                  </button>
+
+                  <button
+                    style={{
+                      ...preparingButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `prepare-${order.id}`
+                          ? "#c209f5"
+                          : "#b522de",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `prepare-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `prepare-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`prepare-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() =>
+                      handleButtonClick(`prepare-${order.id}`, () => {
+                        const orderId = order.id;
+                        const token = localStorage.getItem("access_token");
+
+                        fetch(
+                          `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
+                          {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({ status: "preparing" }),
+                          },
+                        ).then(() => {
+                          const updatedOrders = orders.map((o) =>
+                            o.id === orderId
+                              ? { ...o, status: "preparing" }
+                              : o,
+                          );
+                          setOrders(updatedOrders);
+                        });
                       })
-                      .catch((error) => {
-                        console.error("Error:", error);
-                        alert("Failed to remove order!");
-                      });
-                  })
-                }
-              >
-                REMOVE
-              </button>
+                    }
+                  >
+                    PREPARE
+                  </button>
 
-              <button
-                style={{
-                  ...preparingButtonStyle,
-                  backgroundColor:
-                    hoveredButton === `prepare-${order.id}`
-                      ? "#c209f5"
-                      : "#b522de",
-                  transition: "all 0.1s ease",
-                  transform:
-                    clickedButton === `prepare-${order.id}`
-                      ? "scale(0.95)"
-                      : hoveredButton === `prepare-${order.id}`
-                        ? "scale(1.05) translateY(-2px)"
-                        : "scale(1)",
-                }}
-                onMouseEnter={() => setHoveredButton(`prepare-${order.id}`)}
-                onMouseLeave={() => setHoveredButton(null)}
-                onClick={() =>
-                  handleButtonClick(`prepare-${order.id}`, () => {
-                    const orderId = order.id;
-                    const token = localStorage.getItem("access_token");
+                  <button
+                    style={{
+                      ...completeButtonStyle,
+                      backgroundColor:
+                        hoveredButton === `complete-${order.id}`
+                          ? "#0ad65f"
+                          : "#27ae60",
+                      transition: "all 0.1s ease",
+                      transform:
+                        clickedButton === `complete-${order.id}`
+                          ? "scale(0.95)"
+                          : hoveredButton === `complete-${order.id}`
+                            ? "scale(1.05) translateY(-2px)"
+                            : "scale(1)",
+                    }}
+                    onMouseEnter={() => setHoveredButton(`complete-${order.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={() =>
+                      handleButtonClick(`complete-${order.id}`, () => {
+                        console.log("Complete clicked!");
+                        const orderId = order.id;
+                        const token = localStorage.getItem("access_token");
 
-                    fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
-                      {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ status: "preparing" }),
-                      },
-                    ).then(() => {
-                      const updatedOrders = orders.map((o) =>
-                        o.id === orderId ? { ...o, status: "preparing" } : o,
-                      );
-                      setOrders(updatedOrders);
-                    });
-                  })
-                }
-              >
-                PREPARE
-              </button>
+                        console.log("Complete clicked!");
+                        console.log("orderId:", orderId);
+                        console.log("token:", token);
 
-              <button
-                style={{
-                  ...preparingButtonStyle,
-                  backgroundColor:
-                    hoveredButton === `complete-${order.id}`
-                      ? "#0ad65f"
-                      : "#27ae60",
-                  transition: "all 0.1s ease",
-                  transform:
-                    clickedButton === `complete-${order.id}`
-                      ? "scale(0.95)"
-                      : hoveredButton === `complete-${order.id}`
-                        ? "scale(1.05) translateY(-2px)"
-                        : "scale(1)",
-                }}
-                onMouseEnter={() => setHoveredButton(`complete-${order.id}`)}
-                onMouseLeave={() => setHoveredButton(null)}
-                onClick={() =>
-                  handleButtonClick(`complete-${order.id}`, () => {
-                    console.log("Complete clicked!");
-                    const orderId = order.id;
-                    const token = localStorage.getItem("access_token");
+                        fetch(
+                          `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
+                          {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({ status: "ready" }),
+                          },
+                        )
+                          .then((r) => {
+                            console.log("PATCH status:", r.status); // ← add this
+                            return r.json();
+                          })
 
-                    console.log("Complete clicked!");
-                    console.log("orderId:", orderId);
-                    console.log("token:", token);
-
-                    fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
-                      {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ status: "ready" }),
-                      },
-                    )
-                      .then((r) => {
-                        console.log("PATCH status:", r.status); // ← add this
-                        return r.json();
+                          .then((result) => {
+                            console.log("PATCH response:", result);
+                            setOrders((prev) =>
+                              prev.filter((o) => o.id !== orderId),
+                            );
+                          })
+                          .catch((error) => console.log("Error:", error));
                       })
-
-                      .then((result) => {
-                        console.log("PATCH response:", result);
-                        setOrders((prev) =>
-                          prev.filter((o) => o.id !== orderId),
-                        );
-                      })
-                      .catch((error) => console.log("Error:", error));
-                  })
-                }
-              >
-                COMPLETE
-              </button>
-            </div>
-          ))}
+                    }
+                  >
+                    COMPLETE
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -2,6 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import settingsAnimation from "./gear.json";
 import Lottie from "lottie-react";
 
+// ── Design tokens (matches the rest of the dashboard) ──────
+const C = {
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  green: "#3DAA6D",
+  greenTint: "#E7F5EC",
+  red: "#D9534F",
+  redTint: "#FBEAEA",
+};
+
 function Header({ setShowModal, setActiveTab }) {
   const lottieRef = useRef();
 
@@ -41,80 +54,112 @@ function Header({ setShowModal, setActiveTab }) {
     }
   };
 
+  // ── styles ───────────────────────────────────────────────
   const mainStyle = {
     display: "flex",
-    flexDirection: "row", // ← Items LEFT to RIGHT
-    justifyContent: "space-between", // ← LEFT and RIGHT ends!
-    alignItems: "center", // ← Vertical center
-    paddingRight: "20px",
-    paddingLeft: "20px",
-    backgroundColor: "#ffffff",
-    borderBottom: "0.3px solid #000000",
-    paddingTop: "10px",
-    paddingBottom: "10px",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "14px 24px",
+    backgroundColor: C.surface,
+    borderBottom: `1px solid ${C.border}`,
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   };
 
   const firstSectionStyle = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: "16px",
+    gap: "20px",
   };
 
   const rightSectionStyle = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: "15px",
+    gap: "12px",
   };
 
-  const defaultPaddingMargin = {
-    margin: "0px",
-    padding: "0px",
+  const restaurantNameStyle = {
+    margin: 0,
+    fontSize: "20px",
+    fontWeight: 800,
+    letterSpacing: "-0.02em",
+    color: C.ink,
+  };
+
+  const subtitleStyle = {
+    margin: "2px 0 0",
+    fontSize: "11px",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    letterSpacing: "0.09em",
+    color: C.muted,
   };
 
   const openButtonStyle = {
-    backgroundColor: isOpen ? "#ffa9986c" : "#b2ffa1",
-    height: "50px",
-    padding: "10px",
+    backgroundColor: isOpen ? C.redTint : C.greenTint,
+    color: isOpen ? C.red : C.green,
     border: "none",
-    margin: "10px",
-    paddingRight: "15px",
-    paddingLeft: "15px",
-    borderRadius: "10px",
-    fontSize: "15px",
-    color: isOpen ? "#ff2a00ad" : "#188500",
+    height: "42px",
+    padding: "0 18px",
+    borderRadius: "999px",
+    fontSize: "14px",
+    fontWeight: 700,
     cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    transition: "all 0.18s ease",
   };
 
   const newOrderButtonStyle = {
-    backgroundColor: "#00c903",
+    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
     color: "#ffffff",
-    height: "50px",
+    height: "42px",
     border: "none",
-    paddingRight: "15px",
-    paddingLeft: "15px",
-    borderRadius: "5px",
+    padding: "0 20px",
+    borderRadius: "10px",
     cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: 700,
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    boxShadow: "0 6px 16px rgba(255,140,66,0.28)",
   };
 
   const settingsButtonStyle = {
     border: "none",
-    backgroundColor: "#ffffff",
+    backgroundColor: "transparent",
     cursor: "pointer",
     fontSize: "20px",
+    padding: 0,
+    display: "flex",
+    alignItems: "center",
   };
+
   return (
     <div style={mainStyle}>
+      <style>{`
+        .bf-neworder:active { transform: scale(0.97); }
+        .bf-open:active { transform: scale(0.97); }
+      `}</style>
+
       <div style={firstSectionStyle}>
         <div>
-          <h2 style={defaultPaddingMargin}>
+          <h2 style={restaurantNameStyle}>
             {loading ? "Loading..." : restaurant?.name || "My Restaurant"}
           </h2>
-          <p style={defaultPaddingMargin}>Management Dashboard</p>
+          <p style={subtitleStyle}>Management Dashboard</p>
         </div>
         <div>
-          <button style={openButtonStyle} onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className="bf-open"
+            style={openButtonStyle}
+            onClick={() => setIsOpen(!isOpen)}
+          >
             <i
               className={isOpen ? "fa-solid fa-lock" : "fa-solid fa-lock-open"}
             ></i>{" "}
@@ -124,8 +169,12 @@ function Header({ setShowModal, setActiveTab }) {
       </div>
 
       <div style={rightSectionStyle}>
-        <button style={newOrderButtonStyle} onClick={() => setShowModal(true)}>
-          <i class="fa-solid fa-plus"></i> New Order
+        <button
+          className="bf-neworder"
+          style={newOrderButtonStyle}
+          onClick={() => setShowModal(true)}
+        >
+          <i className="fa-solid fa-plus"></i> New Order
         </button>
         <button
           style={settingsButtonStyle}

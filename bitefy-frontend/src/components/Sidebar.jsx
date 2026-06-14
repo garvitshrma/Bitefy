@@ -1,77 +1,97 @@
 import { useState } from "react";
 
-function Sidebar({ activeTab, setActiveTab }) {
+// ── Design tokens (matches the rest of the dashboard) ──────
+const C = {
+  surface: "#FFFFFF",
+  ink: "#2A2118",
+  muted: "#9B9389",
+  border: "#EFE7DD",
+  accent: "#FF8C42",
+  accentDeep: "#E8722A",
+};
 
-  
+function Sidebar({ activeTab, setActiveTab }) {
   // Track active
 
   const mainStyle = {
     display: "flex",
     flexDirection: "row",
-    paddingTop: "20px",
-    paddingRight: "20px",
-    paddingLeft: "20px",
-    borderBottom: "0.3px solid #000000",
-    gap: "45px",
+    padding: "0 24px",
+    paddingTop: "6px",
+    backgroundColor: C.surface,
+    borderBottom: `1px solid ${C.border}`,
+    gap: "8px",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  };
+
+  const baseTab = {
+    border: "none",
+    fontSize: "15px",
+    fontWeight: 600,
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    padding: "12px 22px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    borderBottom: "2.5px solid transparent", // reserve space so active doesn't shift
+    transition: "color 0.18s ease, border-color 0.18s ease",
   };
 
   const inactiveButtonStyle = {
-    border: "none",
-    borderBottom: "none",
-    fontSize: "16px",
-    backgroundColor: "#ffffff",
-    color: "#0000009e",
-    cursor: "pointer",
-    paddingBottom: "10px",
-    paddingLeft: "30px",
-    paddingRight: "30px",
+    ...baseTab,
+    color: C.muted,
   };
 
   const activeButtonStyle = {
-    border: "none",
-    fontSize: "16px",
-    backgroundColor: "#ffffff",
-    color: "#0066ff",
-    cursor: "pointer",
-    borderBottom: "1.5px solid #0066ff",
-    paddingBottom: "10px",
-    paddingLeft: "30px",
-    paddingRight: "30px",
+    ...baseTab,
+    color: C.accentDeep,
+    borderBottom: `2.5px solid ${C.accent}`,
   };
 
   const handleTabClick = (tab) => {
     console.log("Clicked tab:", tab);
     setActiveTab(tab);
   };
+
   return (
     <div style={mainStyle}>
+      <style>{`
+        .bf-tab:hover { color: ${C.ink} !important; }
+      `}</style>
+
       <button
+        className="bf-tab"
         style={activeTab === "order" ? activeButtonStyle : inactiveButtonStyle}
-        onClick={() => handleTabClick('order')}
+        onClick={() => handleTabClick("order")}
       >
-        <i class="fa-solid fa-clipboard"></i> Order Queue
+        <i className="fa-solid fa-clipboard"></i> Order Queue
       </button>
       <button
+        className="bf-tab"
         style={activeTab === "menu" ? activeButtonStyle : inactiveButtonStyle}
         onClick={() => setActiveTab("menu")}
       >
-        <i class="fa-solid fa-utensils"></i> Menu
+        <i className="fa-solid fa-utensils"></i> Menu
       </button>
       <button
+        className="bf-tab"
         style={
           activeTab === "statistics" ? activeButtonStyle : inactiveButtonStyle
         }
         onClick={() => setActiveTab("statistics")}
       >
-        <i class="fa-solid fa-chart-line"></i> Statistics
+        <i className="fa-solid fa-chart-line"></i> Statistics
       </button>
       <button
+        className="bf-tab"
         style={
           activeTab === "history" ? activeButtonStyle : inactiveButtonStyle
         }
         onClick={() => setActiveTab("history")}
       >
-        <i class="fa-regular fa-clock"></i> History
+        <i className="fa-regular fa-clock"></i> History
       </button>
     </div>
   );
