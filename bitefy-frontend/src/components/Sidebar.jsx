@@ -23,7 +23,9 @@ function Sidebar({ activeTab, setActiveTab }) {
     gap: "8px",
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      overflowX: 'auto'
   };
+  
 
   const baseTab = {
     border: "none",

@@ -62,18 +62,35 @@ function Dashboard() {
   const appStyle = {
     display: "flex",
     flexDirection: "column",
-    height: "100vh",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     color: "#333",
   };
 
   return (
-    <div style={appStyle}>
+    <div className="bf-app" style={appStyle}>
+      <style>{`
+        /* Use the real visible viewport height on mobile (fixes cut-off bottom) */
+        .bf-app {
+          height: 100vh;      /* fallback for old browsers */
+          height: 100dvh;     /* dynamic viewport — wins where supported */
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+        .bf-content {
+          display: flex;
+          flex: 1;
+          gap: 15px;
+          overflow: hidden;
+          min-height: 0;       /* lets inner panels scroll instead of overflowing */
+        }
+        @media (max-width: 768px) {
+          .bf-content { gap: 0; }
+        }
+      `}</style>
+
       <Header setShowModal={setShowModal} setActiveTab={setActiveTab} />
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div
-        style={{ display: "flex", flex: 1, gap: "15px", overflow: "hidden" }}
-      >
+      <div className="bf-content">
         {activeTab === "order" && (
           <OrderList
             selectedItems={selectedItems}

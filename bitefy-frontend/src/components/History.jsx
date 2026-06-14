@@ -169,7 +169,7 @@ function History() {
                 }}
               >
                 <span style={{ fontSize: "13px", color: C.muted }}>
-                  🕐 {formatTime(order.created_at)} &nbsp;·&nbsp; 📅{" "}
+                  <i class="fa-regular fa-clock"></i> {formatTime(order.created_at)} &nbsp;·&nbsp; <i class="fa-regular fa-calendar"></i>{" "}
                   {formatDate(order.created_at)}
                 </span>
                 <span
