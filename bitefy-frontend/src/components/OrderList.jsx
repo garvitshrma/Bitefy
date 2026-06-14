@@ -3,7 +3,6 @@ import bg from "../assets/bg.png";
 import nothingAnimation from "./trolley.json";
 import Lottie from "lottie-react";
 import { printOrder } from "../utils/printReceipt";
-import { data } from "react-router-dom";
 
 function OrderList({
   selectedItems,
@@ -32,12 +31,15 @@ function OrderList({
   };
 
   const updateStatus = (orderId, status) => {
+    const token = localStorage.getItem("access_token");
     return fetch(
-      // ← add return here
       `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
       {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ status }),
       },
     ).then((r) => r.json());
@@ -317,16 +319,14 @@ function OrderList({
 
                     // 1. FIRST: Update order status to "cancelled"
                     fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
                       {
                         method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
                         },
-                        body: JSON.stringify({
-                          status: "cancelled", // ← Update status!
-                        }),
+                        body: JSON.stringify({ status: "cancelled" }),
                       },
                     )
                       .then(() => {
@@ -428,26 +428,35 @@ function OrderList({
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={() =>
                   handleButtonClick(`complete-${order.id}`, () => {
+                    console.log("Complete clicked!");
                     const orderId = order.id;
                     const token = localStorage.getItem("access_token");
 
+                    console.log("Complete clicked!");
+                    console.log("orderId:", orderId);
+                    console.log("token:", token);
+
                     fetch(
-                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/`,
+                      `https://bitefy-backend.onrender.com/api/orders/${orderId}/update_status/`,
                       {
                         method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
                         },
-                        body: JSON.stringify({
-                          status: "ready", // ← Update status
-                          is_completed: true, // ← Mark completed
-                        }),
+                        body: JSON.stringify({ status: "ready" }),
                       },
                     )
-                      .then(() => {
-                        // Remove from active orders
-                        setOrders((prev) => prev.filter((_, i) => i !== index));
+                      .then((r) => {
+                        console.log("PATCH status:", r.status); // ← add this
+                        return r.json();
+                      })
+
+                      .then((result) => {
+                        console.log("PATCH response:", result);
+                        setOrders((prev) =>
+                          prev.filter((o) => o.id !== orderId),
+                        );
                       })
                       .catch((error) => console.log("Error:", error));
                   })

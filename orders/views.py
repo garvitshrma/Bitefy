@@ -57,15 +57,12 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["patch"])
     def update_status(self, request, pk=None):
         order = self.get_object()
-
         new_status = request.data.get("status")
         order.status = new_status
+        if new_status == "ready":
+            order.is_completed = True
         order.save()
-
-        return Response({
-            "order_id": order.id,
-            "status": order.status
-        })
+        return Response({"order_id": order.id, "status": order.status})
     
 class RemovedOrderViewSet(viewsets.ModelViewSet):
     queryset = RemovedOrder.objects.all()
