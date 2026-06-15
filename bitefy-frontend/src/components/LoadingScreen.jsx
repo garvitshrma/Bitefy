@@ -20,8 +20,8 @@ function LoadingScreen() {
         visible={true}
         height="100"
         width="100"
-        color="#5582fd" // Your blue!
-        secondaryColor="#5582fd"
+        color="#FF6F3C" // Your blue!
+        secondaryColor="#FF6F3C"
         radius="12.5"
         ariaLabel="mutating-dots-loading"
       />
