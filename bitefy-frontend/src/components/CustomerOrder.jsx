@@ -48,10 +48,14 @@ function CustomerOrder() {
         .then((r) => r.json())
         .then((data) => {
           console.log("STATUS RESPONSE:", data);
-          setOrderStatus(data.status);
+          if (!data.is_accepted) {
+            setOrderStatus("placed");
+          } else {
+            setOrderStatus(data.status);
+          }
         })
         .catch((err) => console.error(err));
-    }, 3000); // 👈 every 3 seconds
+    }, 3000); 
 
     return () => clearInterval(interval);
   }, [placedOrder]);
@@ -184,7 +188,9 @@ function CustomerOrder() {
                 fontWeight: "bold",
               }}
             >
-              <h3 style={{ color: C.accentDeep }}>Total: ₹{placedOrder?.total}</h3>
+              <h3 style={{ color: C.accentDeep }}>
+                Total: ₹{placedOrder?.total}
+              </h3>
             </div>
           </div>
           {orderStatus == "placed" && (

@@ -12,6 +12,7 @@ def order_status(request, order_id):
             "order_number": order.name,
             "status": order.status,
             "total": order.total,
+            "is_accepted": order.is_accepted,
         })
     except Order.DoesNotExist:
         return Response({"status": "cancelled"}, status=404)
