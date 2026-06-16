@@ -155,9 +155,9 @@ function CustomerOrder() {
     try {
       // Initiate payment
       const res = await fetch(
-        `https://bitefy-backend.onrender.com/api/orders/${placedOrder.order_id}/initiate_payment/`,
-        { method: "POST" },
-      );
+  `https://bitefy-backend.onrender.com/api/public/initiate-payment/${placedOrder.order_id}/`,
+  { method: "POST" },
+);
       const data = await res.json();
 
       console.log("Payment response:", data);  // ← ADD THIS
