@@ -155,13 +155,13 @@ function CustomerOrder() {
     try {
       // Initiate payment
       const res = await fetch(
-  `https://bitefy-backend.onrender.com/api/public/initiate-payment/${placedOrder.order_id}/`,
-  { method: "POST" },
-);
+        `https://bitefy-backend.onrender.com/api/public/initiate-payment/${placedOrder.order_id}/`,
+        { method: "POST" },
+      );
       const data = await res.json();
 
-      console.log("Payment response:", data);  // ← ADD THIS
-    console.log("Status:", res.status);
+      console.log("Payment response:", data); // ← ADD THIS
+      console.log("Status:", res.status);
 
       // Load Razorpay script
       const script = document.createElement("script");
@@ -172,6 +172,12 @@ function CustomerOrder() {
           amount: data.amount * 100,
           currency: "INR",
           order_id: data.razorpay_order_id,
+          method: {
+            upi: true, // ← ADD THIS
+            card: false,
+            netbanking: false,
+            wallet: false,
+          },
           handler: function (response) {
             console.log("Payment success:", response);
             setOrderStatus("preparing");
