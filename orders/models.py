@@ -15,6 +15,21 @@ class Order(models.Model):
         ('offline', 'Offline'),    
     ]
 
+    PAYMENT_STATUS_CHOICES = [
+    ('pending', 'Pending'),
+    ('completed', 'Completed'),
+    ('failed', 'Failed'),
+    ]
+
+    payment_status = models.CharField(
+    max_length=20,
+    choices=PAYMENT_STATUS_CHOICES,
+    default='pending'
+    )
+
+    payment_id = models.CharField(max_length=100, null=True, blank=True)
+
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -27,6 +42,8 @@ class Order(models.Model):
         null=True,
         blank=True
     )
+
+
     name = models.CharField(max_length=100)
     items = models.JSONField()
     total = models.IntegerField()

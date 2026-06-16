@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Order, RemovedOrder
 from .serializers import OrderSerializer, RemovedOrderSerializer
 from rest_framework.decorators import action
+import razorpay
 
 class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -82,6 +83,42 @@ class OrderViewSet(viewsets.ModelViewSet):
             defaults={"removed_by": request.user, "reason": "Rejected online order"},
         )
         return Response({"order_id": order.id, "status": order.status})
+    
+    @action(detail=True, methods=["post"])
+    def initiate_payment(self, request, pk=None):
+        order = self.get_object()
+    
+    # Check if order is accepted but not paid
+        if not order.is_accepted:
+            return Response({"error": "Order not accepted yet"}, status=400)
+    
+        if order.payment_status == "completed":
+            return Response({"error": "Order already paid"}, status=400)
+    
+        client = razorpay.Client(
+            auth=("rzp_test_T2Nd6b98j6QVnQ", "ps6TcAzkWdqn9PBZhh6iChph")
+        )
+    
+    # Create Razorpay order
+        razorpay_order = client.order.create(
+            {
+                "amount": order.total * 100,  # Amount in paise
+                "currency": "INR",
+                "receipt": f"order_{order.id}",
+                "notes": {"order_id": order.id},
+            }
+        )
+    
+    # Save Razorpay order ID
+        order.payment_id = razorpay_order["id"]
+        order.save()
+    
+        return Response({
+            "order_id": order.id,
+            "razorpay_order_id": razorpay_order["id"],
+            "amount": order.total,
+            "key_id": "rzp_test_T2Nd6b98j6QVnQ"
+        })
     
 class RemovedOrderViewSet(viewsets.ModelViewSet):
     queryset = RemovedOrder.objects.all()

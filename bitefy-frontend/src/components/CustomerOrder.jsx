@@ -151,6 +151,37 @@ function CustomerOrder() {
     boxSizing: "border-box",
   };
 
+  const handlePayment = async () => {
+    try {
+      // Initiate payment
+      const res = await fetch(
+        `https://bitefy-backend.onrender.com/api/orders/${placedOrder.order_id}/initiate_payment/`,
+        { method: "POST" },
+      );
+      const data = await res.json();
+
+      // Load Razorpay script
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => {
+        const rzp = new window.Razorpay({
+          key: data.key_id,
+          order_id: data.razorpay_order_id,
+          amount: data.amount * 100,
+          currency: "INR",
+          handler: () => {
+            // Payment done, refresh status
+            setOrderStatus("preparing");
+          },
+        });
+        rzp.open();
+      };
+      document.body.appendChild(script);
+    } catch (err) {
+      console.error("Payment error:", err);
+    }
+  };
+
   if (isLoading)
     return (
       <div
@@ -256,14 +287,32 @@ function CustomerOrder() {
             />
           )}
           {orderStatus == "pending" && (
-            <Lottie
-              animationData={deliveryAnimation}
-              loop={true}
-              style={{
-                width: 250,
-                margin: "0 auto",
-              }}
-            />
+            <>
+              <Lottie
+                animationData={deliveryAnimation}
+                loop={true}
+                style={{
+                  width: 250,
+                  margin: "0 auto",
+                }}
+              />
+              <button
+                onClick={handlePayment}
+                style={{
+                  marginTop: "20px",
+                  padding: "14px 28px",
+                  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+              >
+                Pay Now
+              </button>
+            </>
           )}
           {orderStatus == "preparing" && (
             <Lottie
