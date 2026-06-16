@@ -6,6 +6,16 @@ import preparingAnimation from "./coffee.json";
 import readyAnimation from "./food-truck.json";
 import cancelAnimation from "./cancel.json";
 
+import appleAnimation from "../assets/animations/apple.json";
+import frenchAnimation from "../assets/animations/french-fries.json";
+import redWineAnimation from "../assets/animations/red-wine.json";
+import easterEggAnimation from "../assets/animations/easter-egg.json";
+import blackTeaAnimation from "../assets/animations/black-tea.json";
+import pumpkinAnimation from "../assets/animations/pumpkin.json";
+import vegetableAnimation from "../assets/animations/vegetable.json";
+import bonfireAnimation from "../assets/animations/bonfire.json";
+import restaurantAnimation from "../assets/animations/restaurant.json";
+
 // ── Design tokens (matches the app) ────────────────────────
 const C = {
   bg: "#FBF8F4",
@@ -55,7 +65,7 @@ function CustomerOrder() {
           }
         })
         .catch((err) => console.error(err));
-    }, 3000); 
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [placedOrder]);
@@ -81,12 +91,54 @@ function CustomerOrder() {
   };
 
   const statusText = {
-    pending: "Your order has been accepted, We will let you know when it's preparing.",
-    placed: "Waiting for Confirmation",
+    pending:
+      "Your order has been accepted, We will let you know when it's preparing.",
+    placed: "Waiting for Confirmation from restaurant.",
     preparing: "Preparing Your Food",
     ready: "Ready for Pickup",
     cancelled: "We are sorry, your order has been cancelled.",
   };
+
+  const [foodFactData, setFoodFactData] = useState({ fact: "", icon: null });
+
+  const foodFactsWithIcons = [
+    {
+      fact: "Did you know? The world's oldest restaurant still operating is Restaurante Restaurante in Spain, founded in 1725.",
+      icon: restaurantAnimation,
+    },
+    {
+      fact: "Did you know? An apple a day keeps the doctor away? Apples are 85% water!",
+      icon: appleAnimation,
+    },
+    {
+      fact: "Fun fact: French fries are actually Belgian, not French! They were invented in Belgium in the 1600s.",
+      icon: frenchAnimation,
+    },
+    {
+      fact: "Did you know? Red wine gets its color from grape skins. White wine doesn't use the skins during fermentation.",
+      icon: redWineAnimation,
+    },
+    {
+      fact: "Fun fact: Easter eggs are traditionally decorated to symbolize rebirth and new life in spring.",
+      icon: easterEggAnimation,
+    },
+    {
+      fact: "Did you know? Black tea has more caffeine than green tea because it's more oxidized.",
+      icon: blackTeaAnimation,
+    },
+    {
+      fact: "Fun fact: Pumpkins are technically fruits, not vegetables! They grow from the flower of the plant.",
+      icon: pumpkinAnimation,
+    },
+    {
+      fact: "Did you know? Vegetables are defined by how we eat them, not by biology. Tomatoes are actually fruits!",
+      icon: vegetableAnimation,
+    },
+    {
+      fact: "Fun fact: Roasting food over a bonfire creates a unique smoky flavor that can't be replicated in modern cooking.",
+      icon: bonfireAnimation,
+    },
+  ];
 
   // ── shared styles ────────────────────────────────────────
   const pageStyle = {
@@ -195,7 +247,7 @@ function CustomerOrder() {
           </div>
           {orderStatus == "placed" && (
             <Lottie
-              animationData={deliveryAnimation}
+              animationData={foodFactData.icon}
               loop={true}
               style={{
                 width: 250,
@@ -243,6 +295,21 @@ function CustomerOrder() {
                 margin: "0 auto",
               }}
             />
+          )}
+
+          {orderStatus == "placed" && (
+            <p
+              style={{
+                color: C.muted,
+                fontSize: "14px",
+                fontStyle: "italic",
+                marginTop: "20px",
+                padding: "0 20px",
+                lineHeight: 1.6,
+              }}
+            >
+              ✨ {foodFactData.fact}
+            </p>
           )}
         </div>
       </div>
@@ -469,6 +536,11 @@ function CustomerOrder() {
                       total: orderTotal,
                     });
                     setOrderPlaced(true);
+                    const randomData =
+                      foodFactsWithIcons[
+                        Math.floor(Math.random() * foodFactsWithIcons.length)
+                      ];
+                    setFoodFactData(randomData);
                     setQuantities({});
                   })
                   .catch((error) => console.log("Error:", error));
