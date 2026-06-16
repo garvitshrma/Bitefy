@@ -84,18 +84,15 @@ function OrderRequests() {
 
   // ── helpers ────────────────────────────────────────────────
   const summarizeItems = (items) => {
-    if (!Array.isArray(items) || items.length === 0) return "No items";
-    const visibleOrders = orders.filter(
-  (o) => o.is_accepted || o.order_type === "offline"
-);
-    return items
-      .map((it) => {
-        const name = it.name || it.item_name || it.item || "Item";
-        const qty = it.quantity || it.qty || 1;
-        return `${qty}× ${name}`;
-      })
-      .join(", ");
-  };
+  if (!Array.isArray(items) || items.length === 0) return "No items";
+  return items
+    .map((it) => {
+      const name = it.name || it.item_name || it.item || "Item";
+      const qty = it.quantity || it.qty || 1;
+      return `${qty}× ${name}`;
+    })
+    .join(", ");
+};
 
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
