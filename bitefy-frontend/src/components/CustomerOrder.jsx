@@ -81,7 +81,7 @@ function CustomerOrder() {
   };
 
   const statusText = {
-    pending: "Order Received",
+    pending: "Your order has been accepted, We will let you know when it's preparing.",
     placed: "Waiting for Confirmation",
     preparing: "Preparing Your Food",
     ready: "Ready for Pickup",
