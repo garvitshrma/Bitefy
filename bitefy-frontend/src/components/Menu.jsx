@@ -104,7 +104,7 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
   };
 
   return (
-    <div style={page}>
+    <div className="bf-scrollbar" style={page}>
       <style>{`
         .bf-item { transition: transform .18s ease, box-shadow .18s ease; }
         .bf-item:hover { transform: translateY(-2px);
@@ -114,6 +114,37 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
         .bf-trash:hover { color: ${C.red} !important;
           border-color: ${C.red} !important; background: ${C.redTint} !important; }
         .bf-add:active { transform: scale(0.97); }
+
+        .bf-order {
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .bf-order:hover {
+    box-shadow: 0 6px 20px rgba(42,33,24,0.08);
+  }
+
+  /* Scrollbar */
+  .bf-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 140, 66, 0.45);
+    border-radius: 999px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 140, 66, 0.8);
+  }
+
+  .bf-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 140, 66, 0.45) transparent;
+  }
       `}</style>
 
       {/* Header */}

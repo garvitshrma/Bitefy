@@ -7,6 +7,7 @@ import Statistics from "./Statistics";
 import History from "./History";
 import NewOrderModal from "./NewOrderModal";
 import Settings from "./Settings";
+import OrderRequests from "./OrderRequests";
 
 import { useState, useEffect } from "react";
 
@@ -92,15 +93,18 @@ function Dashboard() {
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="bf-content">
         {activeTab === "order" && (
-          <OrderList
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-            orders={orders}
-            setOrders={setOrders}
-            menuItems={menuItems}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+          <>
+            <OrderList
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+              orders={orders}
+              setOrders={setOrders}
+              menuItems={menuItems}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            <OrderRequests />
+          </>
         )}
         {activeTab === "menu" && (
           <Menu

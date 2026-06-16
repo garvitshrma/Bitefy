@@ -165,11 +165,46 @@ function OrderList({
     return { bar: C.accent, label: "New" };
   };
 
+  const visibleOrders = orders.filter(
+  (o) => o.is_accepted || o.order_type === "offline"
+);
+
   return (
-    <div style={containerStyle}>
+    <div className="bf-scrollbar" style={containerStyle}>
       <style>{`
         .bf-order { transition: transform .15s ease, box-shadow .15s ease; }
         .bf-order:hover { box-shadow: 0 6px 20px rgba(42,33,24,0.08); }
+
+        .bf-order {
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .bf-order:hover {
+    box-shadow: 0 6px 20px rgba(42,33,24,0.08);
+  }
+
+  /* Scrollbar */
+  .bf-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 140, 66, 0.45);
+    border-radius: 999px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 140, 66, 0.8);
+  }
+
+  .bf-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 140, 66, 0.45) transparent;
+  }
       `}</style>
 
       {activeTab === "order" && (
@@ -190,7 +225,7 @@ function OrderList({
             Drag orders to adjust priority
           </p>
 
-          {orders.every(
+          {visibleOrders.every(
             (order) => !Array.isArray(order.items) || order.items.length === 0,
           ) && (
             <div
@@ -223,7 +258,7 @@ function OrderList({
             </div>
           )}
 
-          {orders.map((order, index) => {
+          {visibleOrders.map((order, index) => {
             const accent = statusAccent(order.status);
             return (
               <div
@@ -276,7 +311,9 @@ function OrderList({
                   }}
                 >
                   <span style={{ fontSize: "13px", color: C.muted }}>
-                    <i class="fa-regular fa-clock"></i> {formatTime(order.created_at)} &nbsp;·&nbsp; <i class="fa-regular fa-calendar"></i>{" "}
+                    <i class="fa-regular fa-clock"></i>{" "}
+                    {formatTime(order.created_at)} &nbsp;·&nbsp;{" "}
+                    <i class="fa-regular fa-calendar"></i>{" "}
                     {formatDate(order.created_at)}
                   </span>
                   <p style={totalStyle}>₹{order.total}</p>
@@ -378,7 +415,9 @@ function OrderList({
                             );
                           })
                           .then(() => {
-                            console.log("✅ Order cancelled and moved to removed");
+                            console.log(
+                              "✅ Order cancelled and moved to removed",
+                            );
                             // 3. THEN: Remove from active orders UI
                             setOrders((prev) =>
                               prev.filter((o) => o.id !== orderId),
@@ -455,7 +494,9 @@ function OrderList({
                             ? "scale(1.05) translateY(-2px)"
                             : "scale(1)",
                     }}
-                    onMouseEnter={() => setHoveredButton(`complete-${order.id}`)}
+                    onMouseEnter={() =>
+                      setHoveredButton(`complete-${order.id}`)
+                    }
                     onMouseLeave={() => setHoveredButton(null)}
                     onClick={() =>
                       handleButtonClick(`complete-${order.id}`, () => {

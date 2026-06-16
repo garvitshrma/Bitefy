@@ -136,12 +136,43 @@ function Statistics() {
   };
 
   return (
-    <div style={page}>
+    <div className="bf-scrollbar" style={page}>
       <style>{`
         .bf-card { transition: transform .18s ease, box-shadow .18s ease; }
         .bf-card:hover { transform: translateY(-3px);
           box-shadow: 0 8px 24px rgba(42,33,24,0.08); }
         .bf-seg { transition: all .18s ease; }
+
+        .bf-order {
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .bf-order:hover {
+    box-shadow: 0 6px 20px rgba(42,33,24,0.08);
+  }
+
+  /* Scrollbar */
+  .bf-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 140, 66, 0.45);
+    border-radius: 999px;
+  }
+
+  .bf-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 140, 66, 0.8);
+  }
+
+  .bf-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 140, 66, 0.45) transparent;
+  }
       `}</style>
 
       {/* Header */}

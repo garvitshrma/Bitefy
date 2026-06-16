@@ -64,6 +64,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.save()
         return Response({"order_id": order.id, "status": order.status})
     
+    @action(detail=True, methods=["patch"])
+    def accept(self, request, pk=None):
+        order = self.get_object()
+        order.is_accepted = True
+        order.save()
+        return Response({"order_id": order.id, "is_accepted": order.is_accepted})
+
+    @action(detail=True, methods=["patch"])
+    def reject(self, request, pk=None):
+        order = self.get_object()
+        order.status = "cancelled"
+        order.save()
+        # mirror your REMOVE flow so it leaves the active board
+        RemovedOrder.objects.get_or_create(
+            order=order,
+            defaults={"removed_by": request.user, "reason": "Rejected online order"},
+        )
+        return Response({"order_id": order.id, "status": order.status})
+    
 class RemovedOrderViewSet(viewsets.ModelViewSet):
     queryset = RemovedOrder.objects.all()
     serializer_class = RemovedOrderSerializer
