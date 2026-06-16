@@ -160,20 +160,32 @@ function CustomerOrder() {
       );
       const data = await res.json();
 
+      console.log("Payment response:", data);  // ← ADD THIS
+    console.log("Status:", res.status);
+
       // Load Razorpay script
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => {
-        const rzp = new window.Razorpay({
+        const options = {
           key: data.key_id,
-          order_id: data.razorpay_order_id,
           amount: data.amount * 100,
           currency: "INR",
-          handler: () => {
-            // Payment done, refresh status
+          order_id: data.razorpay_order_id,
+          handler: function (response) {
+            console.log("Payment success:", response);
             setOrderStatus("preparing");
           },
-        });
+          prefill: {
+            contact: "",
+            email: "",
+          },
+          theme: {
+            color: "#FF8C42",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
         rzp.open();
       };
       document.body.appendChild(script);
