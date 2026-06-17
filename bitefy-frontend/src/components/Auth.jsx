@@ -132,7 +132,7 @@ function Auth() {
   };
 
   const finalButton = {
-    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+    background: `linear-gradient(135deg, ${C.accent}, #fe6d38)`,
     height: "50px",
     borderRadius: "10px",
     color: "#ffffff",
