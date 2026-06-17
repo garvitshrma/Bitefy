@@ -87,19 +87,20 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def initiate_payment(self, request, pk=None):
         order = self.get_object()
-    
-    # Check if order is accepted but not paid
+
+        # Check if order is accepted but not paid
         if not order.is_accepted:
             return Response({"error": "Order not accepted yet"}, status=400)
-    
+
         if order.payment_status == "completed":
             return Response({"error": "Order already paid"}, status=400)
-    
+
+        # Initialize Razorpay client
         client = razorpay.Client(
             auth=("rzp_test_T2Nd6b98j6QVnQ", "ps6TcAzkWdqn9PBZhh6iChph")
         )
-    
-    # Create Razorpay order
+
+        # Create Razorpay order
         razorpay_order = client.order.create(
             {
                 "amount": order.total * 100,  # Amount in paise
@@ -108,11 +109,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "notes": {"order_id": order.id},
             }
         )
-    
-    # Save Razorpay order ID
+
+        # Save Razorpay order ID
         order.payment_id = razorpay_order["id"]
         order.save()
-    
+
         return Response({
             "order_id": order.id,
             "razorpay_order_id": razorpay_order["id"],

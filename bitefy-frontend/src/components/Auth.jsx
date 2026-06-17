@@ -398,8 +398,6 @@ function Auth() {
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
                   console.log("Google login success!", credentialResponse);
-
-                  // Send Google token to Django!
                   fetch(
                     "https://bitefy-backend.onrender.com/api/auth/google/",
                     {

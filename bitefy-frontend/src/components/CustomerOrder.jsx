@@ -172,19 +172,9 @@ function CustomerOrder() {
           amount: data.amount * 100,
           currency: "INR",
           order_id: data.razorpay_order_id,
-          method: {
-            upi: true, // ← ADD THIS
-            card: false,
-            netbanking: false,
-            wallet: false,
-          },
           handler: function (response) {
             console.log("Payment success:", response);
             setOrderStatus("preparing");
-          },
-          prefill: {
-            contact: "",
-            email: "",
           },
           theme: {
             color: "#FF8C42",
