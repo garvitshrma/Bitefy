@@ -19,17 +19,26 @@ function Settings() {
   const [slug, setSlug] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [accountNumber, setAccountNumber] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
+  const [accountHolderName, setAccountHolderName] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    fetch("https://bitefy-backend.onrender.com/api/restaurants/my_restaurant/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      "https://bitefy-backend.onrender.com/api/restaurants/my_restaurant/",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
       .then((r) => r.json())
       .then((data) => {
         setRestaurant(data);
         setRestaurantName(data.name);
         setSlug(data.slug || "");
+        setAccountNumber(data.account_number || "");
+        setIfscCode(data.ifsc_code || "");
+        setAccountHolderName(data.account_holder_name || "");
         setIsLoading(false);
       })
       .catch((error) => {
@@ -42,17 +51,23 @@ function Settings() {
     const token = localStorage.getItem("access_token");
     setIsSaving(true);
 
-    fetch(`https://bitefy-backend.onrender.com/api/restaurants/${restaurant.id}/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    fetch(
+      `https://bitefy-backend.onrender.com/api/restaurants/${restaurant.id}/`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: restaurantName,
+          slug: slug,
+          account_number: accountNumber,
+          ifsc_code: ifscCode,
+          account_holder_name: accountHolderName,
+        }),
       },
-      body: JSON.stringify({
-        name: restaurantName,
-        slug: slug,
-      }),
-    })
+    )
       .then((r) => r.json())
       .then((data) => {
         setRestaurant(data);
@@ -201,8 +216,47 @@ function Settings() {
           />
           <p style={helperStyle}>
             Your customer order link: bitefy.vercel.app/order/
-            <strong style={{ color: C.accentDeep }}>{slug || "your-slug"}</strong>
+            <strong style={{ color: C.accentDeep }}>
+              {slug || "your-slug"}
+            </strong>
           </p>
+        </div>
+
+        <div style={formGroupStyle}>
+          <label style={labelStyle}>Account Holder Name</label>
+          <input
+            type="text"
+            className="bf-input"
+            value={accountHolderName}
+            onChange={(e) => setAccountHolderName(e.target.value)}
+            style={inputStyle}
+            placeholder="e.g., Tech Cafe"
+          />
+        </div>
+
+        <div style={formGroupStyle}>
+          <label style={labelStyle}>Account Number</label>
+          <input
+            type="text"
+            className="bf-input"
+            value={accountNumber}
+            onChange={(e) => setAccountNumber(e.target.value)}
+            style={inputStyle}
+            placeholder="e.g., 12345678901234"
+          />
+        </div>
+
+        <div style={formGroupStyle}>
+          <label style={labelStyle}>IFSC Code</label>
+          <input
+            type="text"
+            className="bf-input"
+            value={ifscCode}
+            onChange={(e) => setIfscCode(e.target.value)}
+            style={inputStyle}
+            placeholder="e.g., AXIS0001234"
+          />
+          <p style={helperStyle}>Your bank's IFSC code for split payments</p>
         </div>
 
         <button
