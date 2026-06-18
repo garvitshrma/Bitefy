@@ -58,10 +58,12 @@ function CustomerOrder() {
         .then((r) => r.json())
         .then((data) => {
           console.log("STATUS RESPONSE:", data);
-          if (!data.is_accepted) {
-            setOrderStatus("placed");
+          if (data.status === "cancelled") {
+            setOrderStatus("cancelled"); 
+          } else if (!data.is_accepted) {
+            setOrderStatus("placed"); 
           } else {
-            setOrderStatus(data.status);
+            setOrderStatus(data.status); 
           }
         })
         .catch((err) => console.error(err));
@@ -153,7 +155,6 @@ function CustomerOrder() {
 
   const handlePayment = async () => {
     try {
-      // Initiate payment
       const res = await fetch(
         `https://bitefy-backend.onrender.com/api/public/initiate-payment/${placedOrder.order_id}/`,
         { method: "POST" },
