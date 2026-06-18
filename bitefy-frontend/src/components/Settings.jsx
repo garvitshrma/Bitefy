@@ -93,6 +93,7 @@ function Settings() {
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     color: C.ink,
+    overflowY: 'auto'
   };
   const eyebrow = {
     textTransform: "uppercase",
