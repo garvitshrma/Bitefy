@@ -24,9 +24,33 @@ function Header({ setShowModal, setActiveTab }) {
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     fetchRestaurant();
   }, []);
+
+    const toggleOpen = async () => {
+    const token = localStorage.getItem("access_token");
+    const newStatus = !isOpen;
+    setIsOpen(newStatus); // optimistic update
+
+    try {
+      await fetch(
+        `https://bitefy-backend.onrender.com/api/restaurants/${restaurant.id}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ is_open: newStatus }),
+        },
+      );
+    } catch (error) {
+      console.log("Error toggling status:", error);
+      setIsOpen(!newStatus); // revert on failure
+    }
+  };
 
   const fetchRestaurant = async () => {
     try {
@@ -45,6 +69,7 @@ function Header({ setShowModal, setActiveTab }) {
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
+      setIsOpen(data.is_open);
       setRestaurant(data);
     } catch (error) {
       console.log("Error fetching restaurant:", error);
@@ -158,7 +183,7 @@ function Header({ setShowModal, setActiveTab }) {
           <button
             className="bf-open"
             style={openButtonStyle}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={toggleOpen}
           >
             <i
               className={isOpen ? "fa-solid fa-lock" : "fa-solid fa-lock-open"}
