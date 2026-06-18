@@ -12,6 +12,7 @@ const C = {
   accentDeep: "#E8722A",
   accentTint: "#FFF1E6",
   green: "#3DAA6D",
+  greenTint: "#E7F5EC",
 };
 
 function RestaurantList() {
@@ -170,7 +171,25 @@ function RestaurantList() {
         filtered.map((restaurant) => (
           <div key={restaurant.slug} className="bf-rcard" style={cardStyle}>
             <div>
-              <h3 style={restaurantNameStyle}>{restaurant.name}</h3>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                <h3 style={restaurantNameStyle}>{restaurant.name}</h3>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    padding: "3px 10px",
+                    borderRadius: "999px",
+                    background: restaurant.is_open ? C.greenTint : "#FBEAEA",
+                    color: restaurant.is_open ? C.green : "#D9534F",
+                  }}
+                >
+                  {restaurant.is_open ? "Open" : "Closed"}
+                </span>
+              </div>
 
               <div style={restaurantMetaStyle}>Fast ordering • QR menu</div>
 
@@ -193,10 +212,23 @@ function RestaurantList() {
 
             <button
               className="bf-order"
-              style={buttonStyle}
-              onClick={() => navigate(`/order/${restaurant.slug}`)}
+              style={{
+                ...buttonStyle,
+                opacity: restaurant.is_open ? 1 : 0.5,
+                cursor: restaurant.is_open ? "pointer" : "not-allowed",
+                background: restaurant.is_open
+                  ? `linear-gradient(135deg, ${C.accent}, #FF6F3C)`
+                  : C.muted,
+                boxShadow: restaurant.is_open
+                  ? "0 6px 16px rgba(255,140,66,0.28)"
+                  : "none",
+              }}
+              disabled={!restaurant.is_open}
+              onClick={() =>
+                restaurant.is_open && navigate(`/order/${restaurant.slug}`)
+              }
             >
-              Order Now
+              {restaurant.is_open ? "Order Now" : "Closed"}
             </button>
           </div>
         ))

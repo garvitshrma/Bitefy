@@ -61,5 +61,5 @@ def get_restaurants(request):
     restaurants = Restaurant.objects.filter(
         is_active=True
     ).exclude(slug=None).exclude(slug='')
-    data = [{'name': r.name, 'slug': r.slug} for r in restaurants]
+    data = [{'name': r.name, 'slug': r.slug,'is_open': r.is_open} for r in restaurants]
     return Response(data)
