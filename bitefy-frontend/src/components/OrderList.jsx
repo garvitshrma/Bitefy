@@ -28,7 +28,7 @@ function OrderList({
   activeTab,
   setActiveTab,
 }) {
-  // const [orders, setOrders] = useState([]);
+
 
   const [customerName, setCustomerName] = useState("");
   const [completedOrders, setCompletedOrders] = useState([]);
@@ -44,7 +44,7 @@ function OrderList({
   const handleButtonClick = (buttonId, callback) => {
     setClickedButton(buttonId);
     callback();
-    setTimeout(() => setClickedButton(null), 200); // ← Resets after 200ms
+    setTimeout(() => setClickedButton(null), 200);
   };
 
   const handleDrop = (targetId) => {
@@ -56,8 +56,8 @@ function OrderList({
     const from = ids.indexOf(draggedId);
     const to = ids.indexOf(targetId);
     if (from === -1 || to === -1) return;
-    ids.splice(from, 1); // pull the dragged card out
-    ids.splice(to, 0, draggedId); // drop it at the target spot
+    ids.splice(from, 1);
+    ids.splice(to, 0, draggedId); 
     setManualSeq(ids);
     setDraggedId(null);
 
