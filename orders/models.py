@@ -56,6 +56,10 @@ class Order(models.Model):
     )
     order_type = models.CharField(max_length=20, choices=ORDER_SOURCE_CHOICES, default='offline') 
     is_accepted = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
+
+
+
     def __str__(self):
         return f"{self.name} - ₹{self.total}"
     

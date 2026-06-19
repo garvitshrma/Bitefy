@@ -36,6 +36,8 @@ function OrderList({
   const [isHovering, setIsHovering] = useState(false);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
+  const [manualSeq, setManualSeq] = useState([]);
+  const [draggedId, setDraggedId] = useState(null);
 
   const [clickedButton, setClickedButton] = useState(null);
 
@@ -43,6 +45,33 @@ function OrderList({
     setClickedButton(buttonId);
     callback();
     setTimeout(() => setClickedButton(null), 200); // ← Resets after 200ms
+  };
+
+  const handleDrop = (targetId) => {
+    if (draggedId == null || draggedId === targetId) {
+      setDraggedId(null);
+      return;
+    }
+    const ids = visibleOrders.map((o) => o.id);
+    const from = ids.indexOf(draggedId);
+    const to = ids.indexOf(targetId);
+    if (from === -1 || to === -1) return;
+    ids.splice(from, 1); // pull the dragged card out
+    ids.splice(to, 0, draggedId); // drop it at the target spot
+    setManualSeq(ids);
+    setDraggedId(null);
+
+    const token = localStorage.getItem("access_token");
+    ids.forEach((id, index) => {
+      fetch(`https://bitefy-backend.onrender.com/api/orders/${id}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ priority: index }),
+      }).catch((err) => console.log("Error updating priority:", err));
+    });
   };
 
   const updateStatus = (orderId, status) => {
@@ -165,9 +194,25 @@ function OrderList({
     return { bar: C.accent, label: "New" };
   };
 
-  const visibleOrders = orders.filter(
-  (o) => o.is_accepted || o.order_type === "offline"
-);
+  const baseOrders = orders.filter(
+    (o) => o.is_accepted || o.order_type === "offline",
+  );
+
+  const byId = {};
+  baseOrders.forEach((o) => {
+    byId[o.id] = o;
+  });
+
+  // manually-arranged orders that still exist, in your drag order
+  const seqIds = manualSeq.filter((id) => byId[id]);
+
+  // brand-new orders (not yet dragged) → sorted oldest→newest so newest sits at the bottom
+  const newIds = baseOrders
+    .filter((o) => !manualSeq.includes(o.id))
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    .map((o) => o.id);
+
+  const visibleOrders = [...seqIds, ...newIds].map((id) => byId[id]);
 
   return (
     <div className="bf-scrollbar" style={containerStyle}>
@@ -264,10 +309,16 @@ function OrderList({
               <div
                 key={order.id || index}
                 className="bf-order"
+                draggable
+                onDragStart={() => setDraggedId(order.id)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDrop(order.id)}
                 style={{
                   ...orderBoxStyle,
                   borderLeft: `5px solid ${accent.bar}`,
                   backgroundColor: getOrderColor(order.status),
+                  opacity: draggedId === order.id ? 0.5 : 1,
+                  cursor: "grab",
                 }}
               >
                 {/* Top row: customer + status badge */}

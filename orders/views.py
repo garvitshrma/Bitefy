@@ -21,12 +21,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             removedorder__isnull=False  # ← Exclude removed
             ).filter(
                 Q(user=self.request.user) | Q(restaurant=restaurant)
-            )
+            ).order_by('priority')
         except Restaurant.DoesNotExist:
             return Order.objects.filter(
                 user=self.request.user, 
                 is_completed=False
-            ).exclude(removedorder__isnull=False)
+            ).exclude(removedorder__isnull=False).order_by('priority')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user) 
