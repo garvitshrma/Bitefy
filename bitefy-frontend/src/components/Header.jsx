@@ -124,8 +124,8 @@ function Header({ setShowModal, setActiveTab }) {
   };
 
   const openButtonStyle = {
-    backgroundColor: isOpen ? C.redTint : C.greenTint,
-    color: isOpen ? C.red : C.green,
+    backgroundColor: isOpen ? C.greenTint : C.redTint,
+    color: isOpen ? C.green : C.red,
     border: "none",
     height: "42px",
     padding: "0 18px",
@@ -186,9 +186,9 @@ function Header({ setShowModal, setActiveTab }) {
             onClick={toggleOpen}
           >
             <i
-              className={isOpen ? "fa-solid fa-lock" : "fa-solid fa-lock-open"}
+              className={isOpen ? "fa-solid fa-lock-open" : "fa-solid fa-lock"}
             ></i>{" "}
-            {isOpen ? "Closed" : "Open"}
+            {isOpen ? "Open" : "Closed"}
           </button>
         </div>
       </div>
