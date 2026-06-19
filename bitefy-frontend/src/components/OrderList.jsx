@@ -209,7 +209,7 @@ function OrderList({
   // brand-new orders (not yet dragged) → sorted oldest→newest so newest sits at the bottom
   const newIds = baseOrders
     .filter((o) => !manualSeq.includes(o.id))
-    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    // .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
     .map((o) => o.id);
 
   const visibleOrders = [...seqIds, ...newIds].map((id) => byId[id]);
