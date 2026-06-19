@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 
 // ── Design tokens (matches the rest of the dashboard) ──────
 const C = {
@@ -22,6 +23,7 @@ function Settings() {
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
   const [accountHolderName, setAccountHolderName] = useState("");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -93,7 +95,7 @@ function Settings() {
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     color: C.ink,
-    overflowY: 'auto'
+    overflowY: "auto",
   };
   const eyebrow = {
     textTransform: "uppercase",
@@ -170,6 +172,18 @@ function Settings() {
 
   return (
     <div style={page}>
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="Log Out?"
+        message="You'll be signed out of your dashboard. You can log back in anytime."
+        onConfirm={() => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
+          window.location.href = "/auth";
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+        isDangerous={false}
+      />
       <style>{`
         .bf-input:focus { border-color: ${C.accent} !important;
           background: #fff !important; }
@@ -278,11 +292,7 @@ function Settings() {
       <div>
         <button
           style={logoutButtonStyle}
-          onClick={() => {
-            localStorage.removeItem("user");
-            localStorage.removeItem("access_token");
-            window.location.href = "/auth";
-          }}
+          onClick={() => setShowLogoutConfirm(true)}
         >
           Log Out <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </button>

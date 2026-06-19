@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 
 // ── Design tokens (matches Statistics & History) ───────────
 const C = {
@@ -19,6 +20,10 @@ const C = {
 function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
   const [newItemName, setNewItemName] = useState("");
   const [newPrice, setNewPrice] = useState("");
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    itemId: null,
+  });
 
   // ── styles ───────────────────────────────────────────────
   const page = {
@@ -103,8 +108,31 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
     borderRadius: "10px",
   };
 
+  const confirmDelete = () => {
+    const itemId = confirmDialog.itemId;
+    setConfirmDialog({ isOpen: false, itemId: null });
+
+    const token = localStorage.getItem("access_token");
+    fetch(`https://bitefy-backend.onrender.com/api/menu-items/${itemId}/`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(() => {
+        setMenuItems(menuItems.filter((m) => m.id !== itemId));
+      })
+      .catch((error) => console.log("Error:", error));
+  };
+
   return (
     <div className="bf-scrollbar" style={page}>
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Delete Menu Item?"
+        message="This item will be permanently removed from your menu. Customers won't be able to order it anymore."
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, itemId: null })}
+        isDangerous={true}
+      />
       <style>{`
         .bf-item { transition: transform .18s ease, box-shadow .18s ease; }
         .bf-item:hover { transform: translateY(-2px);
@@ -263,20 +291,7 @@ function Menu({ selectedItems, setSelectedItems, menuItems, setMenuItems }) {
               className="bf-trash"
               style={trashBtn}
               onClick={() => {
-                const token = localStorage.getItem("access_token");
-
-                fetch(
-                  `https://bitefy-backend.onrender.com/api/menu-items/${item.id}/`,
-                  {
-                    method: "DELETE",
-                    headers: { Authorization: `Bearer ${token}` },
-                  },
-                )
-                  .then(() => {
-                    const newItems = menuItems.filter((_, i) => i !== index);
-                    setMenuItems(newItems);
-                  })
-                  .catch((error) => console.log("Error:", error));
+                setConfirmDialog({ isOpen: true, itemId: item.id });
               }}
             >
               <i className="fa-solid fa-trash"></i>

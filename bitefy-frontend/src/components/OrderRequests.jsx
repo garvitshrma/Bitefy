@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 
 const C = {
   bg: "#FBF8F4",
@@ -23,6 +24,12 @@ function OrderRequests() {
 
   const token = localStorage.getItem("access_token");
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    orderId: null,
+    action: null, // "reject" or "accept"
+  });
+
   // ── fetch pending (unaccepted) orders ──────────────────────
   const fetchRequests = () => {
     fetch(`${API}/api/orders/`, {
@@ -33,7 +40,10 @@ function OrderRequests() {
         if (!Array.isArray(data)) return;
         // waiting-for-decision = pending status AND not yet accepted
         const pending = data.filter(
-          (o) => o.status === "pending" && !o.is_accepted && o.order_type === "online"
+          (o) =>
+            o.status === "pending" &&
+            !o.is_accepted &&
+            o.order_type === "online",
         );
         setRequests(pending);
       })
@@ -66,6 +76,13 @@ function OrderRequests() {
   };
 
   const handleReject = (orderId) => {
+    setConfirmDialog({ isOpen: true, orderId, action: "reject" });
+  };
+
+  const confirmReject = () => {
+    const orderId = confirmDialog.orderId;
+    setConfirmDialog({ isOpen: false, orderId: null, action: null });
+
     setProcessing(orderId);
     fetch(`${API}/api/orders/${orderId}/reject/`, {
       method: "PATCH",
@@ -84,15 +101,15 @@ function OrderRequests() {
 
   // ── helpers ────────────────────────────────────────────────
   const summarizeItems = (items) => {
-  if (!Array.isArray(items) || items.length === 0) return "No items";
-  return items
-    .map((it) => {
-      const name = it.name || it.item_name || it.item || "Item";
-      const qty = it.quantity || it.qty || 1;
-      return `${qty}× ${name}`;
-    })
-    .join(", ");
-};
+    if (!Array.isArray(items) || items.length === 0) return "No items";
+    return items
+      .map((it) => {
+        const name = it.name || it.item_name || it.item || "Item";
+        const qty = it.quantity || it.qty || 1;
+        return `${qty}× ${name}`;
+      })
+      .join(", ");
+  };
 
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
@@ -221,6 +238,14 @@ function OrderRequests() {
 
   return (
     <div style={sidebarStyle}>
+      <ConfirmDialog
+      isOpen={confirmDialog.isOpen}
+      title="Reject Order?"
+      message="This order will be cancelled and the customer will be notified. This cannot be undone."
+      onConfirm={confirmReject}
+      onCancel={() => setConfirmDialog({ isOpen: false, orderId: null, action: null })}
+      isDangerous={true}
+    />
       <style>{`
         .bf-accept:hover { background: #2f9a5e !important; }
         .bf-reject:hover { background: ${C.redTint} !important; }
