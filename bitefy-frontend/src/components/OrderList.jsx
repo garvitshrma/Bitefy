@@ -213,6 +213,8 @@ function OrderList({
     .map((o) => o.id);
 
   const visibleOrders = [...seqIds, ...newIds].map((id) => byId[id]);
+  console.log("orders prop in OrderList:", orders);       // ← ADD
+console.log("visibleOrders:", visibleOrders);           // ← ADD
 
   return (
     <div className="bf-scrollbar" style={containerStyle}>

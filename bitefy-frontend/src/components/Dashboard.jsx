@@ -23,25 +23,22 @@ function Dashboard() {
     const token = localStorage.getItem("access_token");
 
     const fetchOrders = () => {
-      fetch("https://bitefy-backend.onrender.com/api/orders/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Orders response:", data);
-          if (Array.isArray(data)) {
-            const sorted = data.sort((a, b) => {
-              return new Date(b.created_at) - new Date(a.created_at);
-            });
-            setOrders(sorted);
-          } else {
-            setOrders([]);
-          }
-        })
-        .catch((error) => console.log("Error:", error));
-    };
+  fetch("https://bitefy-backend.onrender.com/api/orders/", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Orders response:", data);
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        setOrders([]);
+      }
+    })
+    .catch((error) => console.log("Error:", error));
+};
 
     fetch("https://bitefy-backend.onrender.com/api/menu-items/", {
       headers: { Authorization: `Bearer ${token}` },
