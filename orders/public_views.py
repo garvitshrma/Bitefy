@@ -65,7 +65,7 @@ def public_verify_payment(request, order_id):
         return Response({"error": "Order not found"}, status=404)
 
     client = razorpay.Client(
-        auth=("YOUR_LIVE_KEY_ID", "YOUR_LIVE_KEY_SECRET")  # same keys as initiate_payment
+        auth=("rzp_live_T3tL8sfG4xM0Md", "pcf6SteEQrtsWHJeCRXaPWCf") 
     )
 
     params = {
@@ -84,4 +84,4 @@ def public_verify_payment(request, order_id):
     order.payment_status = "completed"
     order.payment_id = params["razorpay_payment_id"]
     order.save()
-    return Response({"payment_status": "completed"})
+    return Response({"payment_status": "completed"})    
