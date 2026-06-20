@@ -28,8 +28,6 @@ function OrderList({
   activeTab,
   setActiveTab,
 }) {
-
-
   const [customerName, setCustomerName] = useState("");
   const [completedOrders, setCompletedOrders] = useState([]);
   const [numberOfOrders, setNumberOfOrders] = useState("1");
@@ -57,7 +55,7 @@ function OrderList({
     const to = ids.indexOf(targetId);
     if (from === -1 || to === -1) return;
     ids.splice(from, 1);
-    ids.splice(to, 0, draggedId); 
+    ids.splice(to, 0, draggedId);
     setManualSeq(ids);
     setDraggedId(null);
 
@@ -195,7 +193,9 @@ function OrderList({
   };
 
   const baseOrders = orders.filter(
-    (o) => o.is_accepted || o.order_type === "offline",
+    (o) =>
+      o.order_type === "offline" ||
+      (o.is_accepted && o.payment_status === "completed"),
   );
 
   const byId = {};
@@ -213,8 +213,8 @@ function OrderList({
     .map((o) => o.id);
 
   const visibleOrders = [...seqIds, ...newIds].map((id) => byId[id]);
-  console.log("orders prop in OrderList:", orders);       // ← ADD
-console.log("visibleOrders:", visibleOrders);           // ← ADD
+  console.log("orders prop in OrderList:", orders); // ← ADD
+  console.log("visibleOrders:", visibleOrders); // ← ADD
 
   return (
     <div className="bf-scrollbar" style={containerStyle}>
