@@ -15,6 +15,7 @@ import pumpkinAnimation from "../assets/animations/pumpkin.json";
 import vegetableAnimation from "../assets/animations/vegetable.json";
 import bonfireAnimation from "../assets/animations/bonfire.json";
 import restaurantAnimation from "../assets/animations/restaurant.json";
+import catAnimation from "../assets/animations/cat.json"
 
 // ── Design tokens (matches the app) ────────────────────────
 const C = {
@@ -332,7 +333,7 @@ function CustomerOrder() {
           )}
           {orderStatus == "ready" && (
             <Lottie
-              animationData={readyAnimation}
+              animationData={catAnimation}
               loop={true}
               style={{
                 width: 250,
@@ -396,7 +397,7 @@ function CustomerOrder() {
           {orderStatus === "pending" && (
             <>
               <Lottie
-                animationData={preparingAnimation}
+                animationData={readyAnimation}
                 loop={true}
                 style={{ width: 250, margin: "0 auto" }}
               />
