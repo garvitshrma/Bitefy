@@ -54,3 +54,34 @@ def public_initiate_payment(request, order_id):
         "amount": order.total,
         "key_id": "rzp_live_T3tL8sfG4xM0Md"
     })
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def public_verify_payment(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
+
+    client = razorpay.Client(
+        auth=("YOUR_LIVE_KEY_ID", "YOUR_LIVE_KEY_SECRET")  # same keys as initiate_payment
+    )
+
+    params = {
+        "razorpay_order_id": request.data.get("razorpay_order_id"),
+        "razorpay_payment_id": request.data.get("razorpay_payment_id"),
+        "razorpay_signature": request.data.get("razorpay_signature"),
+    }
+
+    try:
+        client.utility.verify_payment_signature(params)
+    except razorpay.errors.SignatureVerificationError:
+        order.payment_status = "failed"
+        order.save()
+        return Response({"error": "Verification failed"}, status=400)
+
+    order.payment_status = "completed"
+    order.payment_id = params["razorpay_payment_id"]
+    order.save()
+    return Response({"payment_status": "completed"})

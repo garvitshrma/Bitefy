@@ -59,11 +59,11 @@ function CustomerOrder() {
         .then((data) => {
           console.log("STATUS RESPONSE:", data);
           if (data.status === "cancelled") {
-            setOrderStatus("cancelled"); 
+            setOrderStatus("cancelled");
           } else if (!data.is_accepted) {
-            setOrderStatus("placed"); 
+            setOrderStatus("placed");
           } else {
-            setOrderStatus(data.status); 
+            setOrderStatus(data.status);
           }
         })
         .catch((err) => console.error(err));
@@ -173,9 +173,31 @@ function CustomerOrder() {
           amount: data.amount * 100,
           currency: "INR",
           order_id: data.razorpay_order_id,
-          handler: function (response) {
-            console.log("Payment success:", response);
-            setOrderStatus("preparing");
+          handler: async function (response) {
+            try {
+              const verifyRes = await fetch(
+                `https://bitefy-backend.onrender.com/api/public/verify-payment/${placedOrder.order_id}/`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                  }),
+                },
+              );
+              const verifyData = await verifyRes.json();
+              if (verifyData.payment_status === "completed") {
+                setOrderStatus("preparing");
+              } else {
+                alert(
+                  "Payment could not be verified. Please contact the restaurant.",
+                );
+              }
+            } catch (err) {
+              console.error("Verify error:", err);
+            }
           },
           theme: {
             color: "#FF8C42",

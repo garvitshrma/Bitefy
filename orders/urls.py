@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import OrderViewSet, RemovedOrderViewSet
-from .public_views import order_status, public_initiate_payment
+from .public_views import order_status, public_initiate_payment, public_verify_payment
 from .webhooks import razorpay_webhook
 
 router = DefaultRouter()
@@ -19,4 +19,6 @@ urlpatterns = [
 
     path('webhooks/razorpay/', razorpay_webhook, name='razorpay_webhook'),
     path('public/initiate-payment/<int:order_id>/', public_initiate_payment, name='public_initiate_payment'),
+
+    path('public/verify-payment/<int:order_id>/', public_verify_payment, name='public_verify_payment'),
 ]
