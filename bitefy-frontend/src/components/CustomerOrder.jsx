@@ -61,9 +61,11 @@ function CustomerOrder() {
           if (data.status === "cancelled") {
             setOrderStatus("cancelled");
           } else if (!data.is_accepted) {
-            setOrderStatus("placed");
+            setOrderStatus("placed"); // waiting for restaurant to accept
+          } else if (data.payment_status !== "completed") {
+            setOrderStatus("awaiting_payment"); // accepted, needs to pay
           } else {
-            setOrderStatus(data.status);
+            setOrderStatus(data.status); // paid → real kitchen status
           }
         })
         .catch((err) => console.error(err));
@@ -93,12 +95,13 @@ function CustomerOrder() {
   };
 
   const statusText = {
-    pending:
-      "Your order has been accepted, We will let you know when it's preparing.",
-    placed: "Waiting for Confirmation from restaurant.",
-    preparing: "Preparing Your Food",
-    ready: "Ready for Pickup",
-    cancelled: "We are sorry, your order has been cancelled.",
+    placed: "Waiting for confirmation from the restaurant.",
+    awaiting_payment:
+      "Your order is accepted! Please complete payment to confirm.",
+    pending: "Payment received! Waiting for the kitchen to start.",
+    preparing: "Preparing your food 🍳",
+    ready: "Your order is ready for pickup! 🎉",
+    cancelled: "We're sorry, your order has been cancelled.",
   };
 
   const [foodFactData, setFoodFactData] = useState({ fact: "", icon: null });
@@ -189,7 +192,7 @@ function CustomerOrder() {
               );
               const verifyData = await verifyRes.json();
               if (verifyData.payment_status === "completed") {
-                setOrderStatus("preparing");
+                setOrderStatus("pending");
               } else {
                 alert(
                   "Payment could not be verified. Please contact the restaurant.",
@@ -317,34 +320,6 @@ function CustomerOrder() {
               }}
             />
           )}
-          {orderStatus == "pending" && (
-            <>
-              <Lottie
-                animationData={deliveryAnimation}
-                loop={true}
-                style={{
-                  width: 250,
-                  margin: "0 auto",
-                }}
-              />
-              <button
-                onClick={handlePayment}
-                style={{
-                  marginTop: "20px",
-                  padding: "14px 28px",
-                  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
-                  border: "none",
-                  borderRadius: "10px",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-              >
-                Pay Now
-              </button>
-            </>
-          )}
           {orderStatus == "preparing" && (
             <Lottie
               animationData={preparingAnimation}
@@ -390,6 +365,45 @@ function CustomerOrder() {
             >
               ✨ {foodFactData.fact}
             </p>
+          )}
+
+          {orderStatus === "awaiting_payment" && (
+            <>
+              <Lottie
+                animationData={deliveryAnimation}
+                loop={true}
+                style={{ width: 250, margin: "0 auto" }}
+              />
+              <button
+                onClick={handlePayment}
+                style={{
+                  marginTop: "20px",
+                  padding: "14px 28px",
+                  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+              >
+                Pay Now
+              </button>
+            </>
+          )}
+
+          {orderStatus === "pending" && (
+            <>
+              <Lottie
+                animationData={preparingAnimation}
+                loop={true}
+                style={{ width: 250, margin: "0 auto" }}
+              />
+              <p style={{ color: C.green, fontWeight: 700, marginTop: "16px" }}>
+                ✅ Payment successful — sit tight!
+              </p>
+            </>
           )}
         </div>
       </div>
