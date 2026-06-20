@@ -33,7 +33,7 @@ def public_initiate_payment(request, order_id):
         return Response({"error": "Order already paid"}, status=400)
 
     client = razorpay.Client(
-        auth=("rzp_test_T2Nd6b98j6QVnQ", "ps6TcAzkWdqn9PBZhh6iChph")
+        auth=("rzp_live_T3tL8sfG4xM0Md", "pcf6SteEQrtsWHJeCRXaPWCf")
     )
 
     razorpay_order = client.order.create(
@@ -52,5 +52,5 @@ def public_initiate_payment(request, order_id):
         "order_id": order.id,
         "razorpay_order_id": razorpay_order["id"],
         "amount": order.total,
-        "key_id": "rzp_test_T2Nd6b98j6QVnQ"
+        "key_id": "rzp_live_T3tL8sfG4xM0Md"
     })
