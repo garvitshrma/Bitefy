@@ -1,21 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import deliveryAnimation from "./order-placed.json";
 import preparingAnimation from "./coffee.json";
 import readyAnimation from "./food-truck.json";
 import cancelAnimation from "./cancel.json";
-
-import appleAnimation from "../assets/animations/apple.json";
-import frenchAnimation from "../assets/animations/french-fries.json";
-import redWineAnimation from "../assets/animations/red-wine.json";
-import easterEggAnimation from "../assets/animations/easter-egg.json";
-import blackTeaAnimation from "../assets/animations/black-tea.json";
-import pumpkinAnimation from "../assets/animations/pumpkin.json";
-import vegetableAnimation from "../assets/animations/vegetable.json";
-import bonfireAnimation from "../assets/animations/bonfire.json";
-import restaurantAnimation from "../assets/animations/restaurant.json";
-import catAnimation from "../assets/animations/cat.json"
 
 // ── Design tokens (matches the app) ────────────────────────
 const C = {
@@ -28,624 +17,528 @@ const C = {
   accentDeep: "#E8722A",
   accentTint: "#FFF1E6",
   green: "#3DAA6D",
+  greenTint: "#E7F5EC",
+  blue: "#3B82C4",
+  blueTint: "#E8F1FA",
+  red: "#D9534F",
+  redTint: "#FBEAEA",
 };
+
+// The 5-stage journey every order travels through.
+const STAGES = ["Placed", "Accepted", "Paid", "Cooking", "Ready"];
+
+// Map a derived status → how far along the stepper it is.
+const STAGE_INDEX = {
+  placed: 0,
+  awaiting_payment: 1,
+  pending: 2, // paid, waiting for kitchen
+  preparing: 3,
+  ready: 4,
+};
+
+// Friendly copy + colour for each derived status.
+const STATUS_META = {
+  placed: { label: "Waiting for confirmation", color: C.accent, anim: deliveryAnimation },
+  awaiting_payment: { label: "Payment needed", color: C.accentDeep, anim: deliveryAnimation },
+  pending: { label: "Confirmed — in the queue", color: C.green, anim: preparingAnimation },
+  preparing: { label: "Cooking your food", color: C.blue, anim: preparingAnimation },
+  ready: { label: "Ready for pickup!", color: C.green, anim: readyAnimation },
+  cancelled: { label: "Order cancelled", color: C.red, anim: cancelAnimation },
+};
+
+// A few facts to keep customers entertained while they wait.
+const FOOD_FACTS = [
+  "French fries are actually Belgian — invented there in the 1600s.",
+  "Apples are 85% water.",
+  "Black tea has more caffeine than green tea because it's more oxidised.",
+  "Pumpkins are technically fruits, not vegetables.",
+  "Honey never spoils — edible pots have been found in ancient tombs.",
+  "Tomatoes are botanically a fruit, used like a vegetable.",
+  "Carrots were originally purple, not orange.",
+  "The world's oldest restaurant still running opened in Madrid in 1725.",
+];
 
 function CustomerOrder() {
   const { slug } = useParams();
+
   const [menuItems, setMenuItems] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState(null);
-  const [orderStatus, setOrderStatus] = useState("placed");
+  const [error, setError] = useState(null);
 
+  // orders = the customer's own placed orders (persisted to localStorage)
+  // statuses = live status for each, keyed by order_id (fetched, not persisted)
+  const [orders, setOrders] = useState([]);
+  const [statuses, setStatuses] = useState({});
+
+  const storageKey = `bitefy_orders_${slug}`;
+
+  // ── load menu ──────────────────────────────────────────────
   useEffect(() => {
     fetch(`https://bitefy-backend.onrender.com/api/public/menu/${slug}/`)
       .then((r) => r.json())
       .then((data) => {
-        console.log(data);
-        setMenuItems(data);
+        setMenuItems(Array.isArray(data) ? data : []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Couldn't load the menu. Please refresh.");
         setIsLoading(false);
       });
   }, [slug]);
 
+  // ── restore the customer's orders on load ─────────────────
   useEffect(() => {
-    if (!placedOrder) return;
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      try {
+        setOrders(JSON.parse(saved));
+      } catch {
+        /* ignore corrupt storage */
+      }
+    }
+  }, [storageKey]);
 
-    const interval = setInterval(() => {
-      fetch(
-        `https://bitefy-backend.onrender.com/api/public/order-status/${placedOrder.order_id}/`,
-      )
-        .then((r) => r.json())
-        .then((data) => {
-          console.log("STATUS RESPONSE:", data);
-          if (data.status === "cancelled") {
-            setOrderStatus("cancelled");
-          } else if (!data.is_accepted) {
-            setOrderStatus("placed"); 
-          } else if (data.payment_status !== "completed") {
-            setOrderStatus("awaiting_payment"); 
-          } else {
-            setOrderStatus(data.status);
-          }
-        })
-        .catch((err) => console.error(err));
-    }, 3000);
+  // ── load Razorpay checkout script once ────────────────────
+  useEffect(() => {
+    if (document.getElementById("razorpay-checkout")) return;
+    const script = document.createElement("script");
+    script.id = "razorpay-checkout";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    document.body.appendChild(script);
+  }, []);
 
+  // ── poll status for every active order every 3s ───────────
+  useEffect(() => {
+    if (orders.length === 0) return;
+
+    const poll = () => {
+      orders.forEach((o) => {
+        fetch(
+          `https://bitefy-backend.onrender.com/api/public/order-status/${o.order_id}/`,
+        )
+          .then((r) => r.json())
+          .then((data) =>
+            setStatuses((prev) => ({ ...prev, [o.order_id]: data })),
+          )
+          .catch(() => {});
+      });
+    };
+
+    poll();
+    const interval = setInterval(poll, 3000);
     return () => clearInterval(interval);
-  }, [placedOrder]);
-  const total = menuItems.reduce((sum, item) => {
-    return sum + item.price * (quantities[item.id] || 0);
-  }, 0);
+  }, [orders]);
 
-
-  const increaseQty = (item) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [item.id]: (prev[item.id] || 0) + 1,
-    }));
+  // ── derive a single status string from a status payload ───
+  const deriveStatus = (s) => {
+    if (!s) return "placed";
+    if (s.status === "cancelled") return "cancelled";
+    if (!s.is_accepted) return "placed";
+    if (s.payment_status !== "completed") return "awaiting_payment";
+    return s.status; // pending | preparing | ready
   };
 
-
-  const decreaseQty = (item) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [item.id]: Math.max(0, (prev[item.id] || 0) - 1),
-    }));
+  const persist = (next) => {
+    setOrders(next);
+    localStorage.setItem(storageKey, JSON.stringify(next));
   };
 
-  const statusText = {
-    placed: "Waiting for confirmation from the restaurant.",
-    awaiting_payment:
-      "Your order is accepted! Please complete payment to confirm.",
-    pending: "Payment received! Waiting for the kitchen to start.",
-    preparing: "Preparing your food 🍳",
-    ready: "Your order is ready for pickup! 🎉",
-    cancelled: "We're sorry, your order has been cancelled.",
+  const dismissOrder = (orderId) => {
+    persist(orders.filter((o) => o.order_id !== orderId));
+    setStatuses((prev) => {
+      const n = { ...prev };
+      delete n[orderId];
+      return n;
+    });
   };
 
-  const [foodFactData, setFoodFactData] = useState({ fact: "", icon: null });
+  // ── cart helpers ──────────────────────────────────────────
+  const total = menuItems.reduce(
+    (sum, item) => sum + item.price * (quantities[item.id] || 0),
+    0,
+  );
+  const increaseQty = (item) =>
+    setQuantities((p) => ({ ...p, [item.id]: (p[item.id] || 0) + 1 }));
+  const decreaseQty = (item) =>
+    setQuantities((p) => ({ ...p, [item.id]: Math.max(0, (p[item.id] || 0) - 1) }));
 
-  const foodFactsWithIcons = [
-    {
-      fact: "Did you know? The world's oldest restaurant still operating is Restaurante Restaurante in Spain, founded in 1725.",
-      icon: restaurantAnimation,
-    },
-    {
-      fact: "Did you know? An apple a day keeps the doctor away? Apples are 85% water!",
-      icon: appleAnimation,
-    },
-    {
-      fact: "Fun fact: French fries are actually Belgian, not French! They were invented in Belgium in the 1600s.",
-      icon: frenchAnimation,
-    },
-    {
-      fact: "Did you know? Red wine gets its color from grape skins. White wine doesn't use the skins during fermentation.",
-      icon: redWineAnimation,
-    },
-    {
-      fact: "Fun fact: Easter eggs are traditionally decorated to symbolize rebirth and new life in spring.",
-      icon: easterEggAnimation,
-    },
-    {
-      fact: "Did you know? Black tea has more caffeine than green tea because it's more oxidized.",
-      icon: blackTeaAnimation,
-    },
-    {
-      fact: "Fun fact: Pumpkins are technically fruits, not vegetables! They grow from the flower of the plant.",
-      icon: pumpkinAnimation,
-    },
-    {
-      fact: "Did you know? Vegetables are defined by how we eat them, not by biology. Tomatoes are actually fruits!",
-      icon: vegetableAnimation,
-    },
-    {
-      fact: "Fun fact: Roasting food over a bonfire creates a unique smoky flavor that can't be replicated in modern cooking.",
-      icon: bonfireAnimation,
-    },
-  ];
+  const placeOrder = () => {
+    const items = menuItems
+      .filter((item) => quantities[item.id] > 0)
+      .map((item) => ({
+        name: item.name,
+        quantity: quantities[item.id],
+        price: item.price,
+      }));
 
-  // ── shared styles ────────────────────────────────────────
-  const pageStyle = {
-    minHeight: "100vh",
-    background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
-    padding: "40px 20px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    color: C.ink,
-    boxSizing: "border-box",
+    if (items.length === 0) {
+      alert("Please select at least one item.");
+      return;
+    }
+
+    const orderTotal = total;
+    const orderNumber = Math.floor(Math.random() * 900000) + 100000;
+
+    fetch(`https://bitefy-backend.onrender.com/api/public/order/${slug}/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: `Order #${orderNumber}`,
+        items,
+        total: orderTotal,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const newOrder = {
+          order_id: data.order_id,
+          order_number: data.order_number || `Order #${orderNumber}`,
+          items,
+          total: orderTotal,
+        };
+        persist([...orders, newOrder]);
+        setQuantities({});
+        // scroll the customer up to their freshly-placed order
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      })
+      .catch(() => alert("Couldn't place your order. Please try again."));
   };
 
-  const handlePayment = async () => {
+  // ── payment ───────────────────────────────────────────────
+  const handlePayment = async (order) => {
     try {
       const res = await fetch(
-        `https://bitefy-backend.onrender.com/api/public/initiate-payment/${placedOrder.order_id}/`,
+        `https://bitefy-backend.onrender.com/api/public/initiate-payment/${order.order_id}/`,
         { method: "POST" },
       );
       const data = await res.json();
 
-      console.log("Payment response:", data); 
-      console.log("Status:", res.status);
-
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => {
-        const options = {
-          key: data.key_id,
-          amount: data.amount * 100,
-          currency: "INR",
-          order_id: data.razorpay_order_id,
-          handler: async function (response) {
-            try {
-              const verifyRes = await fetch(
-                `https://bitefy-backend.onrender.com/api/public/verify-payment/${placedOrder.order_id}/`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                  }),
+      const options = {
+        key: data.key_id,
+        amount: data.amount * 100,
+        currency: "INR",
+        order_id: data.razorpay_order_id,
+        name: "Bitefy",
+        description: order.order_number,
+        handler: async (response) => {
+          try {
+            const vr = await fetch(
+              `https://bitefy-backend.onrender.com/api/public/verify-payment/${order.order_id}/`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              },
+            );
+            const vd = await vr.json();
+            if (vd.payment_status === "completed") {
+              // optimistic update — next poll will confirm
+              setStatuses((prev) => ({
+                ...prev,
+                [order.order_id]: {
+                  ...(prev[order.order_id] || {}),
+                  is_accepted: true,
+                  payment_status: "completed",
+                  status: "pending",
                 },
-              );
-              const verifyData = await verifyRes.json();
-              if (verifyData.payment_status === "completed") {
-                setOrderStatus("pending");
-              } else {
-                alert(
-                  "Payment could not be verified. Please contact the restaurant.",
-                );
-              }
-            } catch (err) {
-              console.error("Verify error:", err);
+              }));
+            } else {
+              alert("Payment couldn't be verified. Please show this to the counter.");
             }
-          },
-          theme: {
-            color: "#FF8C42",
-          },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+          } catch (err) {
+            console.error("Verify error:", err);
+          }
+        },
+        theme: { color: C.accent },
       };
-      document.body.appendChild(script);
+
+      if (!window.Razorpay) {
+        alert("Payment is still loading — please try again in a moment.");
+        return;
+      }
+      new window.Razorpay(options).open();
     } catch (err) {
       console.error("Payment error:", err);
     }
   };
 
+  // ── styles ────────────────────────────────────────────────
+  const pageStyle = {
+    minHeight: "100vh",
+    background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
+    padding: "32px 16px 60px",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    color: C.ink,
+    boxSizing: "border-box",
+  };
+
+  // ── loading / error gates ─────────────────────────────────
   if (isLoading)
     return (
-      <div
-        style={{
-          ...pageStyle,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ color: C.muted, fontSize: "16px" }}>Loading menu…</p>
       </div>
     );
 
-  if (orderPlaced)
+  if (error)
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: `linear-gradient(180deg, ${C.bg} 0%, ${C.accentTint} 100%)`,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          boxSizing: "border-box",
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "500px",
-            background: C.surface,
-            borderRadius: "24px",
-            padding: "32px",
-            border: `1px solid ${C.border}`,
-            boxShadow: "0 20px 50px rgba(42,33,24,0.12)",
-            textAlign: "center",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "2rem",
-              fontWeight: 800,
-              letterSpacing: "-0.02em",
-              marginBottom: "10px",
-              color: C.accentDeep,
-            }}
-          >
-            🎉 Order Placed!
-          </h1>
-          <p
-            style={{
-              color: C.muted,
-              marginBottom: "20px",
-              fontWeight: 600,
-            }}
-          >
-            {placedOrder?.order_number}
-          </p>
-          <h2 style={{ color: C.ink, fontSize: "1.3rem", fontWeight: 700 }}>
-            {statusText[orderStatus] || orderStatus}
-          </h2>
-          <div>
-            <h3 style={{ color: C.ink, marginTop: "24px" }}>Order Summary</h3>
-            {placedOrder?.items?.map((item, index) => (
-              <div key={index}>
-                <p style={{ color: C.muted }}>
-                  {item.name} x {item.quantity} - ₹{item.price * item.quantity}
-                </p>
-              </div>
-            ))}
-
-            <hr
-              style={{
-                border: "none",
-                borderTop: `1px solid ${C.border}`,
-                margin: "16px 0",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                fontSize: "1.3rem",
-                fontWeight: "bold",
-              }}
-            >
-              <h3 style={{ color: C.accentDeep }}>
-                Total: ₹{placedOrder?.total}
-              </h3>
-            </div>
-          </div>
-          {orderStatus == "placed" && (
-            <Lottie
-              animationData={foodFactData.icon}
-              loop={true}
-              style={{
-                width: 250,
-                margin: "0 auto",
-              }}
-            />
-          )}
-          {orderStatus == "preparing" && (
-            <Lottie
-              animationData={preparingAnimation}
-              loop={true}
-              style={{
-                width: 250,
-                margin: "0 auto",
-              }}
-            />
-          )}
-          {orderStatus == "ready" && (
-            <Lottie
-              animationData={catAnimation}
-              loop={true}
-              style={{
-                width: 250,
-                margin: "0 auto",
-              }}
-            />
-          )}
-
-          {orderStatus == "cancelled" && (
-            <Lottie
-              animationData={cancelAnimation}
-              loop={true}
-              style={{
-                width: 250,
-                margin: "0 auto",
-              }}
-            />
-          )}
-
-          {orderStatus == "placed" && (
-            <p
-              style={{
-                color: C.muted,
-                fontSize: "14px",
-                fontStyle: "italic",
-                marginTop: "20px",
-                padding: "0 20px",
-                lineHeight: 1.6,
-              }}
-            >
-              ✨ {foodFactData.fact}
-            </p>
-          )}
-
-          {orderStatus === "awaiting_payment" && (
-            <>
-              <Lottie
-                animationData={deliveryAnimation}
-                loop={true}
-                style={{ width: 250, margin: "0 auto" }}
-              />
-              <button
-                onClick={handlePayment}
-                style={{
-                  marginTop: "20px",
-                  padding: "14px 28px",
-                  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
-                  border: "none",
-                  borderRadius: "10px",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-              >
-                Pay Now
-              </button>
-            </>
-          )}
-
-          {orderStatus === "pending" && (
-            <>
-              <Lottie
-                animationData={readyAnimation}
-                loop={true}
-                style={{ width: 250, margin: "0 auto" }}
-              />
-              <p style={{ color: C.green, fontWeight: 700, marginTop: "16px" }}>
-                ✅ Payment successful — sit tight!
-              </p>
-            </>
-          )}
+      <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "18px", fontWeight: 700 }}>{error}</p>
+          <button onClick={() => window.location.reload()} style={primaryBtn}>
+            Try again
+          </button>
         </div>
       </div>
     );
 
-  // ── menu view styles ─────────────────────────────────────
-  const itemNameStyle = {
-    color: C.ink,
-    fontSize: "1.1rem",
-    fontWeight: 700,
-  };
+  // ── progress stepper ──────────────────────────────────────
+  const Stepper = ({ idx, color }) => (
+    <div style={{ display: "flex", alignItems: "center", margin: "14px 0 6px" }}>
+      {STAGES.map((label, i) => {
+        const reached = i <= idx;
+        const isCurrent = i === idx;
+        return (
+          <div key={label} style={{ display: "flex", alignItems: "center", flex: i < STAGES.length - 1 ? 1 : "0 0 auto" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "5px" }}>
+              <div
+                className={isCurrent ? "bf-dot-pulse" : ""}
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "50%",
+                  background: reached ? color : C.border,
+                  boxShadow: isCurrent ? `0 0 0 4px ${color}22` : "none",
+                  flexShrink: 0,
+                }}
+              />
+              <span style={{ fontSize: "9.5px", fontWeight: 700, letterSpacing: "0.02em", color: reached ? C.ink : C.muted, whiteSpace: "nowrap" }}>
+                {label}
+              </span>
+            </div>
+            {i < STAGES.length - 1 && (
+              <div style={{ flex: 1, height: "2px", margin: "0 4px", marginBottom: "16px", background: i < idx ? color : C.border, borderRadius: "2px" }} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 
-  const priceStyle = {
-    color: C.accentDeep,
-    fontWeight: 700,
-    fontSize: "1rem",
-    marginTop: "4px",
-  };
+  // ── one order card ────────────────────────────────────────
+  const OrderCard = ({ order }) => {
+    const status = deriveStatus(statuses[order.order_id]);
+    const meta = STATUS_META[status];
+    const idx = STAGE_INDEX[status] ?? 0;
+    const cancelled = status === "cancelled";
+    const done = status === "ready";
+    const fact = FOOD_FACTS[order.order_id % FOOD_FACTS.length];
 
-  const quantityContainerStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  };
+    const itemSummary = (order.items || [])
+      .map((it) => `${it.name} ×${it.quantity}`)
+      .join(" · ");
 
-  const quantityButtonStyle = {
-    width: "40px",
-    height: "40px",
-    border: "none",
-    borderRadius: "10px",
-    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
-    color: "#fff",
-    cursor: "pointer",
-    fontSize: "20px",
-    fontWeight: "bold",
-    boxShadow: "0 4px 10px rgba(255,140,66,0.28)",
-  };
+    return (
+      <div
+        style={{
+          background: cancelled ? C.redTint : done ? C.greenTint : C.surface,
+          border: `1px solid ${cancelled ? C.red + "44" : C.border}`,
+          borderLeft: `5px solid ${meta.color}`,
+          borderRadius: "18px",
+          padding: "18px 18px 16px",
+          marginBottom: "14px",
+          boxShadow: "0 4px 16px rgba(42,33,24,0.06)",
+        }}
+      >
+        {/* header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+            <Lottie animationData={meta.anim} loop={!done && !cancelled} style={{ width: 52, height: 52, flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 800, fontSize: "16px" }}>{order.order_number}</div>
+              <div style={{ fontSize: "12px", color: C.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "190px" }}>
+                {itemSummary}
+              </div>
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              color: meta.color,
+              background: "rgba(255,255,255,0.75)",
+              padding: "5px 10px",
+              borderRadius: "999px",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            {meta.label}
+          </span>
+        </div>
 
-  const quantityTextStyle = {
-    color: C.ink,
-    minWidth: "22px",
-    textAlign: "center",
-    fontWeight: 700,
-    fontSize: "16px",
-  };
+        {/* stepper (hidden when cancelled) */}
+        {!cancelled && <Stepper idx={idx} color={meta.color} />}
 
-  const cartStyle = {
-    background: C.surface,
-    border: `1px solid ${C.border}`,
-    borderRadius: "20px",
-    padding: "26px",
-    maxWidth: "700px",
-    margin: "30px auto 0 auto",
-    boxShadow: "0 10px 30px rgba(42,33,24,0.06)",
-  };
+        {/* waiting-state food fact */}
+        {(status === "placed" || status === "pending") && (
+          <p style={{ fontSize: "12.5px", color: C.muted, fontStyle: "italic", margin: "8px 2px 0", lineHeight: 1.5 }}>
+            ✨ {fact}
+          </p>
+        )}
 
-  const orderButtonStyle = {
-    width: "100%",
-    background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
-    boxShadow: "0 8px 20px rgba(255,140,66,0.32)",
-    fontSize: "17px",
-    color: "white",
-    border: "none",
-    borderRadius: "12px",
-    padding: "16px",
-    fontWeight: 700,
-    cursor: "pointer",
-    marginTop: "18px",
-    letterSpacing: "0.3px",
-  };
+        {/* footer: total + action */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "14px" }}>
+          <span style={{ fontWeight: 800, fontSize: "17px", color: C.accentDeep }}>₹{order.total}</span>
 
-  const menuCardStyle = {
-    background: C.surface,
-    border: `1px solid ${C.border}`,
-    borderRadius: "16px",
-    padding: "18px 22px",
-    maxWidth: "700px",
-    margin: "0 auto 14px auto",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "16px",
-    transition: "all 0.18s ease",
+          {status === "awaiting_payment" && (
+            <button onClick={() => handlePayment(order)} style={{ ...primaryBtn, marginTop: 0, padding: "11px 22px" }}>
+              Pay ₹{order.total}
+            </button>
+          )}
+          {(done || cancelled) && (
+            <button onClick={() => dismissOrder(order.order_id)} style={ghostBtn}>
+              {done ? "Got it" : "Dismiss"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
     <div style={pageStyle}>
       <style>{`
         .bf-menucard:hover { transform: translateY(-3px);
-          box-shadow: 0 10px 26px rgba(42,33,24,0.08);
-          border-color: ${C.accent} !important; }
+          box-shadow: 0 10px 26px rgba(42,33,24,0.08); border-color: ${C.accent} !important; }
         .bf-qty:active { transform: scale(0.92); }
         .bf-place:active { transform: scale(0.99); }
+        @keyframes bf-pulse { 0%{opacity:1} 50%{opacity:0.45} 100%{opacity:1} }
+        .bf-dot-pulse { animation: bf-pulse 1.4s infinite; }
       `}</style>
 
-      <div>
-        <div>
-          <div
-            style={{
-              textAlign: "center",
-              marginBottom: "36px",
-            }}
-          >
-            <h1
-              style={{
-                color: C.accentDeep,
-                fontSize: "clamp(30px, 7vw, 44px)",
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-                marginBottom: "8px",
-              }}
-            >
-              <i className="fa-solid fa-burger"></i> Bitefy
-            </h1>
+      <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+        {/* header */}
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
+          <h1 style={{ color: C.accentDeep, fontSize: "clamp(30px, 7vw, 42px)", fontWeight: 800, letterSpacing: "-0.02em", marginBottom: "6px" }}>
+            <i className="fa-solid fa-burger"></i> Bitefy
+          </h1>
+          <p style={{ color: C.muted, fontWeight: 600, margin: 0 }}>Scan • Order • Enjoy</p>
+        </div>
 
-            <p
-              style={{
-                color: C.muted,
-                fontWeight: 600,
-              }}
-            >
-              Select your items
+        {/* active orders */}
+        {orders.length > 0 && (
+          <div style={{ marginBottom: "30px" }}>
+            <p style={{ textTransform: "uppercase", letterSpacing: "0.09em", fontSize: "11px", fontWeight: 700, color: C.muted, margin: "0 0 12px 2px" }}>
+              Your Orders ({orders.length})
             </p>
+            {orders.map((order) => (
+              <OrderCard key={order.order_id} order={order} />
+            ))}
           </div>
+        )}
 
-          {menuItems.map((item) => (
-            <div key={item.id} className="bf-menucard" style={menuCardStyle}>
-              <div>
-                <div style={itemNameStyle}>{item.name}</div>
-                <div style={priceStyle}>₹{item.price}</div>
-              </div>
-              <div style={quantityContainerStyle}>
-                <button
-                  className="bf-qty"
-                  style={quantityButtonStyle}
-                  onClick={() => decreaseQty(item)}
-                >
-                  -
-                </button>
-                <span style={quantityTextStyle}>
-                  {quantities[item.id] || 0}
-                </span>
-                <button
-                  className="bf-qty"
-                  style={quantityButtonStyle}
-                  onClick={() => increaseQty(item)}
-                >
-                  +
-                </button>
-              </div>
+        {/* menu */}
+        <p style={{ textTransform: "uppercase", letterSpacing: "0.09em", fontSize: "11px", fontWeight: 700, color: C.muted, margin: "0 0 12px 2px" }}>
+          {orders.length > 0 ? "Order More" : "Menu"}
+        </p>
+
+        {menuItems.map((item) => (
+          <div key={item.id} className="bf-menucard" style={menuCardStyle}>
+            <div>
+              <div style={{ color: C.ink, fontSize: "1.05rem", fontWeight: 700 }}>{item.name}</div>
+              <div style={{ color: C.accentDeep, fontWeight: 700, fontSize: "0.95rem", marginTop: "4px" }}>₹{item.price}</div>
             </div>
-          ))}
-
-          <div style={cartStyle}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span
-                style={{
-                  color: C.muted,
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                }}
-              >
-                Order Total
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <button className="bf-qty" style={qtyBtn} onClick={() => decreaseQty(item)}>-</button>
+              <span style={{ color: C.ink, minWidth: "22px", textAlign: "center", fontWeight: 700, fontSize: "16px" }}>
+                {quantities[item.id] || 0}
               </span>
-
-              <span
-                style={{
-                  color: C.ink,
-                  fontSize: "1.6rem",
-                  fontWeight: 800,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                ₹{total}
-              </span>
+              <button className="bf-qty" style={qtyBtn} onClick={() => increaseQty(item)}>+</button>
             </div>
-
-            <button
-              className="bf-place"
-              style={orderButtonStyle}
-              onClick={() => {
-                const items = menuItems
-                  .filter((item) => quantities[item.id] > 0)
-                  .map((item) => ({
-                    name: item.name,
-                    quantity: quantities[item.id],
-                    price: item.price,
-                  }));
-
-                if (items.length === 0) {
-                  alert("Please select items!");
-                  return;
-                }
-
-                const orderTotal = total;
-                const orderItems = items;
-
-                const orderNumber = Math.floor(Math.random() * 900000) + 100000;
-
-                fetch(
-                  `https://bitefy-backend.onrender.com/api/public/order/${slug}/`,
-                  {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      name: `Order #${orderNumber}`,
-                      items: items,
-                      total: total,
-                    }),
-                  },
-                )
-                  .then((r) => r.json())
-                  .then((data) => {
-                    console.log("Order placed:", data);
-                    setPlacedOrder({
-                      ...data,
-                      items: orderItems,
-                      total: orderTotal,
-                    });
-                    setOrderPlaced(true);
-                    const randomData =
-                      foodFactsWithIcons[
-                        Math.floor(Math.random() * foodFactsWithIcons.length)
-                      ];
-                    setFoodFactData(randomData);
-                    setQuantities({});
-                  })
-                  .catch((error) => console.log("Error:", error));
-              }}
-            >
-              Place Order
-            </button>
           </div>
+        ))}
+
+        {/* cart */}
+        <div style={cartStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: C.muted, fontSize: "1rem", fontWeight: 600 }}>Order total</span>
+            <span style={{ color: C.ink, fontSize: "1.6rem", fontWeight: 800, letterSpacing: "-0.02em" }}>₹{total}</span>
+          </div>
+          <button className="bf-place" style={{ ...primaryBtn, width: "100%", padding: "16px", fontSize: "17px" }} onClick={placeOrder}>
+            Place order
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+// ── shared button + card styles ─────────────────────────────
+const primaryBtn = {
+  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+  boxShadow: "0 8px 20px rgba(255,140,66,0.32)",
+  color: "white",
+  border: "none",
+  borderRadius: "12px",
+  padding: "13px 24px",
+  fontWeight: 700,
+  cursor: "pointer",
+  marginTop: "18px",
+  letterSpacing: "0.3px",
+};
+
+const ghostBtn = {
+  background: "transparent",
+  border: `1px solid ${C.border}`,
+  borderRadius: "10px",
+  padding: "10px 18px",
+  fontWeight: 700,
+  fontSize: "14px",
+  color: C.ink,
+  cursor: "pointer",
+};
+
+const qtyBtn = {
+  width: "40px",
+  height: "40px",
+  border: "none",
+  borderRadius: "10px",
+  background: `linear-gradient(135deg, ${C.accent}, #FF6F3C)`,
+  color: "#fff",
+  cursor: "pointer",
+  fontSize: "20px",
+  fontWeight: "bold",
+  boxShadow: "0 4px 10px rgba(255,140,66,0.28)",
+};
+
+const menuCardStyle = {
+  background: C.surface,
+  border: `1px solid ${C.border}`,
+  borderRadius: "16px",
+  padding: "16px 20px",
+  margin: "0 auto 12px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "16px",
+  transition: "all 0.18s ease",
+};
+
+const cartStyle = {
+  background: C.surface,
+  border: `1px solid ${C.border}`,
+  borderRadius: "20px",
+  padding: "24px",
+  margin: "20px auto 0",
+  boxShadow: "0 10px 30px rgba(42,33,24,0.06)",
+};
 
 export default CustomerOrder;
