@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import Order
 import razorpay
+from django.conf import settings
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -34,7 +35,7 @@ def public_initiate_payment(request, order_id):
         return Response({"error": "Order already paid"}, status=400)
 
     client = razorpay.Client(
-        auth=("rzp_live_T3tL8sfG4xM0Md", "pcf6SteEQrtsWHJeCRXaPWCf")
+        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
     )
 
     razorpay_order = client.order.create(
@@ -53,7 +54,7 @@ def public_initiate_payment(request, order_id):
         "order_id": order.id,
         "razorpay_order_id": razorpay_order["id"],
         "amount": order.total,
-        "key_id": "rzp_live_T3tL8sfG4xM0Md"
+        "key_id": settings.RAZORPAY_KEY_ID
     })
 
 
@@ -66,7 +67,7 @@ def public_verify_payment(request, order_id):
         return Response({"error": "Order not found"}, status=404)
 
     client = razorpay.Client(
-        auth=("rzp_live_T3tL8sfG4xM0Md", "pcf6SteEQrtsWHJeCRXaPWCf") 
+        auth=(settings.RAZORPAY_KEY_ID , settings.RAZORPAY_KEY_SECRET) 
     )
 
     params = {
