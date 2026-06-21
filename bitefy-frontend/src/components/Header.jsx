@@ -32,7 +32,7 @@ function Header({ setShowModal, setActiveTab }) {
     const toggleOpen = async () => {
     const token = localStorage.getItem("access_token");
     const newStatus = !isOpen;
-    setIsOpen(newStatus); // optimistic update
+    setIsOpen(newStatus); 
 
     try {
       await fetch(
@@ -48,7 +48,7 @@ function Header({ setShowModal, setActiveTab }) {
       );
     } catch (error) {
       console.log("Error toggling status:", error);
-      setIsOpen(!newStatus); // revert on failure
+      setIsOpen(!newStatus);
     }
   };
 
@@ -57,7 +57,6 @@ function Header({ setShowModal, setActiveTab }) {
       const token = localStorage.getItem("access_token");
 
       const response = await fetch(
-        // "http://localhost:8000/api/restaurants/my_restaurant/"
         "https://bitefy-backend.onrender.com/api/restaurants/my_restaurant/",
         {
           headers: {
@@ -73,7 +72,7 @@ function Header({ setShowModal, setActiveTab }) {
       setRestaurant(data);
     } catch (error) {
       console.log("Error fetching restaurant:", error);
-      setRestaurant({ name: "My Restaurant" }); // Fallback
+      setRestaurant({ name: "My Restaurant" });
     } finally {
       setLoading(false);
     }
@@ -205,13 +204,13 @@ function Header({ setShowModal, setActiveTab }) {
           style={settingsButtonStyle}
           onClick={() => {
             setActiveTab("settings");
-            lottieRef.current.goToAndPlay(0); // ← play from start every click
+            lottieRef.current.goToAndPlay(0);
           }}
         >
           <Lottie
-            lottieRef={lottieRef} // ← attach the ref
+            lottieRef={lottieRef}
             animationData={settingsAnimation}
-            autoplay={false} // ← never autoplay
+            autoplay={false}
             loop={false}
             style={{ width: 40 }}
             onComplete={() => lottieRef.current.stop()}

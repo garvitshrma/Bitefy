@@ -24,12 +24,8 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [restaurantName, setRestaurantName] = useState("");
-
-  // Login state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
-  // Tab state
   const [activeTab, setActiveTab] = useState("signup");
 
   // ── styles ───────────────────────────────────────────────
@@ -216,7 +212,6 @@ function Auth() {
                   password: loginPassword,
                 };
                 fetch(
-                  // "http://localhost:8000/api/auth/login/"
                   "https://bitefy-backend.onrender.com/api/auth/login/",
                   {
                     method: "POST",
@@ -235,7 +230,6 @@ function Auth() {
                     localStorage.setItem("user", JSON.stringify(data.user));
                     console.log("Login response:", data);
                     console.log("Login successful!");
-                    // Later: redirect to dashboard
                     window.location.href = "/dashboard";
                   })
                   .catch((error) => console.log("Error:", error));
@@ -254,7 +248,6 @@ function Auth() {
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
                   console.log("Google login success!", credentialResponse);
-                  // Send to Django next!
                 }}
                 onError={() => {
                   alert("Google login failed!");
@@ -363,7 +356,6 @@ function Auth() {
                 console.log("Sending:", signupData);
 
                 fetch(
-                  // "http://localhost:8000/api/auth/signup/"
                   "https://bitefy-backend.onrender.com/api/auth/signup/",
                   {
                     method: "POST",

@@ -62,11 +62,11 @@ function CustomerOrder() {
           if (data.status === "cancelled") {
             setOrderStatus("cancelled");
           } else if (!data.is_accepted) {
-            setOrderStatus("placed"); // waiting for restaurant to accept
+            setOrderStatus("placed"); 
           } else if (data.payment_status !== "completed") {
-            setOrderStatus("awaiting_payment"); // accepted, needs to pay
+            setOrderStatus("awaiting_payment"); 
           } else {
-            setOrderStatus(data.status); // paid → real kitchen status
+            setOrderStatus(data.status);
           }
         })
         .catch((err) => console.error(err));
@@ -74,12 +74,11 @@ function CustomerOrder() {
 
     return () => clearInterval(interval);
   }, [placedOrder]);
-  // Calculate total
   const total = menuItems.reduce((sum, item) => {
     return sum + item.price * (quantities[item.id] || 0);
   }, 0);
 
-  // Increase quantity
+
   const increaseQty = (item) => {
     setQuantities((prev) => ({
       ...prev,
@@ -87,7 +86,7 @@ function CustomerOrder() {
     }));
   };
 
-  // Decrease quantity
+
   const decreaseQty = (item) => {
     setQuantities((prev) => ({
       ...prev,
@@ -165,10 +164,9 @@ function CustomerOrder() {
       );
       const data = await res.json();
 
-      console.log("Payment response:", data); // ← ADD THIS
+      console.log("Payment response:", data); 
       console.log("Status:", res.status);
 
-      // Load Razorpay script
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => {
