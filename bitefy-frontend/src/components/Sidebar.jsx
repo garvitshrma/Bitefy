@@ -11,7 +11,6 @@ const C = {
 };
 
 function Sidebar({ activeTab, setActiveTab }) {
-  // Track active
 
   const mainStyle = {
     display: "flex",

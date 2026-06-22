@@ -20,14 +20,14 @@ const API = "https://bitefy-backend.onrender.com";
 
 function OrderRequests() {
   const [requests, setRequests] = useState([]);
-  const [processing, setProcessing] = useState(null); // id currently being accepted/rejected
+  const [processing, setProcessing] = useState(null); 
 
   const token = localStorage.getItem("access_token");
 
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     orderId: null,
-    action: null, // "reject" or "accept"
+    action: null, 
   });
 
   // ── fetch pending (unaccepted) orders ──────────────────────
@@ -38,7 +38,6 @@ function OrderRequests() {
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) return;
-        // waiting-for-decision = pending status AND not yet accepted
         const pending = data.filter(
           (o) =>
             o.status === "pending" &&
@@ -52,7 +51,7 @@ function OrderRequests() {
 
   useEffect(() => {
     fetchRequests();
-    const interval = setInterval(fetchRequests, 3000); // auto-refresh every 3s
+    const interval = setInterval(fetchRequests, 3000); 
     return () => clearInterval(interval);
   }, []);
 
