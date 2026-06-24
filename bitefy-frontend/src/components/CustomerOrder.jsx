@@ -6,6 +6,16 @@ import preparingAnimation from "./coffee.json";
 import readyAnimation from "./food-truck.json";
 import cancelAnimation from "./cancel.json";
 
+import appleAnimation from "../assets/animations/apple.json";
+import frenchAnimation from "../assets/animations/french-fries.json";
+import redWineAnimation from "../assets/animations/red-wine.json";
+import easterEggAnimation from "../assets/animations/easter-egg.json";
+import blackTeaAnimation from "../assets/animations/black-tea.json";
+import pumpkinAnimation from "../assets/animations/pumpkin.json";
+import vegetableAnimation from "../assets/animations/vegetable.json";
+import bonfireAnimation from "../assets/animations/bonfire.json";
+import restaurantAnimation from "../assets/animations/restaurant.json";
+
 // ── Design tokens (matches the app) ────────────────────────
 const C = {
   bg: "#FBF8F4",
@@ -48,14 +58,15 @@ const STATUS_META = {
 
 // A few facts to keep customers entertained while they wait.
 const FOOD_FACTS = [
-  "French fries are actually Belgian — invented there in the 1600s.",
-  "Apples are 85% water.",
-  "Black tea has more caffeine than green tea because it's more oxidised.",
-  "Pumpkins are technically fruits, not vegetables.",
-  "Honey never spoils — edible pots have been found in ancient tombs.",
-  "Tomatoes are botanically a fruit, used like a vegetable.",
-  "Carrots were originally purple, not orange.",
-  "The world's oldest restaurant still running opened in Madrid in 1725.",
+  { fact: "French fries are actually Belgian — invented there in the 1600s.", icon: frenchAnimation },
+  { fact: "Apples are 85% water.", icon: appleAnimation },
+  { fact: "Black tea has more caffeine than green tea because it's more oxidised.", icon: blackTeaAnimation },
+  { fact: "Pumpkins are technically fruits, not vegetables.", icon: pumpkinAnimation },
+  { fact: "Red wine gets its colour from grape skins — white wine skips them.", icon: redWineAnimation },
+  { fact: "Tomatoes are botanically a fruit, used like a vegetable.", icon: vegetableAnimation },
+  { fact: "Roasting over a bonfire gives food a smoky flavour you can't fake.", icon: bonfireAnimation },
+  { fact: "The world's oldest restaurant still running opened in 1725.", icon: restaurantAnimation },
+  { fact: "Easter eggs are decorated to symbolise rebirth and new life.", icon: easterEggAnimation },
 ];
 
 function CustomerOrder() {
@@ -332,12 +343,12 @@ function CustomerOrder() {
 
   // ── one order card ────────────────────────────────────────
   const OrderCard = ({ order }) => {
+    const factData = FOOD_FACTS[order.order_id % FOOD_FACTS.length];
     const status = deriveStatus(statuses[order.order_id]);
     const meta = STATUS_META[status];
     const idx = STAGE_INDEX[status] ?? 0;
     const cancelled = status === "cancelled";
     const done = status === "ready";
-    const fact = FOOD_FACTS[order.order_id % FOOD_FACTS.length];
 
     const itemSummary = (order.items || [])
       .map((it) => `${it.name} ×${it.quantity}`)
@@ -358,7 +369,11 @@ function CustomerOrder() {
         {/* header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
-            <Lottie animationData={meta.anim} loop={!done && !cancelled} style={{ width: 52, height: 52, flexShrink: 0 }} />
+            <Lottie
+  animationData={status === "placed" ? factData.icon : meta.anim}
+  loop={!done && !cancelled}
+  style={{ width: 52, height: 52, flexShrink: 0 }}
+/>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontWeight: 800, fontSize: "16px" }}>{order.order_number}</div>
               <div style={{ fontSize: "12px", color: C.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "190px" }}>
@@ -390,7 +405,7 @@ function CustomerOrder() {
         {/* waiting-state food fact */}
         {(status === "placed" || status === "pending") && (
           <p style={{ fontSize: "12.5px", color: C.muted, fontStyle: "italic", margin: "8px 2px 0", lineHeight: 1.5 }}>
-            ✨ {fact}
+            ✨ {factData.fact}
           </p>
         )}
 
