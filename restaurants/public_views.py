@@ -55,7 +55,7 @@ def place_order(request, slug):
     }, status=201)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'HEAD'])
 @permission_classes([AllowAny])
 def get_restaurants(request):
     restaurants = Restaurant.objects.filter(
