@@ -8,6 +8,7 @@ import History from "./History";
 import NewOrderModal from "./NewOrderModal";
 import Settings from "./Settings";
 import OrderRequests from "./OrderRequests";
+import SalesMonitor from "./SalesMonitor";
 
 import { useState, useEffect } from "react";
 
@@ -23,22 +24,22 @@ function Dashboard() {
     const token = localStorage.getItem("access_token");
 
     const fetchOrders = () => {
-  fetch("https://bitefy-backend.onrender.com/api/orders/", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Orders response:", data);
-      if (Array.isArray(data)) {
-        setOrders(data);
-      } else {
-        setOrders([]);
-      }
-    })
-    .catch((error) => console.log("Error:", error));
-};
+      fetch("https://bitefy-backend.onrender.com/api/orders/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Orders response:", data);
+          if (Array.isArray(data)) {
+            setOrders(data);
+          } else {
+            setOrders([]);
+          }
+        })
+        .catch((error) => console.log("Error:", error));
+    };
 
     fetch("https://bitefy-backend.onrender.com/api/menu-items/", {
       headers: { Authorization: `Bearer ${token}` },
@@ -112,7 +113,19 @@ function Dashboard() {
           />
         )}
 
-        {activeTab === "statistics" && <Statistics />}
+        {activeTab === "statistics" && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              overflowY: "auto",
+            }}
+          >
+            <Statistics />
+            <SalesMonitor />
+          </div>
+        )}
 
         {showModal && (
           <NewOrderModal
