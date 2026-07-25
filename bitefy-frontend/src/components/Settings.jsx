@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ConfirmDialog from "./ConfirmDialog";
+import GST from "./GST";
 
 // ── Design tokens (matches the rest of the dashboard) ──────
 const C = {
@@ -24,6 +25,7 @@ function Settings() {
   const [ifscCode, setIfscCode] = useState("");
   const [accountHolderName, setAccountHolderName] = useState("");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showGST, setShowGST] = useState(false); // ← toggles the GST view
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -170,6 +172,9 @@ function Settings() {
       </div>
     );
 
+  // ── GST view takes over the whole panel when open ─────────
+  if (showGST) return <GST onBack={() => setShowGST(false)} />;
+
   return (
     <div style={page}>
       <ConfirmDialog
@@ -188,6 +193,8 @@ function Settings() {
         .bf-input:focus { border-color: ${C.accent} !important;
           background: #fff !important; }
         .bf-save:active { transform: scale(0.98); }
+        .bf-gst-card:hover { border-color: ${C.accent} !important;
+          box-shadow: 0 8px 22px rgba(42,33,24,0.07); transform: translateY(-2px); }
       `}</style>
 
       {/* Header */}
@@ -286,6 +293,47 @@ function Settings() {
         >
           {isSaving ? "⏳ Saving..." : "💾 Save Settings"}
         </button>
+      </div>
+
+      {/* GST & Invoicing — navigates to the GST component */}
+      <div
+        className="bf-gst-card"
+        style={{
+          ...card,
+          marginTop: "22px",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+          transition: "all 0.18s ease",
+        }}
+        onClick={() => setShowGST(true)}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div
+            style={{
+              width: "46px",
+              height: "46px",
+              borderRadius: "12px",
+              background: "#FFF1E6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "20px",
+              flexShrink: 0,
+            }}
+          >
+            <i className="fa-solid fa-file-invoice" style={{ color: C.accentDeep }}></i>
+          </div>
+          <div>
+            <div style={{ fontSize: "16px", fontWeight: 800 }}>GST & Invoicing</div>
+            <div style={{ fontSize: "13px", color: C.muted, marginTop: "2px" }}>
+              Set up GST details and generate tax invoices
+            </div>
+          </div>
+        </div>
+        <i className="fa-solid fa-chevron-right" style={{ color: C.muted }}></i>
       </div>
 
       {/* Logout — separated from settings to avoid accidental clicks */}

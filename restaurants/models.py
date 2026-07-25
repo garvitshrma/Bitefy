@@ -11,6 +11,11 @@ class Restaurant(models.Model):
     ifsc_code = models.CharField(max_length=11, blank=True)
     account_holder_name = models.CharField(max_length=100, blank=True)
     is_open = models.BooleanField(default=True)
+    gstin = models.CharField(max_length=15, blank=True)
+    gst_legal_name = models.CharField(max_length=200, blank=True)
+    gst_address = models.TextField(blank=True)
+    gst_state = models.CharField(max_length=100, blank=True)
+    gst_percent = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.name
