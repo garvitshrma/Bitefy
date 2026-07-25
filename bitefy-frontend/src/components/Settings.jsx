@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import GST from "./GST";
+import QROrders from "./QROrders";
 
 // ── Design tokens (matches the rest of the dashboard) ──────
 const C = {
@@ -25,7 +26,8 @@ function Settings() {
   const [ifscCode, setIfscCode] = useState("");
   const [accountHolderName, setAccountHolderName] = useState("");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [showGST, setShowGST] = useState(false); // ← toggles the GST view
+  const [showGST, setShowGST] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -165,15 +167,59 @@ function Settings() {
     gap: "8px",
   };
 
+  // a reusable "navigation" card (GST, QR, ...)
+  const navCard = (icon, title, subtitle, onClick) => (
+    <div
+      className="bf-nav-card"
+      style={{
+        ...card,
+        marginTop: "22px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "16px",
+        transition: "all 0.18s ease",
+      }}
+      onClick={onClick}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div
+          style={{
+            width: "46px",
+            height: "46px",
+            borderRadius: "12px",
+            background: "#FFF1E6",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
+            flexShrink: 0,
+          }}
+        >
+          <i className={icon} style={{ color: C.accentDeep }}></i>
+        </div>
+        <div>
+          <div style={{ fontSize: "16px", fontWeight: 800 }}>{title}</div>
+          <div style={{ fontSize: "13px", color: C.muted, marginTop: "2px" }}>
+            {subtitle}
+          </div>
+        </div>
+      </div>
+      <i className="fa-solid fa-chevron-right" style={{ color: C.muted }}></i>
+    </div>
+  );
+
   if (isLoading)
     return (
       <div style={page}>
-        <p style={{ color: C.muted }}>Loading settings…</p>
+        <p style={{ color: C.muted }}>Loading settings...</p>
       </div>
     );
 
-  // ── GST view takes over the whole panel when open ─────────
+  // sub-views take over the whole panel
   if (showGST) return <GST onBack={() => setShowGST(false)} />;
+  if (showQR) return <QROrders onBack={() => setShowQR(false)} />;
 
   return (
     <div style={page}>
@@ -193,7 +239,7 @@ function Settings() {
         .bf-input:focus { border-color: ${C.accent} !important;
           background: #fff !important; }
         .bf-save:active { transform: scale(0.98); }
-        .bf-gst-card:hover { border-color: ${C.accent} !important;
+        .bf-nav-card:hover { border-color: ${C.accent} !important;
           box-shadow: 0 8px 22px rgba(42,33,24,0.07); transform: translateY(-2px); }
       `}</style>
 
@@ -237,7 +283,7 @@ function Settings() {
             placeholder="e.g., tech-cafe"
           />
           <p style={helperStyle}>
-            Your customer order link: bitefy.vercel.app/order/
+            Your customer order link: bitefy.in/order/
             <strong style={{ color: C.accentDeep }}>
               {slug || "your-slug"}
             </strong>
@@ -291,52 +337,27 @@ function Settings() {
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? "⏳ Saving..." : "💾 Save Settings"}
+          {isSaving ? "Saving..." : "Save Settings"}
         </button>
       </div>
 
-      {/* GST & Invoicing — navigates to the GST component */}
-      <div
-        className="bf-gst-card"
-        style={{
-          ...card,
-          marginTop: "22px",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "16px",
-          transition: "all 0.18s ease",
-        }}
-        onClick={() => setShowGST(true)}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div
-            style={{
-              width: "46px",
-              height: "46px",
-              borderRadius: "12px",
-              background: "#FFF1E6",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "20px",
-              flexShrink: 0,
-            }}
-          >
-            <i className="fa-solid fa-file-invoice" style={{ color: C.accentDeep }}></i>
-          </div>
-          <div>
-            <div style={{ fontSize: "16px", fontWeight: 800 }}>GST & Invoicing</div>
-            <div style={{ fontSize: "13px", color: C.muted, marginTop: "2px" }}>
-              Set up GST details and generate tax invoices
-            </div>
-          </div>
-        </div>
-        <i className="fa-solid fa-chevron-right" style={{ color: C.muted }}></i>
-      </div>
+      {/* QR Ordering */}
+      {navCard(
+        "fa-solid fa-qrcode",
+        "QR Ordering",
+        "Get a printable QR standee for your tables",
+        () => setShowQR(true),
+      )}
 
-      {/* Logout — separated from settings to avoid accidental clicks */}
+      {/* GST & Invoicing */}
+      {navCard(
+        "fa-solid fa-file-invoice",
+        "GST & Invoicing",
+        "Set up GST details and generate tax invoices",
+        () => setShowGST(true),
+      )}
+
+      {/* Logout */}
       <div>
         <button
           style={logoutButtonStyle}
