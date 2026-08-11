@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import GST from "./GST";
-import QROrders from "./QROrders";
+import QROrders from "./QROrders.jsx";
 
 // ── Design tokens (matches the rest of the dashboard) ──────
 const C = {
